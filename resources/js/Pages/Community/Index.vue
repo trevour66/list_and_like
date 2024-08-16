@@ -16,7 +16,7 @@ defineProps({
 const associated_user_posts = ref([]);
 const next_page_url = ref("");
 
-const Loading = ref(false);
+const Loading = ref(true);
 
 const userAccessToken = usePage().props.auth.user.auth_token;
 
@@ -92,11 +92,24 @@ onMounted(() => {
 			<div
 				class="grid lg:grid-cols-2 xl:grid-cols-3 grid-cols-1 pt-6 gap-x-3 gap-y-10 mx-3"
 			>
-				<div v-for="(post, index) in associated_user_posts" :key="index">
-					<IGPostRepresentation :post="post" :IGAccessCodes="IGAccessCodes" />
-				</div>
+				<template v-if="(associated_user_posts ?? []).length > 0">
+					<div v-for="(post, index) in associated_user_posts" :key="index">
+						<IGPostRepresentation :post="post" :IGAccessCodes="IGAccessCodes" />
+					</div>
+				</template>
+				<template v-if="!Loading && (associated_user_posts ?? []).length == 0">
+					<div
+						class="flex items-center justify-center w-full h-full bg-gray-50"
+					>
+						<div>
+							<p class="text-md font-normal text-gray-500">
+								You have no community post at the moment
+							</p>
+						</div>
+					</div>
+				</template>
 			</div>
-			<div class="flex items-center justify-center w-full h-32">
+			<div v-if="Loading" class="flex items-center justify-center w-full h-32">
 				<InfinityScrollLoader />
 			</div>
 		</template>

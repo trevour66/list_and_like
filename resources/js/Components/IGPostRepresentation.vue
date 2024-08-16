@@ -1,6 +1,7 @@
 <script setup>
 import IGProfilePost from "@/Services/IGProfilePost";
 import { usePage } from "@inertiajs/vue3";
+import { onMounted, ref } from "vue";
 
 const userAccessToken = usePage().props.auth.user.auth_token;
 
@@ -14,6 +15,9 @@ const props = defineProps({
 		default: [],
 	},
 });
+
+const postSkipped = ref(false);
+const skippingPost = ref(false);
 
 const truncateString = (str) => {
 	const maxLength = 150;
@@ -51,12 +55,35 @@ const formURLWithAccessToken = (url) => {
 };
 
 const skipPost = async (post_id) => {
-	await IGProfilePost.skipPost(userAccessToken, post_id);
+	if (skippingPost.value) {
+		return;
+	}
+
+	skippingPost.value = true;
+	await IGProfilePost.skipPost(userAccessToken, post_id)
+		.then(function (response) {
+			// handle success
+			console.log(response);
+			const status = response?.data?.status ?? false;
+
+			console.log(status);
+
+			if (status == "success") {
+				postSkipped.value = true;
+			}
+
+			skippingPost.value = false;
+		})
+		.catch(function (error) {
+			// handle error
+			console.log(error);
+			skippingPost.value = false;
+		});
 };
 </script>
 
 <template>
-	{{ post }}
+	<!-- {{ post }} -->
 	<div
 		class="relative flex flex-col flex-auto min-w-0 p-4 mx-3 overflow-hidden break-words bg-white border-0 dark:bg-slate-850 dark:shadow-dark-xl shadow-xl rounded-2xl bg-clip-border"
 	>
@@ -181,6 +208,9 @@ const skipPost = async (post_id) => {
 		<div
 			class="w-full max-w-full mx-auto mt-4 sm:mr-0 relative flex items-center bg-gray-50 gap-3 p-1 rounded-xl hover:cursor-pointer hover:opacity-50"
 			@click="skipPost(post?.post_id ?? '')"
+			:class="{
+				'cursor-not-allowed opacity-50': skippingPost || postSkipped,
+			}"
 		>
 			<div
 				class="z-30 flex gap-4 items-center justify-center w-full px-0 py-1 mb-0 transition-colors ease-in-out border-0 rounded-lg bg-inherit text-slate-700"
@@ -189,7 +219,8 @@ const skipPost = async (post_id) => {
 					<i class="fas fa-walking"></i>
 				</span>
 
-				<p>Skip</p>
+				<p v-if="postSkipped">Post Skipped</p>
+				<p v-else>Skip Post</p>
 			</div>
 		</div>
 		<a
