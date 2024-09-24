@@ -2,7 +2,6 @@
 
 namespace App\Listeners;
 
-use App\Models\User;
 use App\Events\NewConnectedIGBusinessAccount;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Services\IGMedia;

@@ -13,7 +13,7 @@ class ig_profile_post extends Model
     protected $connection = 'mongodb';
 
     protected $fillable = [
-        'ig_profile_id',
+        'ig_profile_handle',
         'associated_ig_business_accounts',
         'post_id',
         'post_type',
@@ -26,10 +26,16 @@ class ig_profile_post extends Model
         'timestamp',
 
         'skipped_by',
+        'reactedTo_by',
+    ];
+
+    protected $attributes = [
+        'skipped_by' => [],
+        'reactedTo_by' => [],
     ];
 
     public function owner_ig_profile(): BelongsTo
     {
-        return $this->belongsTo(ig_profiles::class);
+        return $this->belongsTo(ig_profiles::class, 'ig_profiles_id');
     }
 }

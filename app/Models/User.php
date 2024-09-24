@@ -70,7 +70,13 @@ class User extends Authenticatable
     public function toArray()
     {
         $array = parent::toArray();
-        $array['auth_token'] = $this->createToken('auth-token')->plainTextToken;
+        $token = $this->getAuthTokenAttribute() ?? null;
+
+        if ($token === null) {
+            $token = $this->createToken('auth-token')->plainTextToken;
+        }
+
+        $array['auth_token'] = $token;
         return $array;
     }
 }

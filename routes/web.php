@@ -12,7 +12,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-use App\Http\Controllers\ProxyController;
+use App\Http\Controllers\DashboardController;
 
 
 /*
@@ -35,14 +35,13 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::post('/get-analytics', [DashboardController::class, 'fetch_account_analytics_data'])->name('dashboard.fetch_account_analytics_data');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/callback', [IGBusinessLoginController::class, 'index'])->name('callback.index');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/sync-data', [DashboardController::class, 'sync_data'])->name('dashboard.sync_data');
 
+    Route::get('/callback', [IGBusinessLoginController::class, 'index'])->name('callback.index');
     Route::post('/new-ig-connection', [IGBusinessLoginController::class, 'store'])->name('authRequest.store');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -55,12 +54,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/my-lists/{userList}', [UserListController::class, 'show'])->name('user_lists.show');
     Route::post('/my-lists', [UserListController::class, 'create'])->name('user_lists.create');
     Route::post('/my-lists/{userList}/add-profile', [UserListController::class, 'store'])->name('user_lists.store_profile');
+    Route::post('/my-lists/{userList}/delete', [UserListController::class, 'destroy'])->name('user_lists.destroy_profile');
 
     Route::get('/community', [CommunityController::class, 'index'])->name('community.index');
 
-    // Route::get('/proxy-image', [ProxyController::class, 'fetchImage'])->name('proxy.fetchImage');
-
     Route::post('/ig-post/skip/{post_id}', [IgProfilePostController::class, 'skip'])->name('ig_profile_post.skip');
+    Route::post('/ig-post/react/{post_id}', [IgProfilePostController::class, 'react'])->name('ig_profile_post.react');
 });
 
 require __DIR__ . '/auth.php';

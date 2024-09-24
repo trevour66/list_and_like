@@ -1,7 +1,15 @@
 <script setup>
 import IGProfilePost from "@/Services/IGProfilePost";
-import { usePage } from "@inertiajs/vue3";
+import { router, usePage, useForm } from "@inertiajs/vue3";
 import { onMounted, ref } from "vue";
+import { initDropdowns } from "flowbite";
+import { watchEffect } from "vue";
+
+const emits = defineEmits([
+	"postSkipped",
+	"postReactedTo",
+	"IGProfileAddedToAList",
+]);
 
 const userAccessToken = usePage().props.auth.user.auth_token;
 
@@ -10,7 +18,11 @@ const props = defineProps({
 		type: Object,
 		required: true,
 	},
-	IGAccessCodes: {
+	index: {
+		type: Number,
+		required: true,
+	},
+	user_lists: {
 		type: Array,
 		default: [],
 	},
@@ -18,6 +30,7 @@ const props = defineProps({
 
 const postSkipped = ref(false);
 const skippingPost = ref(false);
+const addedToListSuccessMsg = ref("");
 
 const truncateString = (str) => {
 	const maxLength = 150;
@@ -28,30 +41,6 @@ const truncateString = (str) => {
 	} else {
 		return str;
 	}
-};
-
-const formURLWithAccessToken = (url) => {
-	if (!url) {
-		return "";
-	}
-
-	console.log(url);
-
-	console.log(props.IGAccessCodes);
-	const user_IGAccessCodes = props?.IGAccessCodes ?? [];
-
-	if (user_IGAccessCodes.length === 0) {
-		return "";
-	}
-
-	// const acc_token = user_IGAccessCodes[0]?.long_lived_access_token ?? "";
-	const acc_token = user_IGAccessCodes[0]?.short_lived_access_token ?? "";
-
-	if (!acc_token) {
-		return "";
-	}
-
-	return url + "/?access_token=" + acc_token;
 };
 
 const skipPost = async (post_id) => {
@@ -80,6 +69,60 @@ const skipPost = async (post_id) => {
 			skippingPost.value = false;
 		});
 };
+
+const reactedToPost = async (post_id, url) => {
+	if (!(url ?? false)) {
+		return;
+	}
+
+	window.open(url, "_blank");
+
+	await IGProfilePost.reactedToPost(userAccessToken, post_id)
+		.then(function (response) {
+			// handle success
+			console.log(response);
+			const status = response?.data?.status ?? false;
+
+			console.log(status);
+		})
+		.catch(function (error) {
+			// handle error
+			console.log(error);
+		});
+};
+
+const ig_profile_is_already_in_list = (user_list_ids, list_id) => {
+	return (user_list_ids ?? []).find((item) => item == list_id) ?? false;
+};
+
+const addUserToList = (list_id, ig_handle, user_list_ids) => {
+	if (ig_profile_is_already_in_list(user_list_ids, list_id)) return;
+
+	const form = useForm({
+		ig_handle: ig_handle,
+	});
+
+	form.post(`/my-lists/${list_id}/add-profile`, {
+		onFinish: () => {
+			addedToListSuccessMsg.value = "IG profile added to list";
+			form.reset();
+			emits("IGProfileAddedToAList");
+			// router.reload();
+		},
+	});
+};
+
+watchEffect(() => {
+	if (addedToListSuccessMsg.value) {
+		setTimeout(() => {
+			addedToListSuccessMsg.value = "";
+		}, 3000);
+	}
+});
+
+onMounted(() => {
+	initDropdowns();
+});
 </script>
 
 <template>
@@ -87,11 +130,16 @@ const skipPost = async (post_id) => {
 	<div
 		class="relative flex flex-col flex-auto min-w-0 p-4 mx-3 overflow-hidden break-words bg-white border-0 dark:bg-slate-850 dark:shadow-dark-xl shadow-xl rounded-2xl bg-clip-border"
 	>
+		<div v-if="addedToListSuccessMsg != ''">
+			<div class="px-4 py-2 text-sm text-gray-400">
+				{{ addedToListSuccessMsg }}
+			</div>
+		</div>
 		<div class="w-full max-w-full mx-auto mt-4 sm:mr-0 md:flex">
-			<div class="flex-none w-auto max-w-full my-auto">
+			<div class="flex justify-between w-full max-w-full my-auto">
 				<div class="h-full">
 					<h5 class="mb-0 leading-normal font-semibold">
-						{{ post?.ig_profile_id }}
+						{{ post?.ig_profile_handle }}
 					</h5>
 					<p class="mb-0 inline-flex text-sm gap-2">
 						<span v-if="post?.likesCount ?? false">
@@ -104,23 +152,77 @@ const skipPost = async (post_id) => {
 						</span>
 					</p>
 				</div>
+
+				<div>
+					<button
+						:id="`${index}_dropdownButton`"
+						:data-dropdown-toggle="`${index}dropdown`"
+						data-dropdown-placement="bottom-end"
+						class="inline-block text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-1.5"
+						type="button"
+					>
+						<span class="sr-only">Open dropdown</span>
+						<svg
+							class="w-5 h-5"
+							aria-hidden="true"
+							xmlns="http://www.w3.org/2000/svg"
+							fill="currentColor"
+							viewBox="0 0 16 3"
+						>
+							<path
+								d="M2 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm6.041 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM14 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"
+							/>
+						</svg>
+					</button>
+					<!-- Dropdown menu -->
+					<div
+						:id="`${index}dropdown`"
+						class="z-10 hidden text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700"
+					>
+						<div class="px-4 py-3 text-sm text-gray-700">
+							<div class="font-bold truncate">Add to list</div>
+						</div>
+						<ul
+							class="text-sm text-gray-800 h-36 overflow-y-auto"
+							:aria-labelledby="`${index}_dropdownButton`"
+						>
+							<li v-for="(list, index) in user_lists" :key="index">
+								<div
+									@click="
+										addUserToList(
+											list._id,
+											post.ig_profile_handle,
+											post?.lists_ig_profile ?? []
+										)
+									"
+									class="h-full w-full px-4 py-4 hover:bg-gray-100 hover:cursor-pointer focus:bg-gray-100"
+									:class="{
+										'bg-gray-200': ig_profile_is_already_in_list(
+											post?.lists_ig_profile ?? [],
+											list._id
+										),
+									}"
+								>
+									<!-- {{ list }} -->
+									<span class="block">{{ list.list_name }}</span>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
 			</div>
 		</div>
-		<div class="w-full max-w-full mx-auto mt-4 sm:mr-0 md:flex">
+		<div class="w-full max-w-full mx-auto mt-4 sm:mr-0 md:flex relative">
 			<div
 				class="md:w-6/12 w-full bg-gray-50 relative inline-flex items-center justify-center text-white transition-all duration-200 ease-in-out text-base h-60 rounded-xl"
 			>
-				<!-- <img
-					:src="formURLWithAccessToken(post?.displayUrl ?? false)"
+				<img
+					v-if="post.image_cdn ?? false"
+					:src="post.image_cdn"
 					alt="profile_image"
-					class="w-full shadow-2xl rounded-xl"
-				/> -->
-				<!-- <img
-					:src="post.displayUrl"
-					alt="profile_image"
-					class="w-full shadow-2xl rounded-xl"
-				/> -->
-				<div class="absolute top-1 right-1 p-4">
+					class="max-h-60 shadow-lg rounded-xl"
+				/>
+				<div class="absolute top-3 right-2 bg-white p-1 rounded-lg">
 					<svg
 						v-if="(post?.post_type ?? '') == 'Image'"
 						class="w-5 h-5"
@@ -223,16 +325,15 @@ const skipPost = async (post_id) => {
 				<p v-else>Skip Post</p>
 			</div>
 		</div>
-		<a
+		<div
 			class="w-full max-w-full mx-auto mt-4 sm:mr-0 bg-[#f24b54] relative flex items-center gap-3 p-1 rounded-xl hover:cursor-pointer hover:opacity-50"
-			target="_blank"
-			:href="post?.url ?? '#'"
+			@click="reactedToPost(post?.post_id ?? '', post?.url ?? '')"
 		>
 			<div
 				class="z-30 flex gap-4 items-center justify-center w-full px-0 py-1 mb-0 transition-colors ease-in-out border-0 rounded-lg bg-inherit text-white"
 			>
 				<p>Interact with Post</p>
 			</div>
-		</a>
+		</div>
 	</div>
 </template>

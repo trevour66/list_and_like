@@ -3,13 +3,16 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InfinityScrollLoader from "@/Components/InfinityScrollLoader.vue";
 import IGPostRepresentation from "@/Components/IGPostRepresentation.vue";
 import { Head, usePage } from "@inertiajs/vue3";
-import { initDropdowns } from "flowbite";
 import { onMounted, ref } from "vue";
 import IGProfilePost from "@/Services/IGProfilePost";
 
 defineProps({
 	IGAccessCodes: {
 		type: Array,
+	},
+	user_lists: {
+		type: Array,
+		default: [],
 	},
 });
 
@@ -36,10 +39,10 @@ const handleInfiniteScroll = () => {
 };
 
 const userPostsFetch = async () => {
+	console.log("response.data");
 	await IGProfilePost.getCommunityPosts(userAccessToken, next_page_url.value)
 		.then(function (response) {
 			// handle success
-			console.log(response);
 			const associated_user_posts_data =
 				response?.data?.associated_user_posts ?? false;
 			const status = response?.data?.status ?? false;
@@ -48,8 +51,6 @@ const userPostsFetch = async () => {
 			// const prev_cursor = associated_user_posts_data?.prev_cursor ?? null;
 
 			next_page_url.value = associated_user_posts_data?.next_page_url ?? null;
-
-			// console.log(posts);
 
 			if (posts && posts.length > 0) {
 				Array.prototype.push.apply(associated_user_posts.value, posts);
@@ -62,6 +63,10 @@ const userPostsFetch = async () => {
 			console.log(error);
 			Loading.value = false;
 		});
+};
+
+const refreshCurrentView = () => {
+	router.reload();
 };
 
 onMounted(() => {
@@ -94,7 +99,13 @@ onMounted(() => {
 			>
 				<template v-if="(associated_user_posts ?? []).length > 0">
 					<div v-for="(post, index) in associated_user_posts" :key="index">
-						<IGPostRepresentation :post="post" :IGAccessCodes="IGAccessCodes" />
+						<!-- {{ post }} -->
+						<IGPostRepresentation
+							:post="post"
+							:index="index"
+							:user_lists="user_lists"
+							@IGProfileAddedToAList="refreshCurrentView"
+						/>
 					</div>
 				</template>
 				<template v-if="!Loading && (associated_user_posts ?? []).length == 0">

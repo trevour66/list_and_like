@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\authorizationRequests;
 use App\Models\user_mongodb_subprofile;
+use App\Models\ig_data_fetch_process;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\RedirectResponse;
@@ -43,6 +44,24 @@ class IGBusinessLoginController extends Controller
         ]);
 
         return $IGGetAccountRequest->json("username") ?? false;
+    }
+
+    private function syncData($ig_account_entry, $user)
+    {
+        logger(print_r($ig_account_entry,  true));
+        $igDataFetchProcess = ig_data_fetch_process::where('IDFP_status', '=', 'processing')
+            ->where('IDFP_ig_bussines_account', '=' . $ig_account_entry->id)
+            ->first() ?? null;
+
+        logger(print_r($igDataFetchProcess,  true));
+        // logger(print_r($ig_account_entry,  true));
+
+        if ($igDataFetchProcess !== null) {
+            return;
+        }
+
+        $igDataFetchProcess_new = new ig_data_fetch_process(['IDFP_status' => 'processing']);
+        $ig_account_entry->igDataFetchProcess()->save($igDataFetchProcess_new);
     }
 
     public function index(Request $request)
@@ -86,9 +105,9 @@ class IGBusinessLoginController extends Controller
             $IG_APP_SCOPED_ID = $accessTokenRequest["user_id"] ?? false;
             $permissions = $accessTokenRequest["permissions"] ?? [];
 
-            logger(print_r($access_token, true));
-            logger(print_r($IG_APP_SCOPED_ID, true));
-            logger(print_r($permissions, true));
+            // logger(print_r($access_token, true));
+            // logger(print_r($IG_APP_SCOPED_ID, true));
+            // logger(print_r($permissions, true));
 
             if (
                 !$access_token ||
@@ -121,7 +140,14 @@ class IGBusinessLoginController extends Controller
                 ->push(
                     'IG_bussiness_accounts',
                     [$IG_USERNAME],
+                    unique: true
                 );
+
+            $ig_account_entry = $current_user->IGAccessCodes()
+                ->where('user_id', '=', $current_user->id)
+                ->where('IG_USERNAME', '=', $IG_USERNAME)->first();
+
+            $this->syncData($ig_account_entry, $current_user);
 
             return redirect()->route('profile.edit');
         } catch (\Throwable $th) {

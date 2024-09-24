@@ -17,6 +17,7 @@ class user_list extends Model
 
     protected $fillable = [
         'list_name',
+        'list_description',
         'user_id',
     ];
 

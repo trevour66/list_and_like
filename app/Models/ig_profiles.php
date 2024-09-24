@@ -38,6 +38,7 @@ class ig_profiles extends Model
     public function ig_posts(): HasMany
     {
         return $this->hasMany(ig_profile_post::class);
+        // return $this->hasMany(ig_profile_post::class, 'ig_profile_link');
     }
 
     public function lists(): BelongsToMany

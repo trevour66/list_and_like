@@ -8,6 +8,8 @@ use App\Models\user_list;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\Redirect;
+
 
 class UserListController extends Controller
 {
@@ -32,23 +34,26 @@ class UserListController extends Controller
     {
         $request->validate([
             'list_name' => 'required|string',
+            'list_description' => 'nullable|string',
         ]);
 
         $user_id = $request->user()->id;
+        $list_name = strtolower($request->list_name);
 
         // Check if the list name is unique for the user
-        $exists = user_list::where('list_name', $request->list_name)
+        $exists = user_list::where('list_name',  $list_name)
             ->where('user_id', $user_id)
             ->exists();
 
         if ($exists) {
             return redirect()->back()
-                ->withErrors(['list_name' => 'The list name must be unique for each user.'])
+                ->withErrors(['list_name' => 'The list name must be unique. List with the same name exist'])
                 ->withInput();
         }
 
         user_list::create([
-            'list_name' => $request->list_name,
+            'list_name' =>  $list_name,
+            'list_description' =>  $request->list_description ?? '',
             'user_id' => $user_id,
         ]);
 
@@ -73,8 +78,6 @@ class UserListController extends Controller
         }
 
         $userList->ig_profiles()->attach($ig_profile);
-
-        return redirect()->route('added_ig_profile.index')->with('success', 'Instagram profile added successfully.');
     }
 
     /**
@@ -93,7 +96,7 @@ class UserListController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(user_list $user_list)
+    public function edit(user_list $userList)
     {
         //
     }
@@ -101,7 +104,7 @@ class UserListController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, user_list $user_list)
+    public function update(Request $request, user_list $userList)
     {
         //
     }
@@ -109,8 +112,10 @@ class UserListController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(user_list $user_list)
+    public function destroy(user_list $userList)
     {
-        //
+
+        $userList->delete();
+        return Redirect::to('/my-lists');
     }
 }

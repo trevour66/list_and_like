@@ -8,6 +8,8 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 use Illuminate\Support\Facades\Event;
 use App\Events\NewConnectedIGBusinessAccount;
 use App\Listeners\PullRecentData;
+use App\Events\NewDataFetchRequest;
+use App\Listeners\DataFetchRequest_PullRecentData;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -22,6 +24,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         NewConnectedIGBusinessAccount::class => [
             PullRecentData::class
+        ],
+        NewDataFetchRequest::class => [
+            DataFetchRequest_PullRecentData::class
         ]
     ];
 

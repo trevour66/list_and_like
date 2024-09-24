@@ -1,6 +1,109 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head } from "@inertiajs/vue3";
+import { useForm, Head } from "@inertiajs/vue3";
+import IG_black from "@/Components/icons/IG_black.vue";
+import { onMounted, ref, reactive } from "vue";
+import { initDropdowns } from "flowbite";
+import { computed } from "vue";
+
+const props = defineProps({
+	ig_data_fetch_process: {
+		type: Array,
+	},
+});
+
+const preferedIgBussinessAccount = reactive({
+	IG_username: "",
+	most_recent_sync: null,
+});
+
+const form = useForm({
+	IG_account_id: "",
+});
+
+const allAccounts = computed(() => {
+	const allBussinesAccounts = props?.ig_data_fetch_process ?? [];
+
+	if (allBussinesAccounts.length > 0) {
+		return allBussinesAccounts;
+	}
+
+	return [];
+});
+
+const resync_data = () => {
+	if ((preferedIgBussinessAccount?.IG_account_id ?? "") == "") {
+		return;
+	}
+
+	form.IG_account_id = preferedIgBussinessAccount.IG_account_id;
+
+	form.post("/sync-data", {
+		onSuccess: (response) => {
+			// console.log("Form submitted successfully:", response);
+		},
+	});
+};
+
+const getPreferedIgBussinessAccount = () => {
+	const allBussinesAccounts = props?.ig_data_fetch_process ?? [];
+
+	if (allBussinesAccounts.length > 0) {
+		preferedIgBussinessAccount.IG_username =
+			allBussinesAccounts[0]?.IG_username;
+
+		preferedIgBussinessAccount.IG_account_id =
+			allBussinesAccounts[0]?.IG_account_id;
+
+		preferedIgBussinessAccount.most_recent_sync =
+			allBussinesAccounts[0]?.IG_data_fetch_process ?? null;
+	}
+
+	return null;
+};
+
+const getLastSyncedDate = computed(() => {
+	const preferedIgBussinessAcc =
+		preferedIgBussinessAccount?.most_recent_sync ?? null;
+
+	if (preferedIgBussinessAcc == null) return "";
+
+	const date = preferedIgBussinessAcc?.created_at ?? null;
+
+	if (date == null) return "";
+
+	const dateString = new Date(date);
+
+	return dateString.toLocaleDateString();
+});
+
+const isMostRecentSyncStillInProcess = computed(() => {
+	const preferedIgBussinessAcc_most_recent_sync =
+		preferedIgBussinessAccount?.most_recent_sync ?? null;
+	const preferedIgBussinessAcc_IG_account_id =
+		preferedIgBussinessAccount?.IG_account_id ?? "";
+
+	// preferedIgBussinessAccount?.IG_account_id
+
+	if (
+		preferedIgBussinessAcc_most_recent_sync == null &&
+		preferedIgBussinessAcc_IG_account_id === ""
+	)
+		return null;
+
+	if (
+		(preferedIgBussinessAcc_most_recent_sync?.IDFP_status ?? "") == "processing"
+	) {
+		true;
+	}
+
+	return false;
+});
+
+onMounted(() => {
+	initDropdowns();
+	getPreferedIgBussinessAccount();
+});
 </script>
 
 <template>
@@ -8,34 +111,101 @@ import { Head } from "@inertiajs/vue3";
 
 	<AuthenticatedLayout>
 		<template #header>
-			<div>
+			<div class="flex-1">
 				<h2 class="font-semibold text-xl text-gray-800 leading-tight">
 					Dashboard
 				</h2>
+
+				<!-- {{ form }}
+				{{ preferedIgBussinessAccount.most_recent_sync }} -->
 			</div>
-			<div>
-				<div class="flex flex-wrap -mx-3">
-					<div class="flex items-center md:ml-auto md:pr-4">
-						<div
-							class="relative flex flex-wrap items-stretch w-full transition-all rounded-lg ease"
-						>
-							<input
-								type="text"
-								class="pl-3 text-sm focus:shadow-primary-outline ease w-1/100 leading-5.6 relative -ml-px block min-w-0 flex-auto rounded-lg border border-solid border-gray-300 dark:bg-slate-850 dark:text-white bg-white bg-clip-padding py-2 pr-9 text-gray-700 transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none focus:transition-shadow"
-								placeholder="Type here..."
-							/>
-							<span
-								class="text-md ease leading-5.6 absolute right-0 z-50 -ml-px flex h-full items-center whitespace-nowrap rounded-lg rounded-tr-none rounded-br-none border border-r-0 border-transparent bg-transparent py-2 px-2.5 text-center font-normal text-slate-500 transition-all"
-							>
-								<i class="fas fa-search"></i>
-							</span>
-						</div>
-					</div>
-				</div>
+			<div class="">
+				<template v-if="isMostRecentSyncStillInProcess !== null">
+					<!-- {{ isMostRecentSyncStillInProcess }} -->
+					<button
+						v-if="isMostRecentSyncStillInProcess === true"
+						class="float-right py-2 px-4 font-medium text-gray-900 focus:outline-none bg-white rounded-lg border-2 border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 hover:cursor-not-allowed animate-pulse"
+					>
+						<p class="text-gray-700 animate-bounce">. . .</p>
+					</button>
+					<button
+						v-else
+						@click="resync_data"
+						class="float-right py-2 px-4 font-medium text-gray-900 focus:outline-none bg-white rounded-lg border-2 border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100"
+					>
+						<p class="text-black">sync data</p>
+					</button>
+
+					<div class="clear-both"></div>
+
+					<p
+						v-if="
+							(preferedIgBussinessAccount?.most_recent_sync ?? null) != null &&
+							isMostRecentSyncStillInProcess === false
+						"
+						class="text-sm font-normal text-gray-500 dark:text-gray-400 my-2"
+					>
+						Last sucessfully synced on {{ getLastSyncedDate }}
+					</p>
+				</template>
 			</div>
 		</template>
 
 		<template #content>
+			<div class="px-4 py-4">
+				<div
+					v-if="preferedIgBussinessAccount?.IG_username"
+					class="inline-flex items-center gap-x-2"
+				>
+					<p class="text-sm font-normal text-gray-500 dark:text-gray-400 my-2">
+						Active IG Business Account:
+					</p>
+					<button
+						id="dropdownSelectPreferedIGAccButton"
+						data-dropdown-toggle="dropdownSelectPreferedIGAcc"
+						class="flex items-center text-md pe-1 font-medium text-gray-900 rounded-full hover:text-[#f24b54] md:me-0 focus:ring-4 focus:ring-gray-100"
+						type="button"
+					>
+						<IG_black :class="`w-6 h-6 me-2`" />
+						{{ preferedIgBussinessAccount?.IG_username }}
+						<svg
+							class="w-2.5 h-2.5 ms-3"
+							aria-hidden="true"
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 10 6"
+						>
+							<path
+								stroke="currentColor"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="m1 1 4 4 4-4"
+							/>
+						</svg>
+					</button>
+
+					<!-- Dropdown menu -->
+					<div
+						id="dropdownSelectPreferedIGAcc"
+						class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
+					>
+						<ul
+							class="py-2 text-sm text-gray-700 dark:text-gray-200"
+							aria-labelledby="dropdownInformdropdownSelectPreferedIGAccButtonationButton"
+						>
+							<li v-for="(acc, index) in allAccounts" :key="index">
+								<div
+									class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white hover:cursor-pointer"
+								>
+									{{ acc.IG_username }}
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
 			<div class="grid lg:grid-cols-2 grid-cols-1 pt-6 gap-3">
 				<div
 					class="relative flex flex-col flex-auto min-w-0 p-4 mx-3 overflow-hidden break-words bg-white border-0 dark:bg-slate-850 dark:shadow-dark-xl shadow-3xl rounded-2xl bg-clip-border"

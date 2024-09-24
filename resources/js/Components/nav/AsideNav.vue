@@ -44,19 +44,6 @@ const isActive = (parent) => {
 			<ul class="flex flex-col pl-0 mb-0">
 				<li class="w-full">
 					<NavLink_New
-						:href="route('community.index')"
-						:active="route().current('community.index')"
-					>
-						<template #icon>
-							<!-- <i
-								class="leading-normal text-xl text-gray-500 fa-solid fa-table-columns"
-							></i> -->
-						</template>
-						<template #text>Community</template>
-					</NavLink_New>
-				</li>
-				<li class="w-full">
-					<NavLink_New
 						:href="route('dashboard')"
 						:active="route().current('dashboard')"
 					>
@@ -66,6 +53,19 @@ const isActive = (parent) => {
 							></i> -->
 						</template>
 						<template #text>Dashboard</template>
+					</NavLink_New>
+				</li>
+				<li class="w-full">
+					<NavLink_New
+						:href="route('community.index')"
+						:active="route().current('community.index')"
+					>
+						<template #icon>
+							<!-- <i
+								class="leading-normal text-xl text-gray-500 fa-solid fa-table-columns"
+							></i> -->
+						</template>
+						<template #text>Community</template>
 					</NavLink_New>
 				</li>
 				<li class="w-full">
@@ -83,7 +83,6 @@ const isActive = (parent) => {
 						<template #text>Lists</template>
 					</NavLink_New>
 				</li>
-
 				<li class="w-full">
 					<NavLink_New
 						:href="route('added_ig_profile.index')"

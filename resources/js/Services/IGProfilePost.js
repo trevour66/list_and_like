@@ -16,10 +16,25 @@ const IGProfilePost = {
 	},
 
 	async skipPost(userAccessToken, post_id) {
-		console.log("here");
+		// console.log("here");
 		if (!(post_id ?? false)) return;
 
 		let url = route("ig_profile_post.skip", {
+			post_id: post_id,
+		});
+
+		return axios.post(url, {
+			headers: {
+				Authorization: `Bearer ${userAccessToken}`,
+			},
+		});
+	},
+
+	async reactedToPost(userAccessToken, post_id) {
+		// console.log("here");
+		if (!(post_id ?? false)) return;
+
+		let url = route("ig_profile_post.react", {
 			post_id: post_id,
 		});
 

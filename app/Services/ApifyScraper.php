@@ -22,6 +22,7 @@ class ApifyScraper
     {
         $url = $this->base_uri . 'acts/apify~instagram-profile-scraper/run-sync-get-dataset-items';
 
+        // $usernames = ig_business_account_post_commenter_to_be_scraped::take(1)->pluck('ig_handle')->toArray();
         $usernames = ig_business_account_post_commenter_to_be_scraped::take(10)->pluck('ig_handle')->toArray();
 
         logger(print_r($usernames, true));
@@ -80,7 +81,7 @@ class ApifyScraper
                 continue;
             }
             $postdataArray = [
-                'ig_profile_id' => $data["ig_handle"],
+                'ig_profile_handle' => $data["ig_handle"],
                 'post_id' => $post['id'],
                 'post_type' => $post['type'] ?? '',
                 'caption' => $post['caption'] ?? '',
@@ -119,6 +120,8 @@ class ApifyScraper
             // logger(print_r($associated_ig_bussiness_acc, true));
 
             $createdOrUpdatedIGProfile->ig_posts()->save($createdOrUpdatedIGPost);
+
+            // $createdOrUpdatedIGPost->owner_ig_profile->attach()
 
             if (count($associated_ig_bussiness_acc ?? []) > 0) {
                 ig_profile_post::where('post_id', $post['id'])

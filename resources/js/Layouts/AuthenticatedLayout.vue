@@ -19,6 +19,8 @@ const showingNavigationBar = ref(true);
 		@closeNavigationBar="showingNavigationBar = false"
 	/>
 
+	<slot name="bits"></slot>
+
 	<main
 		id="main"
 		class="relative h-full max-h-screen transition-all duration-200 ease-in-out xl:ml-[17rem] overflow-y-auto"
@@ -108,7 +110,7 @@ const showingNavigationBar = ref(true);
 			<div class="flex flex-wrap -mx-3">
 				<div class="w-full max-w-full px-1 md:px-3 mt-6 md:flex-none">
 					<div
-						class="relative flex flex-col min-w-0 break-words border-0 rounded-2xl bg-clip-border bg-gray-50 pb-8"
+						class="relative flex flex-col min-w-0 break-words border-0 rounded-2xl bg-clip-border bg-gray-50 pb-8 min-h-[70vh]"
 					>
 						<slot name="content" />
 					</div>

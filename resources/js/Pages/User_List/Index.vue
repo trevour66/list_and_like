@@ -1,31 +1,13 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, useForm, Link } from "@inertiajs/vue3";
+import { initModals } from "flowbite";
+import { onMounted, ref } from "vue";
 
-const colors = [
-	"blue-500",
-	"violet-500",
-	"red-500",
-	"green-500",
-	"yellow-500",
-	"indigo-500",
-	"pink-500",
-	"purple-500",
-	"cyan-500",
-	"lime-500",
-	// Add more colors as needed
-];
+import useModalStore from "@/Store/ModalStore";
+import NewListModal from "@/Components/modals/NewListModal.vue";
 
-const generateRandomGradient = () => {
-	try {
-		const fromColor = colors[Math.floor(Math.random() * colors.length)];
-		const toColor = colors[Math.floor(Math.random() * colors.length)];
-
-		return `from-${fromColor} to-${toColor}`;
-	} catch (error) {
-		return "from-blue-500 to-violet-500";
-	}
-};
+const modalStore = useModalStore();
 
 defineProps({
 	user_lists: {
@@ -34,57 +16,25 @@ defineProps({
 	},
 });
 
-const form = useForm({
-	list_name: "",
+onMounted(() => {
+	initModals();
 });
-
-const generateRandomName = () => {
-	const adjectives = [
-		"Amazing",
-		"Fantastic",
-		"Incredible",
-		"Awesome",
-		"Brilliant",
-	];
-	const nouns = ["List", "Collection", "Group", "Set", "Archive"];
-
-	const randomAdjective =
-		adjectives[Math.floor(Math.random() * adjectives.length)];
-	const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
-
-	return `${randomAdjective} ${randomNoun}`;
-};
-
-const submitForm = () => {
-	form.list_name = generateRandomName();
-
-	form.post("/my-lists", {
-		onFinish: () => {
-			// Optionally reset the form after submission
-			form.reset();
-		},
-		onSuccess: (response) => {
-			// Handle success response
-			console.log("Form submitted successfully:", response);
-		},
-		onError: (errors) => {
-			// Handle error response
-			console.error("Form submission error:", errors);
-		},
-	});
-};
 </script>
 
 <template>
 	<Head title="Dashboard" />
 
 	<AuthenticatedLayout>
+		<template #bits>
+			<NewListModal v-if="modalStore.getNewListModalStatus" />
+		</template>
 		<template #header>
 			<div>
 				<h2 class="font-semibold text-xl text-gray-800 leading-tight">
-					My List
+					My Lists
 				</h2>
 			</div>
+
 			<div>
 				<div class="flex flex-wrap -mx-3">
 					<div class="flex items-center md:ml-auto md:pr-4">
@@ -92,7 +42,7 @@ const submitForm = () => {
 							class="relative flex flex-wrap items-stretch w-full transition-all rounded-lg ease"
 						>
 							<button
-								@click="submitForm"
+								@click="modalStore.toggelNewListModal(true)"
 								type="button"
 								class="text-white bg-[#24292F] hover:bg-[#24292F]/90 focus:ring-4 focus:outline-none focus:ring-[#24292F]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2"
 							>
