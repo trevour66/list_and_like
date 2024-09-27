@@ -12,11 +12,11 @@ class CalculateDashBoardDataFetchRequestTest extends TestCase
 
     public function test_calculate_dashboard_data_fetch_request()
     {
-        $IG_account_id = 1;
+        // $IG_account_id = 1;
         $IG_username = "systemssavedme";
 
         $response = $this->postJson('/get-analytics', [
-            'IG_account_id' => $IG_account_id,
+            // 'IG_account_id' => $IG_account_id,
             'IG_username' => $IG_username,
         ]);
 

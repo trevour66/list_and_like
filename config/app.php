@@ -5,6 +5,8 @@ use Illuminate\Support\ServiceProvider;
 
 return [
 
+    'miniversion' => env('APP_VERSION', ''),
+
     /*
     |--------------------------------------------------------------------------
     | Application Name

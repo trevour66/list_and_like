@@ -14,6 +14,40 @@ use Error;
 
 class IgProfilesController extends Controller
 {
+    public function index_api(Request $request)
+    {
+        try {
+
+            $email = $request->user()->email;
+            $user = user_mongodb_subprofile::where(['email' => $email])->first() ?? false;
+            $ig_profiles = [];
+
+
+            $ig_profiles = ig_profiles::whereIn('user_mongodb_subprofile_user_ids', [$user->user_id])->orderBy('followers', 'desc')->orderBy('bio', 'desc')->cursorPaginate(10);
+            // user_mongodb_subprofile_user_ids
+            $resData = response(json_encode(
+                [
+                    'status' => "success",
+                    'ig_profiles' => $ig_profiles,
+                ]
+            ), 200)
+                ->header('Content-Type', 'application/json');
+
+            return $resData;
+        } catch (\Throwable $th) {
+            logger("Community API Error" . $th->getMessage());
+            $resData = response(json_encode(
+                [
+                    'status' => "error",
+                    'ig_profiles' => null,
+                ]
+            ), 200)
+                ->header('Content-Type', 'application/json');
+
+            return $resData;
+        }
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -21,20 +55,13 @@ class IgProfilesController extends Controller
     {
         $email = $request->user()->email;
 
-        $user = user_mongodb_subprofile::where(['email' => $email])->first() ?? false;
-        $user_lists = [];
-        $ig_profiles = [];
+        $user = user_mongodb_subprofile::where('email', '=', $email)->first() ?? false;
 
-        if ($user && $user->id) {
-            $user_lists = user_list::where(['user_id' => $user->id])->get() ?? [];
-        }
+        // logger($user);
+        $user_lists = user_list::where('user_id', '=', $user->user_id)->get() ?? [];
 
-        if (count(($user_lists ?? []))) {
-            $ig_profiles = $user_lists->ig_profiles_added ?? [];
-        }
-
+        // logger($user_lists);
         return Inertia::render('IG_Profiles', [
-            'ig_profiles' => $ig_profiles,
             'user_lists' => $user_lists,
 
         ]);
@@ -78,7 +105,8 @@ class IgProfilesController extends Controller
             if (!$user) {
                 $user = new user_mongodb_subprofile();
                 $user->fill([
-                    'user_id' => $user_id, 'email' => $email,
+                    'user_id' => $user_id,
+                    'email' => $email,
 
                 ]);
                 $user->save();

@@ -4,6 +4,7 @@ import { router, usePage, useForm } from "@inertiajs/vue3";
 import { onMounted, ref } from "vue";
 import { initDropdowns } from "flowbite";
 import { watchEffect } from "vue";
+import { computed } from "vue";
 
 const emits = defineEmits([
 	"postSkipped",
@@ -26,11 +27,23 @@ const props = defineProps({
 		type: Array,
 		default: [],
 	},
+	parentIsDashboard: {
+		type: Boolean,
+		default: false,
+	},
 });
 
 const postSkipped = ref(false);
 const skippingPost = ref(false);
 const addedToListSuccessMsg = ref("");
+
+const enableAddToList = computed(() => {
+	if (props.user_lists.length == 0) {
+		return false;
+	}
+
+	return true;
+});
 
 const truncateString = (str) => {
 	const maxLength = 150;
@@ -70,6 +83,12 @@ const skipPost = async (post_id) => {
 		});
 };
 
+watchEffect(() => {
+	if (postSkipped.value) {
+		emits("postSkipped");
+	}
+});
+
 const reactedToPost = async (post_id, url) => {
 	if (!(url ?? false)) {
 		return;
@@ -83,7 +102,8 @@ const reactedToPost = async (post_id, url) => {
 			console.log(response);
 			const status = response?.data?.status ?? false;
 
-			console.log(status);
+			// console.log(status);
+			emits("postReactedTo");
 		})
 		.catch(function (error) {
 			// handle error
@@ -128,7 +148,7 @@ onMounted(() => {
 <template>
 	<!-- {{ post }} -->
 	<div
-		class="relative flex flex-col flex-auto min-w-0 p-4 mx-3 overflow-hidden break-words bg-white border-0 dark:bg-slate-850 dark:shadow-dark-xl shadow-xl rounded-2xl bg-clip-border"
+		class="relative flex flex-col flex-auto min-w-0 p-4 overflow-hidden break-words bg-white border-0 dark:bg-slate-850 shadow-md rounded-2xl bg-clip-border"
 	>
 		<div v-if="addedToListSuccessMsg != ''">
 			<div class="px-4 py-2 text-sm text-gray-400">
@@ -153,7 +173,7 @@ onMounted(() => {
 					</p>
 				</div>
 
-				<div>
+				<div v-if="enableAddToList">
 					<button
 						:id="`${index}_dropdownButton`"
 						:data-dropdown-toggle="`${index}dropdown`"
@@ -299,7 +319,7 @@ onMounted(() => {
 				</div>
 			</div>
 			<div class="md:w-6/12 w-full flex justify-center items-center px-3 py-4">
-				<div class="h-[150px] scroll-y-auto">
+				<div class="h-[150px] overflow-y-auto">
 					<p class="text-sm font-normal text-gray-500">
 						{{ truncateString(post?.caption ?? "") }}
 					</p>
@@ -308,31 +328,37 @@ onMounted(() => {
 		</div>
 
 		<div
-			class="w-full max-w-full mx-auto mt-4 sm:mr-0 relative flex items-center bg-gray-50 gap-3 p-1 rounded-xl hover:cursor-pointer hover:opacity-50"
-			@click="skipPost(post?.post_id ?? '')"
 			:class="{
-				'cursor-not-allowed opacity-50': skippingPost || postSkipped,
+				'grid grid-cols-2 gap-2': parentIsDashboard,
 			}"
 		>
 			<div
-				class="z-30 flex gap-4 items-center justify-center w-full px-0 py-1 mb-0 transition-colors ease-in-out border-0 rounded-lg bg-inherit text-slate-700"
+				class="w-full max-w-full mx-auto mt-4 sm:mr-0 relative flex items-center bg-gray-100 gap-3 p-1 rounded-xl hover:cursor-pointer hover:opacity-50"
+				@click="skipPost(post?.post_id ?? '')"
+				:class="{
+					'cursor-not-allowed opacity-50': skippingPost || postSkipped,
+				}"
 			>
-				<span>
-					<i class="fas fa-walking"></i>
-				</span>
+				<div
+					class="z-30 flex gap-4 items-center justify-center w-full px-0 py-1 mb-0 transition-colors ease-in-out border-0 rounded-lg bg-inherit text-slate-700"
+				>
+					<span>
+						<i class="fas fa-walking"></i>
+					</span>
 
-				<p v-if="postSkipped">Post Skipped</p>
-				<p v-else>Skip Post</p>
+					<p v-if="postSkipped">Post Skipped</p>
+					<p v-else>Skip Post</p>
+				</div>
 			</div>
-		</div>
-		<div
-			class="w-full max-w-full mx-auto mt-4 sm:mr-0 bg-[#f24b54] relative flex items-center gap-3 p-1 rounded-xl hover:cursor-pointer hover:opacity-50"
-			@click="reactedToPost(post?.post_id ?? '', post?.url ?? '')"
-		>
 			<div
-				class="z-30 flex gap-4 items-center justify-center w-full px-0 py-1 mb-0 transition-colors ease-in-out border-0 rounded-lg bg-inherit text-white"
+				class="w-full max-w-full mx-auto mt-4 sm:mr-0 bg-[#f24b54] relative flex items-center gap-3 p-1 rounded-xl hover:cursor-pointer hover:opacity-50"
+				@click="reactedToPost(post?.post_id ?? '', post?.url ?? '')"
 			>
-				<p>Interact with Post</p>
+				<div
+					class="z-30 flex gap-4 items-center justify-center w-full px-0 py-1 mb-0 transition-colors ease-in-out border-0 rounded-lg bg-inherit text-white"
+				>
+					<p>Interact with Post</p>
+				</div>
 			</div>
 		</div>
 	</div>

@@ -32,6 +32,7 @@ class ig_profile_post extends Model
     protected $attributes = [
         'skipped_by' => [],
         'reactedTo_by' => [],
+        'image_cdn' => ''
     ];
 
     public function owner_ig_profile(): BelongsTo

@@ -20,4 +20,12 @@ export default {
 	},
 
 	plugins: [require("flowbite/plugin"), forms],
+
+	safelist: [
+		{
+			pattern:
+				/from-(green|lime|pink|fuchsia|cyan|blue|yellow|amber|purple|indigo|orange|rose|red)-500/,
+			variants: ["to"],
+		},
+	],
 };

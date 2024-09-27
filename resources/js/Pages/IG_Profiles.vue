@@ -1,19 +1,73 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, useForm } from "@inertiajs/vue3";
+import InfinityScrollLoader from "@/Components/InfinityScrollLoader.vue";
+import { Head, usePage, useForm } from "@inertiajs/vue3";
+import { onMounted, ref } from "vue";
+import IGProfile from "@/Services/IGProfile";
+
 import { initDropdowns } from "flowbite";
-import { onMounted } from "vue";
 
 defineProps({
-	ig_profiles: {
-		type: Array,
-		default: [],
-	},
 	user_lists: {
 		type: Array,
 		default: [],
 	},
 });
+
+const ig_profiles = ref([]);
+const next_page_url = ref("");
+
+const Loading = ref(true);
+
+const userAccessToken = usePage().props.auth.user.auth_token;
+const miniVersionActive = usePage().props.mini_version ?? false;
+
+const handleInfiniteScroll = () => {
+	const mainContainer = window.document.querySelector("#main");
+
+	const endOfContainer =
+		mainContainer.scrollHeight - mainContainer.scrollTop ===
+		mainContainer.clientHeight;
+
+	// console.log(endOfContainer);
+
+	if (endOfContainer) {
+		Loading.value = true;
+		fetchProfiles();
+	}
+};
+
+const fetchProfiles = async () => {
+	console.log("response.data");
+	await IGProfile.getProfiles(userAccessToken, next_page_url.value)
+		.then(function (response) {
+			console.log(response);
+
+			// return;
+			const ig_profiles_data = response?.data?.ig_profiles ?? false;
+			const status = response?.data?.status ?? false;
+
+			const profiles = ig_profiles_data?.data ?? [];
+			// const prev_cursor = ig_profiles_data?.prev_cursor ?? null;
+
+			next_page_url.value = ig_profiles_data?.next_page_url ?? null;
+
+			if (profiles && profiles.length > 0) {
+				Array.prototype.push.apply(ig_profiles.value, profiles);
+			}
+
+			Loading.value = false;
+		})
+		.catch(function (error) {
+			// handle error
+			console.log(error);
+			Loading.value = false;
+		});
+};
+
+const refreshCurrentView = () => {
+	router.reload();
+};
 
 const ig_profile_is_already_in_list = (user_list_ids, list_id) => {
 	return (user_list_ids ?? []).find((item) => item == list_id) ?? false;
@@ -36,6 +90,11 @@ const addUserToList = (list_id, ig_handle, user_list_ids) => {
 
 onMounted(() => {
 	initDropdowns();
+	window.document
+		.querySelector("#main")
+		.addEventListener("scroll", handleInfiniteScroll);
+
+	fetchProfiles();
 });
 </script>
 
@@ -51,7 +110,7 @@ onMounted(() => {
 			</div>
 			<div>
 				<div class="flex flex-wrap -mx-3">
-					<div class="flex items-center md:ml-auto md:pr-4">
+					<div v-show="false" class="flex items-center md:ml-auto md:pr-4">
 						<div
 							class="relative flex flex-wrap items-stretch w-full transition-all rounded-lg ease"
 						>
@@ -73,15 +132,15 @@ onMounted(() => {
 
 		<template #content>
 			<!-- {{ ig_profiles }} -->
-			<!-- {{ route("proxy") }} -->
 			<div
-				class="grid lg:grid-cols-3 xl:grid-cols-4 grid-cols-1 pt-6 gap-3 mx-3"
+				class="grid lg:grid-cols-3 xl:grid-cols-4 grid-cols-1 pt-6 gap-x-4 gap-y-3 mx-3"
 			>
 				<div v-for="(profile, index) in ig_profiles" :key="index">
 					<div
 						class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 px-5"
 					>
 						<!-- {{ profile }} -->
+						<!-- {{ user_lists }} -->
 						<div class="flex justify-end px-4 pt-4">
 							<button
 								:id="`${index}_dropdownButton`"
@@ -137,23 +196,6 @@ onMounted(() => {
 										</div>
 									</li>
 								</ul>
-								<a
-									href="#"
-									class="flex items-center p-3 text-sm font-medium text-red-600 border-t border-gray-200 rounded-b-lg bg-gray-50 dark:border-gray-600 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-red-500 hover:underline"
-								>
-									<svg
-										class="w-4 h-4 me-2"
-										aria-hidden="true"
-										xmlns="http://www.w3.org/2000/svg"
-										fill="currentColor"
-										viewBox="0 0 20 18"
-									>
-										<path
-											d="M6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Zm11-3h-6a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2Z"
-										/>
-									</svg>
-									Delete
-								</a>
 							</div>
 						</div>
 						<div class="flex flex-col items-center pb-10">
@@ -163,16 +205,17 @@ onMounted(() => {
 								alt="Bonnie image"
 							/> -->
 							<h5
-								class="mb-1 text-xl font-medium text-gray-900 dark:text-white"
+								class="mb-1 text-xl font-medium text-gray-900 dark:text-white break-all"
 							>
 								{{ profile.ig_handle }}
 							</h5>
 							<div
-								class="text-sm text-gray-500 my-2 h-[100px] flex items-center"
+								v-if="!miniVersionActive"
+								class="text-sm text-gray-500 my-2 h-[120px] flex items-center overflow-y-auto"
 							>
 								<span>{{ profile.bio }}</span>
 							</div>
-							<div class="flex my-3 gap-2">
+							<div v-if="!miniVersionActive" class="flex my-3 gap-2">
 								<span class="py-2 text-sm font-medium text-gray-700"
 									>{{ profile.followers }}
 									<span class="text-gray-500 text-xs">followers</span>
@@ -189,6 +232,20 @@ onMounted(() => {
 						</div>
 					</div>
 				</div>
+			</div>
+			<template v-if="!Loading && (ig_profiles ?? []).length == 0">
+				<div
+					class="flex items-center justify-center w-full h-full bg-gray-50 mt-10"
+				>
+					<div>
+						<p class="text-md font-normal text-gray-500">
+							You at not tracking any IG profiles at the moment
+						</p>
+					</div>
+				</div>
+			</template>
+			<div v-if="Loading" class="flex items-center justify-center w-full h-32">
+				<InfinityScrollLoader />
 			</div>
 		</template>
 	</AuthenticatedLayout>

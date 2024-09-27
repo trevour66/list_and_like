@@ -13,28 +13,25 @@ class Dashboard_Analytics
 {
     private $user_id = null;
     private $user_email = null;
-    private $IG_account_id = null;
     private $IG_username = null;
 
     private $user_mongoDB = null;
 
-    private $allIGBusinessPostProcessed = 0;
-    private $allIGBusinessPostCommentsProcessed = 0;
-    private $allIGProfilePostsFromCommentersProcessed = 0;
-    private $allIGProfilePostsFromCommentersProcessed_skipped = 0;
-    private $allIGProfilePostsFromCommentersProcessed_reactedTo = 0;
-    private $allIGProfilesLinkedToIGBusinessAccount = 0;
-    private $allUserLists = 0;
+    public $allIGBusinessPostProcessed = 0;
+    public $allIGBusinessPostCommentsProcessed = 0;
+    public $allIGProfilePostsFromCommentersProcessed = 0;
+    public $allIGProfilePostsFromCommentersProcessed_skipped = 0;
+    public $allIGProfilePostsFromCommentersProcessed_reactedTo = 0;
+    public $allIGProfilesLinkedToIGBusinessAccount = 0;
+    public $allUserLists = 0;
 
     public function __construct(
         $user_id,
         $user_email,
-        $IG_account_id,
         $IG_username
     ) {
         $this->user_id = $user_id;
         $this->user_email = $user_email;
-        $this->IG_account_id = $IG_account_id;
         $this->IG_username = $IG_username;
 
         $this->user_mongoDB = user_mongodb_subprofile::where([
@@ -57,14 +54,14 @@ class Dashboard_Analytics
             $this->allUserLists = $this->calculateUserLists();
 
             // Logging
-            logger($this->user_mongoDB->user_id);
-            logger($this->allIGBusinessPostProcessed);
-            logger($this->allIGBusinessPostCommentsProcessed);
-            logger($this->allIGProfilePostsFromCommentersProcessed);
-            logger($this->allIGProfilePostsFromCommentersProcessed_skipped);
-            logger($this->allIGProfilePostsFromCommentersProcessed_reactedTo);
-            logger($this->allIGProfilesLinkedToIGBusinessAccount);
-            logger($this->allUserLists);
+            // logger($this->user_mongoDB->user_id);
+            // logger($this->allIGBusinessPostProcessed);
+            // logger($this->allIGBusinessPostCommentsProcessed);
+            // logger($this->allIGProfilePostsFromCommentersProcessed);
+            // logger($this->allIGProfilePostsFromCommentersProcessed_skipped);
+            // logger($this->allIGProfilePostsFromCommentersProcessed_reactedTo);
+            // logger($this->allIGProfilesLinkedToIGBusinessAccount);
+            // logger($this->allUserLists);
         } catch (\Exception $th) {
             logger('Dashboard_Analytics calculateData Error');
             logger(print_r($th->getMessage(), true));
@@ -74,7 +71,7 @@ class Dashboard_Analytics
     private function calculateIGBusinessPostProcessed()
     {
         try {
-            return ig_business_account_posts::where('ig_business_account', '=', $this->IG_username)->count() ?? null;
+            return ig_business_account_posts::where('ig_business_account', '=', $this->IG_username)->count() ?? 0;
         } catch (\Exception $th) {
             logger('Error in calculateIGBusinessPostProcessed: ' . $th->getMessage());
             return null;
@@ -84,7 +81,7 @@ class Dashboard_Analytics
     private function calculateIGBusinessPostCommentsProcessed()
     {
         try {
-            return ig_business_account_post_comments::where('ig_business_account', '=', $this->IG_username)->count() ?? null;
+            return ig_business_account_post_comments::where('ig_business_account', '=', $this->IG_username)->count() ?? 0;
         } catch (\Exception $th) {
             logger('Error in calculateIGBusinessPostCommentsProcessed: ' . $th->getMessage());
             return null;
@@ -95,7 +92,7 @@ class Dashboard_Analytics
     {
         try {
             $query = ig_profile_post::where('associated_ig_business_accounts', 'elemMatch', ['$in' => [$this->IG_username]]);
-            return $query->count() ?? null;
+            return $query->count() ?? 0;
         } catch (\Exception $th) {
             logger('Error in calculateIGProfilePostsFromCommentersProcessed: ' . $th->getMessage());
             return null;
@@ -106,7 +103,7 @@ class Dashboard_Analytics
     {
         try {
             $query = ig_profile_post::where('associated_ig_business_accounts', 'elemMatch', ['$in' => [$this->IG_username]]);
-            return $query->where('skipped_by', 'elemMatch', ['$in' => [$this->IG_username]])->count() ?? null;
+            return $query->where('skipped_by', 'elemMatch', ['$in' => [$this->IG_username]])->count() ?? 0;
         } catch (\Exception $th) {
             logger('Error in calculateIGProfilePostsFromCommentersProcessedSkipped: ' . $th->getMessage());
             return null;
@@ -117,7 +114,7 @@ class Dashboard_Analytics
     {
         try {
             $query = ig_profile_post::where('associated_ig_business_accounts', 'elemMatch', ['$in' => [$this->IG_username]]);
-            return $query->where('reactedTo_by', 'elemMatch', ['$in' => [$this->IG_username]])->count() ?? null;
+            return $query->where('reactedTo_by', 'elemMatch', ['$in' => [$this->IG_username]])->count() ?? 0;
         } catch (\Exception $th) {
             logger('Error in calculateIGProfilePostsFromCommentersProcessedReactedTo: ' . $th->getMessage());
             return null;
@@ -127,7 +124,7 @@ class Dashboard_Analytics
     private function calculateIGProfilesLinkedToBusinessAccount()
     {
         try {
-            return ig_profiles::where('user_mongodb_subprofile_user_ids', 'elemMatch', ['$in' => [$this->user_mongoDB->user_id]])->count() ?? null;
+            return ig_profiles::where('user_mongodb_subprofile_user_ids', 'elemMatch', ['$in' => [$this->user_mongoDB->user_id]])->count() ?? 0;
         } catch (\Exception $th) {
             logger('Error in calculateIGProfilesLinkedToBusinessAccount: ' . $th->getMessage());
             return null;
@@ -137,7 +134,7 @@ class Dashboard_Analytics
     private function calculateUserLists()
     {
         try {
-            return user_list::where('user_id', '=', $this->user_mongoDB->user_id)->count() ?? null;
+            return user_list::where('user_id', '=', $this->user_mongoDB->user_id)->count() ?? 0;
         } catch (\Exception $th) {
             logger('Error in calculateUserLists: ' . $th->getMessage());
             return null;

@@ -12,6 +12,8 @@ const props = defineProps({
 	},
 });
 
+const miniVersionActive = usePage().props.mini_version ?? false;
+
 const isActive = (parent) => {
 	return usePage().url.startsWith(parent);
 };
@@ -55,7 +57,7 @@ const isActive = (parent) => {
 						<template #text>Dashboard</template>
 					</NavLink_New>
 				</li>
-				<li class="w-full">
+				<li class="w-full" v-if="!miniVersionActive">
 					<NavLink_New
 						:href="route('community.index')"
 						:active="route().current('community.index')"

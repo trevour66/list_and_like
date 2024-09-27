@@ -12,7 +12,6 @@ use Inertia\Response;
 
 class CommunityController extends Controller
 {
-    //
 
     public function index_api(Request $request)
     {
@@ -28,7 +27,9 @@ class CommunityController extends Controller
             if (
                 (count($ig_usernames) > 0)
             ) {
-                $associated_user_posts = ig_profile_post::whereIn('associated_ig_business_accounts', $ig_usernames)->whereNotIn('skipped_by', $ig_usernames)
+                $associated_user_posts = ig_profile_post::whereIn('associated_ig_business_accounts', $ig_usernames)
+                    ->whereNotIn('skipped_by', $ig_usernames)
+                    ->whereNotIn('reactedTo_by', $ig_usernames)
                     ->orderBy('timestamp', 'desc')
                     ->orderBy('updated_at', 'desc')
                     ->cursorPaginate(10);

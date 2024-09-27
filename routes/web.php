@@ -35,8 +35,6 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-Route::post('/get-analytics', [DashboardController::class, 'fetch_account_analytics_data'])->name('dashboard.fetch_account_analytics_data');
-
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/sync-data', [DashboardController::class, 'sync_data'])->name('dashboard.sync_data');

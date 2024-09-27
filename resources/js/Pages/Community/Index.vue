@@ -95,7 +95,7 @@ onMounted(() => {
 
 		<template #content>
 			<div
-				class="grid lg:grid-cols-2 xl:grid-cols-3 grid-cols-1 pt-6 gap-x-3 gap-y-10 mx-3"
+				class="grid lg:grid-cols-2 xl:grid-cols-3 grid-cols-1 pt-6 gap-x-4 gap-y-10 mx-3"
 			>
 				<template v-if="(associated_user_posts ?? []).length > 0">
 					<div v-for="(post, index) in associated_user_posts" :key="index">

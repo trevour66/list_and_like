@@ -16,26 +16,51 @@ class DashboardController extends Controller
     {
         try {
             $validated = $request->validate([
-                'IG_account_id' => 'required|numeric',
                 'IG_username' => 'required|string'
             ]);
 
-            // $user = $request->user();
-            // $user_id = $user->id;
-            // $user_email = $user->email;
+            $user = $request->user();
+            $user_id = $user->id;
+            $user_email = $user->email;
 
             $analyser = new Dashboard_Analytics(
-                // $user_id,
-                // $user_email,
-                1,
-                'peteriniubong_list_and_like@gmail.com',
-                $validated['IG_account_id'],
+                $user_id,
+                $user_email,
+                // 1,
+                // 'peteriniubong_list_and_like@gmail.com',
                 $validated['IG_username']
             );
 
             $analyser->calculateData();
+
+            $resData = response(json_encode(
+                [
+                    'status' => "success",
+                    'data' => [
+                        "posts_processed" => $analyser->allIGBusinessPostProcessed,
+                        "comments_processed" => $analyser->allIGBusinessPostCommentsProcessed,
+                        "posts_from_commenters_processed" => $analyser->allIGProfilePostsFromCommentersProcessed,
+                        "posts_from_commenters_processed_skipped" => $analyser->allIGProfilePostsFromCommentersProcessed_skipped,
+                        "posts_from_commenters_processed_reactedTo" => $analyser->allIGProfilePostsFromCommentersProcessed_reactedTo,
+                        "all_IG_profiles_linked_to_IG_business_account" => $analyser->allIGProfilesLinkedToIGBusinessAccount,
+                        "all_user_lists" => $analyser->allUserLists,
+                    ],
+                ]
+            ), 200)
+                ->header('Content-Type', 'application/json');
+
+            return $resData;
         } catch (\Throwable $th) {
-            logger($th->getMessage());
+            logger("fetch_account_analytics_data API Error" . $th->getMessage());
+            $resData = response(json_encode(
+                [
+                    'status' => "error",
+                    "data" => null
+                ]
+            ), 200)
+                ->header('Content-Type', 'application/json');
+
+            return $resData;
         }
     }
 
@@ -72,7 +97,8 @@ class DashboardController extends Controller
             $data = [
                 "IG_account_id" => $code["id"] ?? '',
                 "IG_username" => $code["IG_USERNAME"] ?? '',
-                "IG_data_fetch_process" => $code->igDataFetchProcess()->where('IDFP_status', '=', 'finished_success')->latest()->first() ?? null
+                "IG_data_fetch_process" => $code->igDataFetchProcess()->latest()->first() ?? null
+                // "IG_data_fetch_process" => $code->igDataFetchProcess()->where('IDFP_status', '=', 'finished_success')->latest()->first() ?? null
             ];
 
             array_push($igDataFetchProcess, $data);
@@ -80,7 +106,7 @@ class DashboardController extends Controller
 
         // logger($igDataFetchProcess);
 
-        return Inertia::render('Dashboard', [
+        return Inertia::render('Dashboard/Dashboard', [
             "ig_data_fetch_process" => $igDataFetchProcess
         ]);
     }

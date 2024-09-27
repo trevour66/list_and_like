@@ -30,6 +30,14 @@ class ig_profiles extends Model
         'last_fetch',
     ];
 
+
+    protected $attributes = [
+        'bio' => '',
+        'followers' => 0,
+        'following' => 0,
+        'profile_image_cdn' => ''
+    ];
+
     public function users_ids(): BelongsToMany
     {
         return $this->belongsToMany(user_mongodb_subprofile::class);
