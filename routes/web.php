@@ -35,6 +35,35 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
+Route::get('/about-us', function () {
+    return Inertia::render('About', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'laravelVersion' => Application::VERSION,
+        'phpVersion' => PHP_VERSION,
+    ]);
+})->name('about_us');
+
+
+Route::get('/terms-and-condition', function () {
+    return Inertia::render('Terms', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'laravelVersion' => Application::VERSION,
+        'phpVersion' => PHP_VERSION,
+    ]);
+})->name('terms_and_condition');
+
+
+Route::get('/privacy', function () {
+    return Inertia::render('Privacy', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'laravelVersion' => Application::VERSION,
+        'phpVersion' => PHP_VERSION,
+    ]);
+})->name('privacy');
+
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/sync-data', [DashboardController::class, 'sync_data'])->name('dashboard.sync_data');

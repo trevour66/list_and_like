@@ -99,6 +99,17 @@ const isActive = (parent) => {
 					</NavLink_New>
 				</li>
 
+				<li class="w-full">
+					<NavLink_New :href="route('logout')" method="post">
+						<template #icon>
+							<!-- <i
+								class="leading-normal text-xl text-gray-500 fa-solid fa-table-columns"
+							></i> -->
+						</template>
+						<template #text>Log Out</template>
+					</NavLink_New>
+				</li>
+
 				<!-- 
 				<li class="w-full">
 					<NavLink_New :href="route('list')" :active="route().current('list')">

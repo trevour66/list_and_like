@@ -6,8 +6,8 @@ import { ref } from "vue";
 const toggleNavbar = ref(false);
 </script>
 
-<template>
-	<header class="flex flex-wrap">
+<template class="selection:bg-red-500 selection:text-white">
+	<header class="flex flex-wrap min-h-[10vh]">
 		<div class="w-full max-w-full px-3 flex-0">
 			<!-- Navbar -->
 			<nav
@@ -30,24 +30,17 @@ const toggleNavbar = ref(false);
 								<li>
 									<a
 										class="block px-4 py-2 mr-2 font-normal transition-all ease-in-out lg-max:opacity-0 duration-250 text-sm text-slate-700 lg:px-2"
-										href="../pages/profile.html"
+										:href="route('about_us')"
+										:class="{
+											'font-semibold underline decoration-dotted':
+												route().current('about_us'),
+										}"
 									>
-										<i class="mr-1 fa fa-user opacity-60"></i>
 										About
 									</a>
 								</li>
 
-								<li>
-									<a
-										class="block px-4 py-2 mr-2 font-normal transition-all ease-in-out lg-max:opacity-0 duration-250 text-sm text-slate-700 lg:px-2"
-										href="../pages/profile.html"
-									>
-										<i class="mr-1 fa fa-user opacity-60"></i>
-										Profile
-									</a>
-								</li>
-
-								<li>
+								<!-- <li>
 									<a
 										class="flex items-center px-4 py-2 mr-2 font-normal transition-all ease-in-out lg-max:opacity-0 duration-250 text-sm text-slate-700 lg:px-2"
 										aria-current="page"
@@ -56,7 +49,7 @@ const toggleNavbar = ref(false);
 										<i class="mr-1 fa fa-chart-pie opacity-60"></i>
 										Dashboard
 									</a>
-								</li>
+								</li> -->
 
 								<li>
 									<a
@@ -69,7 +62,7 @@ const toggleNavbar = ref(false);
 								<li>
 									<a
 										:href="route('register')"
-										class="inline-block px-8 py-2 mb-0 mr-1 font-bold leading-normal text-center text-white align-middle transition-all ease-in bg-blue-500 border-0 rounded-lg shadow-md cursor-pointer hover:-translate-y-px hover:shadow-xs active:opacity-85 text-xs tracking-tight-rem"
+										class="inline-block px-8 py-2 mb-0 mr-1 font-bold leading-normal text-center text-white align-middle transition-all ease-in bg-[#f24b54] border-0 rounded-lg shadow-md cursor-pointer hover:shadow-xs active:opacity-85 text-xs tracking-tight-rem"
 										>Sign Up</a
 									>
 								</li>
@@ -164,7 +157,40 @@ const toggleNavbar = ref(false);
 		</div>
 	</header>
 
-	<main class="mt-0 transition-all duration-200 ease-in-out">
+	<main class="mt-0 transition-all duration-200 ease-in-out min-h-[80vh] ">
 		<slot />
 	</main>
+
+	<footer class="min-h-[10vh]">
+		<hr class="text-white mx-5" />
+		<div class="max-w-screen-xl px-4 pt-8 mx-auto sm:px-6 lg:px-8">
+			<div class="sm:flex sm:items-center sm:justify-between">
+				<div class="flex justify-center text-teal-300 sm:justify-start">
+					<Link
+						:href="route('home')"
+						class="py-1.75 text-sm mr-4 ml-4 whitespace-nowrap font-bold text-slate-700 lg:ml-0"
+					>
+						<ApplicationLogo />
+					</Link>
+				</div>
+
+				<p class="mt-4 text-sm text-center text-gray-400 lg:text-right lg:mt-0">
+					<div class="inline-flex">
+						<Link
+						:href="route('terms_and_condition')"
+						class="py-1.75 text-sm mr-4 ml-4 whitespace-nowrap font-bold text-slate-700 lg:ml-0"
+					>
+						<span> T&C</span>
+					</Link>
+					<Link
+						:href="route('privacy')"
+						class="py-1.75 text-sm mr-4 ml-4 whitespace-nowrap font-bold text-slate-700 lg:ml-0"
+					>
+						<span> Privacy & Policy</span>
+					</Link>
+					</div>
+				</p>
+			</div>
+		</div>
+	</footer>
 </template>
