@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->job(new ScrapeInstagramProfiles)->everyTwoMinutes()->withoutOverlapping();
+        $schedule->job(new ScrapeInstagramProfiles)->everyTenMinutes()->withoutOverlapping();
     }
 
     /**

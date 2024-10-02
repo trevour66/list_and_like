@@ -27,7 +27,7 @@ class ScrapeInstagramProfiles implements ShouldQueue, ShouldBeUnique
      */
     public function handle(): void
     {
-        logger("started");
+        logger("started scraping");
         $scrapper = new ApifyScraper();
         $scrapper->scrape();
     }
