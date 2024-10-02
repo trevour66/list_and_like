@@ -10,9 +10,10 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Services\ApifyScraper;
 
-class ScrapeInstagramProfiles implements ShouldQueue, ShouldBeUnique
+class ScrapeInstagramProfiles implements ShouldBeUnique
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    // use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable,  SerializesModels;
 
     /**
      * Create a new job instance.
