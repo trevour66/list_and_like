@@ -22,9 +22,9 @@ class ig_data_fetch_process extends Model
         'IDFP_status',
     ];
 
-    protected $dispatchesEvents = [
-        'created' => NewDataFetchRequest::class,
-    ];
+    // protected $dispatchesEvents = [
+    //     'created' => NewDataFetchRequest::class,
+    // ];
 
     public function ig_access_code(): BelongsTo
     {
