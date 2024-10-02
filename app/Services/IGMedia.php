@@ -86,8 +86,8 @@ class IGMedia
         // logger(print_r($this->allPosts, true));
         logger(print_r(count($this->allPosts), true));
 
-        $this->allPosts = array_slice($this->allPosts, 0, 3);
-        logger(print_r(count($this->allPosts), true));
+        // $this->allPosts = array_slice($this->allPosts, 0, 3);
+        // logger(print_r(count($this->allPosts), true));
 
 
         $this->savePostData();

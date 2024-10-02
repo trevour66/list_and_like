@@ -48,12 +48,12 @@ class IGBusinessLoginController extends Controller
 
     private function syncData($ig_account_entry, $user)
     {
-        logger(print_r($ig_account_entry,  true));
+        // logger(print_r($ig_account_entry,  true));
         $igDataFetchProcess = ig_data_fetch_process::where('IDFP_status', '=', 'processing')
             ->where('IDFP_ig_bussines_account', '=' . $ig_account_entry->id)
             ->first() ?? null;
 
-        logger(print_r($igDataFetchProcess,  true));
+        // logger(print_r($igDataFetchProcess,  true));
         // logger(print_r($ig_account_entry,  true));
 
         if ($igDataFetchProcess !== null) {
@@ -196,7 +196,7 @@ class IGBusinessLoginController extends Controller
                 ]);
             }
 
-            logger(print_r($IGOauthURL, true));
+            // logger(print_r($IGOauthURL, true));
             return Inertia::location($IGOauthURL);
         } catch (\Throwable $th) {
             //throw $th;
