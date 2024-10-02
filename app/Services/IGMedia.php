@@ -194,7 +194,9 @@ class IGMedia
 
             if (
                 ($current["username"] ?? '') == $this->IG_access_codes->IG_USERNAME ||
-                !($current["from"]["username"] ?? false)
+                !($current["from"]["username"] ?? false) ||
+                !($current["text"] ?? false) ||
+                !($current["timestamp"] ?? false)
             ) {
                 continue;
             }
@@ -213,8 +215,8 @@ class IGMedia
 
             ], [
                 "commenter_ig_username" => $current["from"]["username"],
-                "likesCount" => $current["like_count"],
-                "text" => $current["text"],
+                "likesCount" => $current["like_count"] ?? 0,
+                "text" => $current["text"] ?? '',
                 "parent_comment_id" => $current["parent_id"] ?? '',
                 "timestamp" => $current["timestamp"],
 
