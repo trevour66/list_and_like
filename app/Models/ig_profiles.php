@@ -35,7 +35,8 @@ class ig_profiles extends Model
         'bio' => '',
         'followers' => 0,
         'following' => 0,
-        'profile_image_cdn' => ''
+        'profile_image_cdn' => '',
+        'directly_added_from_browser_extension_by' => [],
     ];
 
     public function users_ids(): BelongsToMany

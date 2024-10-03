@@ -95,7 +95,7 @@ const isActive = (parent) => {
 								class="leading-normal text-xl text-gray-500 fa-solid fa-table-columns"
 							></i> -->
 						</template>
-						<template #text>Added IG Profiles</template>
+						<template #text>IG Profiles</template>
 					</NavLink_New>
 				</li>
 
