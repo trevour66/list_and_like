@@ -69,17 +69,21 @@ class IGBusinessLoginController extends Controller
         try {
             //code...
             $code = $request->query('code') ?? false;
-            $error = $request->query('error');
+            $error = $request->query('error') ?? false;
             $state_request_id = $request->query('state');
 
+            if ($error) {
+                throw new \Error('CODE_NOT_SAVED | An error occured');
+            }
+
             if (!$code) {
-                throw new \Error('Code not return. It is possible that an error occured');
+                throw new \Error('CODE_NOT_SAVED | Code not return. It is possible that an error occured');
             }
 
             $authorizationRequest = authorizationRequests::where('request_id', '=', $state_request_id)->first() ?? false;
 
             if (!$authorizationRequest) {
-                throw new \Error('Request ID not found. System not able to identify user');
+                throw new \Error('CODE_NOT_SAVED | Request ID not found. System not able to identify user');
             }
 
             $current_user = $request->user();
@@ -114,7 +118,7 @@ class IGBusinessLoginController extends Controller
                 !$IG_APP_SCOPED_ID ||
                 (count($permissions) <= 0)
             ) {
-                throw new \Error('some details missing');
+                throw new \Error('CODE_NOT_SAVED | some details missing');
             }
 
             $IG_USERNAME = $this->getUserIGAccountName($access_token);
@@ -153,6 +157,8 @@ class IGBusinessLoginController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
             logger(print_r($th->getMessage(), true));
+
+            return redirect()->route('dashboard');
         }
     }
 
