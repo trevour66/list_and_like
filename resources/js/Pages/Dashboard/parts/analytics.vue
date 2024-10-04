@@ -89,8 +89,8 @@ onMounted(() => {
 		</div>
 
 		<!-- cards row 2 -->
-		<div class="flex flex-wrap mt-12 -mx-3" v-if="!miniVersionActive">
-			<div class="w-full max-w-full px-3 mt-0 lg:w-8/12 lg:flex-none">
+		<div class="flex flex-wrap mt-8 -mx-3" v-if="!miniVersionActive">
+			<div class="w-full max-w-full my-4 px-3 mt-0 lg:w-8/12 lg:flex-none">
 				<div
 					class="dark:bg-slate-850 dark:shadow-dark-xl shadow-xl relative z-20 flex min-w-0 flex-col break-words rounded-2xl border-0 border-solid bg-white bg-clip-border"
 				>
@@ -116,7 +116,7 @@ onMounted(() => {
 				</div>
 			</div>
 
-			<div class="w-full max-w-full px-3 lg:w-4/12 lg:flex-none">
+			<div class="w-full max-w-full my-4 px-3 lg:w-4/12 lg:flex-none">
 				<div class="relative w-full h-full overflow-hidden rounded-2xl">
 					<div class="grid grid-cols-1 gap-4">
 						<div>

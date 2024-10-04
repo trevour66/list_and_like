@@ -41,7 +41,7 @@ const showingNavigationBar = ref(true);
 							class="flex flex-row justify-end pl-0 mb-0 list-none md-max:w-full"
 						>
 							<li
-								@click="showingNavigationDropdown = true"
+								@click="showingNavigationBar = true"
 								class="flex items-center xl:hidden mr-3"
 							>
 								<div

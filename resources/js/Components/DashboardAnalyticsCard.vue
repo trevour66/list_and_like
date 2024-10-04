@@ -22,8 +22,8 @@ const randomColorPairs = randomColor();
 			class="relative flex flex-col min-w-0 break-words bg-white shadow-xl rounded-2xl bg-clip-border"
 		>
 			<div class="flex-auto p-4">
-				<div class="flex justify-between flex-row -mx-3">
-					<div class="flex-none max-w-full px-3">
+				<div class="flex justify-between flex-row">
+					<div class="flex-none max-w-[80%] px-3">
 						<div>
 							<p
 								class="mb-0 text-gray-500 font-sans text-sm font-semibold leading-normal uppercase"
@@ -33,7 +33,7 @@ const randomColorPairs = randomColor();
 							<h5 class="mt-4 text-gray-700 font-bold">{{ value }}</h5>
 						</div>
 					</div>
-					<div class="px-3 text-right">
+					<div class="">
 						<div
 							class="inline-block w-12 h-12 text-center rounded-full bg-gradient-to-tl shadow-lg flex items-center justify-center"
 							:class="[
