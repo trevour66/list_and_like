@@ -40,17 +40,6 @@ const toggleNavbar = ref(false);
 									</a>
 								</li>
 
-								<!-- <li>
-									<a
-										class="flex items-center px-4 py-2 mr-2 font-normal transition-all ease-in-out lg-max:opacity-0 duration-250 text-sm text-slate-700 lg:px-2"
-										aria-current="page"
-										href="../pages/dashboard.html"
-									>
-										<i class="mr-1 fa fa-chart-pie opacity-60"></i>
-										Dashboard
-									</a>
-								</li> -->
-
 								<li>
 									<a
 										class="block px-4 py-2 mr-2 font-normal transition-all ease-in-out lg-max:opacity-0 duration-250 text-sm text-slate-700 lg:px-2"
@@ -111,44 +100,36 @@ const toggleNavbar = ref(false);
 							class="items-center flex-grow transition-all duration-500 ease lg-max:max-h-0 basis-full w-full"
 						>
 							<ul class="pl-0 mb-0 list-none w-full">
-								<li class="">
+								<li>
 									<a
 										class="flex items-center px-4 py-4 mr-2 font-normal transition-all ease-in-out lg-max:opacity-0 duration-250 text-sm text-slate-700 lg:px-2"
-										aria-current="page"
-										href="../pages/dashboard.html"
+										:href="route('about_us')"
+										:class="{
+											'font-semibold underline decoration-dotted':
+												route().current('about_us'),
+										}"
 									>
-										<i class="mr-1 fa fa-chart-pie opacity-60"></i>
-										Dashboard
+										About
 									</a>
 								</li>
-								<li class="border-t">
-									<a
-										class="block px-4 py-4 mr-2 font-normal transition-all ease-in-out lg-max:opacity-0 duration-250 text-sm text-slate-700 lg:px-2"
-										href="../pages/profile.html"
-									>
-										<i class="mr-1 fa fa-user opacity-60"></i>
-										Profile
-									</a>
-								</li>
+
 								<li class="border-t">
 									<a
 										class="flex items-center px-4 py-4 mr-2 font-normal transition-all ease-in-out lg-max:opacity-0 duration-250 text-sm text-slate-700 lg:px-2"
-										aria-current="page"
 										:href="route('login')"
+										>Sign in</a
 									>
-										<i class="mr-1 fa fa-chart-pie opacity-60"></i>
-										Sign in
-									</a>
 								</li>
+
 								<li class="border-t">
 									<a
-										class="block px-4 py-4 mr-2 font-normal transition-all ease-in-out lg-max:opacity-0 duration-250 text-sm text-slate-700 lg:px-2"
 										:href="route('register')"
+										class="flex items-center px-4 py-4 mr-2 font-normal transition-all ease-in-out lg-max:opacity-0 duration-250 text-sm text-slate-700 lg:px-2"
+										>Sign Up</a
 									>
-										<i class="mr-1 fa fa-user opacity-60"></i>
-										Sign Up
-									</a>
 								</li>
+
+								
 							</ul>
 						</div>
 					</div>
