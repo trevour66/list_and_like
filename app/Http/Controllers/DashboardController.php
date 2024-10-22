@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\ig_data_fetch_process;
 use App\Models\IGAccessCodes;
+use App\Models\ig_profile_post;
 use App\Dashboard_Analytics\Dashboard_Analytics;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+
+
 
 
 class DashboardController extends Controller
@@ -56,6 +59,64 @@ class DashboardController extends Controller
                 [
                     'status' => "error",
                     "data" => null
+                ]
+            ), 200)
+                ->header('Content-Type', 'application/json');
+
+            return $resData;
+        }
+    }
+
+
+    public function fetch_community_data(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'IG_username' => 'required|string'
+            ]);
+
+            $user = $request->user();
+            $associated_user_posts = [];
+
+            $ig_usernames = [$validated['IG_username']];
+
+            // logger(print_r($ig_usernames, true));
+
+            if (
+                (count($ig_usernames) > 0)
+            ) {
+                $associated_user_posts = ig_profile_post::whereIn('associated_ig_business_accounts', $ig_usernames)
+                    ->whereNotIn('skipped_by', $ig_usernames)
+                    ->whereNotIn('reactedTo_by', $ig_usernames)
+                    ->orderBy('timestamp', 'desc')
+                    ->orderBy('updated_at', 'desc')
+                    ->cursorPaginate(10);
+            }
+
+            foreach ($associated_user_posts as $post) {
+                // logger(print_r($post->owner_ig_profile, true));
+                $post["owner_ig_profile"] = $post->owner_ig_profile;
+
+                $lists_ig_profile = $post->owner_ig_profile->lists()->where('user_id', '=', $user->id)->get() ?? null;
+                $post["lists_ig_profile"] = ($lists_ig_profile) ? $lists_ig_profile->pluck("_id")->toArray() ?? [] : [];
+            }
+
+
+            $resData = response(json_encode(
+                [
+                    'status' => "success",
+                    'associated_user_posts' => $associated_user_posts,
+                ]
+            ), 200)
+                ->header('Content-Type', 'application/json');
+
+            return $resData;
+        } catch (\Throwable $th) {
+            logger("Community API Error" . $th->getMessage());
+            $resData = response(json_encode(
+                [
+                    'status' => "error",
+                    "associated_user_posts" => null
                 ]
             ), 200)
                 ->header('Content-Type', 'application/json');

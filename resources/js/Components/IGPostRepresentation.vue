@@ -237,7 +237,7 @@ onMounted(() => {
 				class="md:w-6/12 w-full bg-gray-50 relative inline-flex items-center justify-center text-white transition-all duration-200 ease-in-out text-base h-60 rounded-xl"
 			>
 				<img
-					v-if="post.image_cdn ?? false"
+					v-if="post?.image_cdn ?? false"
 					:src="post.image_cdn"
 					alt="profile_image"
 					class="max-h-60 shadow-lg rounded-xl"

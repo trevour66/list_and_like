@@ -2,7 +2,7 @@
 import DashboardAnalyticsCard from "@/Components/DashboardAnalyticsCard.vue";
 import StackedSlider from "./stackedSlider.vue";
 import { usePage } from "@inertiajs/vue3";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import post from "./icons/post.vue";
 import comment from "./icons/comment.vue";
 import profile from "./icons/profile.vue";
@@ -20,7 +20,7 @@ const props = defineProps({
 const userAccessToken = usePage().props.auth.user.auth_token;
 const miniVersionActive = usePage().props.mini_version ?? false;
 
-const Loading = ref(true);
+const Loading = ref(false);
 const posts_processed = ref(0);
 const comments_processed = ref(0);
 const posts_from_commenters_processed = ref(0);
@@ -28,18 +28,24 @@ const posts_from_commenters_processed_skipped = ref(0);
 const posts_from_commenters_processed_reactedTo = ref(0);
 const all_IG_profiles_linked_to_IG_business_account = ref(0);
 const all_user_lists = ref(0);
+const hasMounted = ref(false);
 
 const fetchAnalytics = async () => {
-	console.log("response.data");
+	// console.log("response.data");
 	let IG_username = props.businessAccountUsed?.IG_username ?? "";
 
-	if (IG_username == "") return;
+	// console.log(IG_username);
+	// console.log(Loading.value);
+
+	if (IG_username == "" || Loading.value) {
+		return;
+	}
 
 	Loading.value = true;
 
 	await DashboardData.getAnalytics(userAccessToken, IG_username)
 		.then(function (response) {
-			console.log(response);
+			// console.log(response);
 			const data = response.data.data ?? {};
 
 			posts_processed.value = data?.posts_processed ?? 0;
@@ -63,8 +69,20 @@ const fetchAnalytics = async () => {
 		});
 };
 
-onMounted(() => {
-	fetchAnalytics();
+watch(props.businessAccountUsed, async (newValue) => {
+	// console.log(newValue);
+
+	let IG_username = newValue?.IG_username ?? "";
+	if (IG_username !== "" && hasMounted.value) {
+		// console.log("start fetchAnalytics");
+		await fetchAnalytics();
+		// console.log("finish fetchAnalytics");
+	}
+});
+
+onMounted(async () => {
+	await fetchAnalytics();
+	hasMounted.value = true;
 });
 </script>
 
@@ -110,7 +128,7 @@ onMounted(() => {
 					</div>
 					<div class="flex-auto p-6">
 						<div>
-							<StackedSlider />
+							<StackedSlider :businessAccountUsed="businessAccountUsed" />
 						</div>
 					</div>
 				</div>

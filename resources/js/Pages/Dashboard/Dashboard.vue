@@ -12,6 +12,8 @@ const props = defineProps({
 	},
 });
 
+const dropdownSelectPreferedIGAccButton = ref(null);
+
 const preferedIgBussinessAccount = reactive({
 	IG_username: "",
 	most_recent_sync: null,
@@ -67,7 +69,7 @@ const getPreferedIgBussinessAccount = () => {
 const getLastSyncedDate = computed(() => {
 	const preferedIgBussinessAcc =
 		preferedIgBussinessAccount?.most_recent_sync ?? null;
-
+	// console.log("called");
 	if (preferedIgBussinessAcc == null) return "";
 
 	const date = preferedIgBussinessAcc?.created_at ?? null;
@@ -102,6 +104,26 @@ const isMostRecentSyncStillInProcess = computed(() => {
 	return false;
 });
 
+const switchAccount = async (acc) => {
+	// console.log(acc);
+
+	const IG_account_id = acc?.IG_account_id ?? false;
+	const IG_data_fetch_process = acc?.IG_data_fetch_process ?? false;
+	const IG_username = acc?.IG_username ?? false;
+
+	if (!IG_account_id || !IG_username) {
+		return;
+	}
+
+	if (preferedIgBussinessAccount.IG_username === IG_username) return;
+
+	preferedIgBussinessAccount.IG_username = IG_username;
+	preferedIgBussinessAccount.IG_account_id = IG_account_id;
+	preferedIgBussinessAccount.most_recent_sync = IG_data_fetch_process ?? null;
+
+	dropdownSelectPreferedIGAccButton.value.click();
+};
+
 onMounted(() => {
 	initDropdowns();
 	getPreferedIgBussinessAccount();
@@ -119,7 +141,7 @@ onMounted(() => {
 				<div class="flex-1">
 					<div
 						v-if="preferedIgBussinessAccount?.IG_username"
-						class="inline-flex flex-col items-center gap-y-2"
+						class="inline-flex flex-col gap-y-2"
 					>
 						<p
 							class="text-sm font-normal text-gray-500 dark:text-gray-400 my-2"
@@ -130,6 +152,7 @@ onMounted(() => {
 						<!-- {{ allAccounts }} -->
 						<button
 							id="dropdownSelectPreferedIGAccButton"
+							ref="dropdownSelectPreferedIGAccButton"
 							data-dropdown-toggle="dropdownSelectPreferedIGAcc"
 							class="flex items-center text-md pe-1 font-medium text-gray-900 rounded-full hover:text-[#f24b54] md:me-0 focus:ring-4 focus:ring-gray-100"
 							type="button"
@@ -164,7 +187,15 @@ onMounted(() => {
 							>
 								<li v-for="(acc, index) in allAccounts" :key="index">
 									<div
-										class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white hover:cursor-pointer"
+										:class="{
+											'bg-gray-100 hover:cursor-not-allowed':
+												(acc?.IG_username ?? '') !== '' &&
+												(preferedIgBussinessAccount.IG_username ===
+													acc?.IG_username ??
+													''),
+										}"
+										@click="switchAccount(acc)"
+										class="block px-4 py-2 hover:bg-gray-100 hover:cursor-pointer"
 									>
 										{{ acc.IG_username }}
 									</div>

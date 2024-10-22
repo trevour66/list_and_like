@@ -92,6 +92,7 @@ class Dashboard_Analytics
     {
         try {
             $query = ig_profile_post::where('associated_ig_business_accounts', 'elemMatch', ['$in' => [$this->IG_username]]);
+
             return $query->count() ?? 0;
         } catch (\Exception $th) {
             logger('Error in calculateIGProfilePostsFromCommentersProcessed: ' . $th->getMessage());
@@ -124,6 +125,11 @@ class Dashboard_Analytics
     private function calculateIGProfilesLinkedToBusinessAccount()
     {
         try {
+            // $query = ig_profile_post::where('associated_ig_business_accounts', 'elemMatch', ['$in' => [$this->IG_username]]);
+
+            // $ig_usernames_count = $query->with(['owner_ig_profile'])->pluck('ig_handle')->unique('ig_handle')->count() ?? 0;
+            // logger($ig_usernames_count);
+
             return ig_profiles::where('user_mongodb_subprofile_user_ids', 'elemMatch', ['$in' => [$this->user_mongoDB->user_id]])->count() ?? 0;
         } catch (\Exception $th) {
             logger('Error in calculateIGProfilesLinkedToBusinessAccount: ' . $th->getMessage());

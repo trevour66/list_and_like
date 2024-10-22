@@ -16,6 +16,22 @@ const DashboardData = {
 			}
 		);
 	},
+
+	async getCommunityData(userAccessToken, IG_username) {
+		let url = route("dashboard.fetch_community_data");
+
+		return axios.post(
+			url,
+			{
+				IG_username: IG_username,
+			},
+			{
+				headers: {
+					Authorization: `Bearer ${userAccessToken}`,
+				},
+			}
+		);
+	},
 };
 
 export default DashboardData;

@@ -1,18 +1,30 @@
 <script setup>
-import { ref, onMounted } from "vue";
 import IGProfilePost from "@/Services/IGProfilePost";
 import InfinityScrollLoader from "@/Components/InfinityScrollLoader.vue";
 import { Head, usePage } from "@inertiajs/vue3";
 import IGPostRepresentation from "@/Components/IGPostRepresentation.vue";
 
+import { onMounted, ref, watch } from "vue";
+
+import DashboardData from "@/Services/DashboardData";
+
+const props = defineProps({
+	businessAccountUsed: {
+		type: Object,
+		required: true,
+	},
+});
+
 const next_page_url = ref("");
 
-const Loading = ref(true);
+const hasMounted = ref(false);
+
+const Loading = ref(false);
 const noMorePost = ref(false);
 const userAccessToken = usePage().props.auth.user.auth_token;
 
 const cards = ref([
-	{ hide: true, dataSlide: 0, data: null, isPlaceholder: true },
+	{ hide: true, dataSlide: 0, data: {}, isPlaceholder: true },
 ]);
 
 const rotateCards = () => {
@@ -32,10 +44,16 @@ const setIndexes = (indexes) => {
 
 const userPostsFetch = async () => {
 	// console.log("response.data");
+	let IG_username = props.businessAccountUsed?.IG_username ?? "";
+
+	if (IG_username == "") return;
+
 	Loading.value = true;
-	await IGProfilePost.getCommunityPosts(userAccessToken, next_page_url.value)
+	cards.value = [{ hide: true, dataSlide: 0, data: {}, isPlaceholder: true }];
+
+	await DashboardData.getCommunityData(userAccessToken, IG_username)
 		.then(function (response) {
-			// handle success
+			// console.log(response);
 			const associated_user_posts_data =
 				response?.data?.associated_user_posts ?? false;
 			const status = response?.data?.status ?? false;
@@ -47,7 +65,8 @@ const userPostsFetch = async () => {
 
 			// console.log(posts);
 
-			if (posts.length == 0) {
+			if (posts.length === 0) {
+				// console.log("no post");
 				noMorePost.value = true;
 			}
 
@@ -75,13 +94,25 @@ const userPostsFetch = async () => {
 };
 
 const refreshCards = async () => {
-	Loading.value = true;
-	cards.value = [{ hide: true, dataSlide: 0, data: null, isPlaceholder: true }];
-
 	await userPostsFetch();
 };
 
-onMounted(() => {
+watch(props.businessAccountUsed, async (newValue) => {
+	// console.log(newValue);
+
+	// console.log("called");
+	let IG_username = props.businessAccountUsed?.IG_username ?? "";
+
+	if (IG_username !== "" && hasMounted.value) {
+		// console.log("start userPostsFetch");
+		next_page_url.value = "";
+
+		await userPostsFetch();
+		// console.log("finish userPostsFetch");
+	}
+});
+
+onMounted(async () => {
 	const initialIndexes = cards.value.map((data, i) => {
 		return data.dataSlide;
 	});
@@ -89,6 +120,7 @@ onMounted(() => {
 	userPostsFetch();
 
 	setIndexes(initialIndexes);
+	hasMounted.value = true;
 });
 </script>
 
