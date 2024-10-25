@@ -100,7 +100,12 @@ const isActive = (parent) => {
 				</li>
 
 				<li class="w-full">
-					<NavLink_New :href="route('logout')" method="post" as="button">
+					<NavLink_New
+						:href="route('logout')"
+						method="post"
+						as="button"
+						class="w-full"
+					>
 						<template #icon>
 							<!-- <i
 								class="leading-normal text-xl text-gray-500 fa-solid fa-table-columns"

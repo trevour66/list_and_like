@@ -32,16 +32,18 @@ if (
 ) {
 	const allBussinesAccounts = props?.ig_data_fetch_process ?? [];
 
+	console.log(allBussinesAccounts);
+
 	const businessAccountOfConcern = allBussinesAccounts.find((elem) => {
 		return (elem?.IG_username ?? "") == savedPreferedAccount_onInit.IG_username;
 	});
 
-	// console.log(businessAccountOfConcern);
+	console.log(businessAccountOfConcern);
 
 	savedPreferedAccount_onInit.most_recent_sync =
 		businessAccountOfConcern?.IG_data_fetch_process ?? null;
 
-	// console.log(savedPreferedAccount_onInit);
+	console.log(savedPreferedAccount_onInit);
 
 	cookies_preferedIgBussinessAccount.set(
 		"preferedIgBussinessAccount",

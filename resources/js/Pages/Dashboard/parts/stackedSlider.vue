@@ -71,7 +71,7 @@ const userPostsFetch = async () => {
 			// console.log(posts);
 
 			if (posts.length === 0) {
-				console.log("no post");
+				// console.log("no post");
 				noMorePost.value = true;
 			}
 

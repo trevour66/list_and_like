@@ -161,8 +161,7 @@ class DashboardController extends Controller
             $data = [
                 "IG_account_id" => $code["id"] ?? '',
                 "IG_username" => $code["IG_USERNAME"] ?? '',
-                "IG_data_fetch_process" => $code->igDataFetchProcess()->where('IDFP_status', '=', 'finished_success')->orWhere('IDFP_status', '=', 'processing')->latest()->first() ?? null
-                // "IG_data_fetch_process" => $code->igDataFetchProcess()->where('IDFP_status', '=', 'finished_success')->latest()->first() ?? null
+                "IG_data_fetch_process" => $code->igDataFetchProcess()->latest()->first() ?? null
             ];
 
             array_push($igDataFetchProcess, $data);
