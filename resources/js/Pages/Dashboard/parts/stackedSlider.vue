@@ -49,9 +49,14 @@ const userPostsFetch = async () => {
 	if (IG_username == "") return;
 
 	Loading.value = true;
+	noMorePost.value = false;
 	cards.value = [{ hide: true, dataSlide: 0, data: {}, isPlaceholder: true }];
 
-	await DashboardData.getCommunityData(userAccessToken, IG_username)
+	await DashboardData.getCommunityData(
+		userAccessToken,
+		IG_username,
+		next_page_url.value
+	)
 		.then(function (response) {
 			// console.log(response);
 			const associated_user_posts_data =
@@ -61,12 +66,12 @@ const userPostsFetch = async () => {
 			const posts = associated_user_posts_data?.data ?? [];
 			// const prev_cursor = associated_user_posts_data?.prev_cursor ?? null;
 
-			next_page_url.value = associated_user_posts_data?.next_page_url ?? null;
+			next_page_url.value = associated_user_posts_data?.next_page_url ?? "";
 
 			// console.log(posts);
 
 			if (posts.length === 0) {
-				// console.log("no post");
+				console.log("no post");
 				noMorePost.value = true;
 			}
 
@@ -139,9 +144,7 @@ onMounted(async () => {
 						<h3 class="my-4 text-center text-3xl font-semibold text-gray-700">
 							Ops!!!
 						</h3>
-						<p class="text-center font-normal text-gray-600">
-							No more posts. Thats about all of it!
-						</p>
+						<p class="text-center font-normal text-gray-600">No post found!</p>
 					</div>
 				</div>
 			</template>
@@ -171,6 +174,7 @@ onMounted(async () => {
 
 				<div class="m-8 flex items-center justify-center float-right">
 					<div
+						v-if="next_page_url !== ''"
 						@click="refreshCards"
 						class="mx-2 inline-block w-12 h-12 text-center rounded-full shadow-md bg-white p-1 flex items-center justify-center float-right hover:cursor-pointer hover:shadow-xl"
 					>

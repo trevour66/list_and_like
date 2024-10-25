@@ -39,7 +39,7 @@ const handleInfiniteScroll = () => {
 };
 
 const userPostsFetch = async () => {
-	console.log("response.data");
+	// console.log("response.data");
 	await IGProfilePost.getCommunityPosts(userAccessToken, next_page_url.value)
 		.then(function (response) {
 			// handle success

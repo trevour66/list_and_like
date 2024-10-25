@@ -17,8 +17,11 @@ const DashboardData = {
 		);
 	},
 
-	async getCommunityData(userAccessToken, IG_username) {
-		let url = route("dashboard.fetch_community_data");
+	async getCommunityData(userAccessToken, IG_username, next_page_url) {
+		let url =
+			next_page_url != ""
+				? next_page_url
+				: route("dashboard.fetch_community_data");
 
 		return axios.post(
 			url,

@@ -122,19 +122,31 @@ onMounted(async () => {
 				<div
 					class="dark:bg-slate-850 dark:shadow-dark-xl shadow-xl relative z-20 flex min-w-0 flex-col break-words rounded-2xl border-0 border-solid bg-white bg-clip-border"
 				>
-					<div
-						class="mb-0 rounded-t-2xl border-b-0 border-solid p-6 pt-4 pb-0 inline-flex gap-x-1"
-					>
-						<p class="mb-0 text-sm leading-normal underline decoration-dotted">
-							<span class="font-semibold">{{
-								posts_from_commenters_processed
-							}}</span>
-						</p>
-						<h6
-							class="mb-0 text-gray-500 font-sans text-sm font-semibold leading-normal uppercase"
-						>
-							Posts from IG Profiles
-						</h6>
+					<div class="mb-0 rounded-t-2xl border-b-0 border-solid p-6 pt-4 pb-0">
+						<div v-if="Loading" class="inline-flex gap-x-1">
+							<p class="mb-0 text-sm leading-normal animate-pulse">
+								<span class="font-semibold">....</span>
+							</p>
+							<h6
+								class="mb-0 text-gray-500 font-sans text-sm font-semibold leading-normal uppercase"
+							>
+								Posts from IG Profiles
+							</h6>
+						</div>
+						<div v-else class="inline-flex gap-x-1">
+							<p
+								class="mb-0 text-sm leading-normal underline decoration-dotted"
+							>
+								<span class="font-semibold">{{
+									posts_from_commenters_processed
+								}}</span>
+							</p>
+							<h6
+								class="mb-0 text-gray-500 font-sans text-sm font-semibold leading-normal uppercase"
+							>
+								Posts from IG Profiles
+							</h6>
+						</div>
 					</div>
 					<div class="flex-auto p-6">
 						<div>

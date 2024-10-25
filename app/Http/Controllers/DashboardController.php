@@ -80,7 +80,7 @@ class DashboardController extends Controller
 
             $ig_usernames = [$validated['IG_username']];
 
-            // logger(print_r($ig_usernames, true));
+            logger(print_r($ig_usernames, true));
 
             if (
                 (count($ig_usernames) > 0)
@@ -92,6 +92,9 @@ class DashboardController extends Controller
                     ->orderBy('updated_at', 'desc')
                     ->cursorPaginate(10);
             }
+
+            // logger(print_r($associated_user_posts, true));
+
 
             foreach ($associated_user_posts as $post) {
                 // logger(print_r($post->owner_ig_profile, true));
