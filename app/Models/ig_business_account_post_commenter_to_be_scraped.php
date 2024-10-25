@@ -14,5 +14,6 @@ class ig_business_account_post_commenter_to_be_scraped extends Model
 
     protected $fillable = [
         'ig_handle',
+        'resulting_ig_business_accounts',
     ];
 }

@@ -84,13 +84,15 @@ class IGMedia
 
         // logger(print_r($responseData['paging'], true));
         // logger(print_r($this->allPosts, true));
-        logger(print_r(count($this->allPosts), true));
+        // logger(print_r(count($this->allPosts), true));
 
         // $this->allPosts = array_slice($this->allPosts, 0, 3);
         // logger(print_r(count($this->allPosts), true));
 
 
         $this->savePostData();
+
+        logger('done pullRecentUserPost');
     }
 
     private function savePostData()
@@ -246,13 +248,20 @@ class IGMedia
 
         foreach ($this->commenters_tracker as $key => $value) {
 
-            if ($value >= 2) {
-                // if ($value >= 5) {
+            // if ($value >= 2) {
+            if ($value >= 5) {
                 ig_business_account_post_commenter_to_be_scraped::updateOrCreate([
                     "ig_handle" => $key,
                 ], [
                     "ig_handle" =>  $key,
                 ]);
+
+                ig_business_account_post_commenter_to_be_scraped::where('ig_handle', $key)
+                    ->push(
+                        'resulting_ig_business_accounts',
+                        [$this->IG_access_codes->IG_USERNAME],
+                        unique: true
+                    );
             }
         }
     }

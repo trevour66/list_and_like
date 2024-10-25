@@ -125,12 +125,15 @@ class Dashboard_Analytics
     private function calculateIGProfilesLinkedToBusinessAccount()
     {
         try {
-            // $query = ig_profile_post::where('associated_ig_business_accounts', 'elemMatch', ['$in' => [$this->IG_username]]);
 
-            // $ig_usernames_count = $query->with(['owner_ig_profile'])->pluck('ig_handle')->unique('ig_handle')->count() ?? 0;
-            // logger($ig_usernames_count);
+            // logger($this->IG_username);
+            $ig_profiles_query = ig_profiles::withWhereHas('ig_bis_account_posts_commented_on', function ($query) {
+                $query->where('ig_business_account', $this->IG_username);
+            });
 
-            return ig_profiles::where('user_mongodb_subprofile_user_ids', 'elemMatch', ['$in' => [$this->user_mongoDB->user_id]])->count() ?? 0;
+            // logger($ig_profiles_query->get());
+
+            return $ig_profiles_query->count() ?? 0;
         } catch (\Exception $th) {
             logger('Error in calculateIGProfilesLinkedToBusinessAccount: ' . $th->getMessage());
             return null;

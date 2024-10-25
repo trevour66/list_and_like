@@ -112,7 +112,7 @@ class DashboardController extends Controller
 
             return $resData;
         } catch (\Throwable $th) {
-            logger("Community API Error" . $th->getMessage());
+            logger("fetch_community_data API Error" . $th->getMessage());
             $resData = response(json_encode(
                 [
                     'status' => "error",
@@ -158,7 +158,7 @@ class DashboardController extends Controller
             $data = [
                 "IG_account_id" => $code["id"] ?? '',
                 "IG_username" => $code["IG_USERNAME"] ?? '',
-                "IG_data_fetch_process" => $code->igDataFetchProcess()->latest()->first() ?? null
+                "IG_data_fetch_process" => $code->igDataFetchProcess()->where('IDFP_status', '=', 'finished_success')->latest()->first() ?? null
                 // "IG_data_fetch_process" => $code->igDataFetchProcess()->where('IDFP_status', '=', 'finished_success')->latest()->first() ?? null
             ];
 

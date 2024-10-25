@@ -12,6 +12,7 @@ class ApifyScraper
 {
     private $base_uri = 'https://api.apify.com/v2/';
     private $headers = [];
+    private $usernames_resulting_ig_business_acc_array = [];
 
     public function __construct()
     {
@@ -23,9 +24,12 @@ class ApifyScraper
         $url = $this->base_uri . 'acts/apify~instagram-profile-scraper/run-sync-get-dataset-items';
 
         // $usernames = ig_business_account_post_commenter_to_be_scraped::take(1)->pluck('ig_handle')->toArray();
-        $usernames = ig_business_account_post_commenter_to_be_scraped::take(10)->pluck('ig_handle')->toArray();
+        $this->usernames_resulting_ig_business_acc_array = ig_business_account_post_commenter_to_be_scraped::take(10)->pluck('resulting_ig_business_accounts', 'ig_handle')->toArray();
 
-        logger(print_r($usernames, true));
+        // logger(print_r($this->usernames_resulting_ig_business_acc_array, true));
+
+        $usernames = array_keys($this->usernames_resulting_ig_business_acc_array);
+        // logger(print_r($usernames, true));
 
         // return;
 
@@ -61,7 +65,7 @@ class ApifyScraper
 
         ig_business_account_post_commenter_to_be_scraped::whereIn('ig_handle', $usernames)->delete();
 
-        logger(print_r("done", true));
+        logger(print_r("API scraping done", true));
     }
 
     protected function updateIGProfile($data, $latest_posts)
@@ -98,36 +102,14 @@ class ApifyScraper
                 $postdataArray
             );
 
-            $user_mongodb_subprofile_user_ids = $createdOrUpdatedIGProfile->user_mongodb_subprofile_user_ids ?? [];
-            $associated_ig_bussiness_acc  = [];
-
-            // logger(print_r($user_mongodb_subprofile_user_ids, true));
-
-            if (
-                $user_mongodb_subprofile_user_ids &&
-                (count($user_mongodb_subprofile_user_ids ?? []) > 0)
-            ) {
-                for ($i = 0; $i < count($user_mongodb_subprofile_user_ids); $i++) {
-                    $cur = $user_mongodb_subprofile_user_ids[$i];
-                    $user_mongodb_subprofile_user = user_mongodb_subprofile::where("user_id", "=", $cur)->first() ?? false;
-
-                    if ($user_mongodb_subprofile_user) {
-                        $associated_ig_bussiness_acc = array_merge($associated_ig_bussiness_acc, ($user_mongodb_subprofile_user->IG_bussiness_accounts ?? []));
-                    }
-                }
-            }
-
-            // logger(print_r($associated_ig_bussiness_acc, true));
-
             $createdOrUpdatedIGProfile->ig_posts()->save($createdOrUpdatedIGPost);
 
-            // $createdOrUpdatedIGPost->owner_ig_profile->attach()
 
-            if (count($associated_ig_bussiness_acc ?? []) > 0) {
+            if (count($this->usernames_resulting_ig_business_acc_array[$data["ig_handle"]] ?? []) > 0) {
                 ig_profile_post::where('post_id', $post['id'])
                     ->push(
                         'associated_ig_business_accounts',
-                        $associated_ig_bussiness_acc,
+                        $this->usernames_resulting_ig_business_acc_array[$data["ig_handle"]],
                         unique: true
                     );
             }

@@ -17,6 +17,8 @@ const props = defineProps({
 	},
 });
 
+const emit = defineEmits(["loading_starts", "loading_finishes"]);
+
 const userAccessToken = usePage().props.auth.user.auth_token;
 const miniVersionActive = usePage().props.mini_version ?? false;
 
@@ -42,6 +44,7 @@ const fetchAnalytics = async () => {
 	}
 
 	Loading.value = true;
+	emit("loading_starts");
 
 	await DashboardData.getAnalytics(userAccessToken, IG_username)
 		.then(function (response) {
@@ -61,11 +64,13 @@ const fetchAnalytics = async () => {
 			all_user_lists.value = data?.all_user_lists ?? 0;
 
 			Loading.value = false;
+			emit("loading_finishes");
 		})
 		.catch(function (error) {
 			// handle error
 			console.log(error);
 			Loading.value = false;
+			emit("loading_finishes");
 		});
 };
 
@@ -93,12 +98,17 @@ onMounted(async () => {
 			class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4"
 		>
 			<div>
-				<DashboardAnalyticsCard title="Post Processed" :value="posts_processed">
+				<DashboardAnalyticsCard
+					:isLoading="Loading"
+					title="Post Processed"
+					:value="posts_processed"
+				>
 					<template #icon><post /></template
 				></DashboardAnalyticsCard>
 			</div>
 			<div>
 				<DashboardAnalyticsCard
+					:isLoading="Loading"
 					title="Comments analyzed"
 					:value="comments_processed"
 					><template #icon><comment /></template
@@ -139,13 +149,17 @@ onMounted(async () => {
 					<div class="grid grid-cols-1 gap-4">
 						<div>
 							<DashboardAnalyticsCard
+								:isLoading="Loading"
 								title="IG Profiles"
 								:value="all_IG_profiles_linked_to_IG_business_account"
 								><template #icon><profile /></template
 							></DashboardAnalyticsCard>
 						</div>
 						<div>
-							<DashboardAnalyticsCard title="Lists" :value="all_user_lists"
+							<DashboardAnalyticsCard
+								:isLoading="Loading"
+								title="Lists"
+								:value="all_user_lists"
 								><template #icon><list /></template
 							></DashboardAnalyticsCard>
 						</div>

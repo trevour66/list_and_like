@@ -7,6 +7,11 @@ const props = defineProps({
 		required: true,
 	},
 
+	isLoading: {
+		type: Boolean,
+		required: true,
+	},
+
 	value: {
 		type: Number,
 		required: true,
@@ -30,7 +35,12 @@ const randomColorPairs = randomColor();
 							>
 								{{ title }}
 							</p>
-							<h5 class="mt-4 text-gray-700 font-bold">{{ value }}</h5>
+							<h5 v-if="!isLoading" class="mt-4 text-gray-700 font-bold">
+								{{ value }}
+							</h5>
+							<h5 v-else class="mt-4 text-gray-800 font-bold animate-pulse">
+								. . .
+							</h5>
 						</div>
 					</div>
 					<div class="">

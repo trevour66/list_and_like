@@ -6,8 +6,6 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
-use App\Events\NewConnectedIGBusinessAccount;
-use App\Listeners\PullRecentData;
 use App\Events\NewDataFetchRequest;
 use App\Listeners\DataFetchRequest_PullRecentData;
 
@@ -22,9 +20,7 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        NewConnectedIGBusinessAccount::class => [
-            PullRecentData::class
-        ],
+
         NewDataFetchRequest::class => [
             DataFetchRequest_PullRecentData::class
         ]
