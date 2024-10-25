@@ -38,10 +38,10 @@ const handleInfiniteScroll = () => {
 };
 
 const fetchProfiles = async () => {
-	console.log("response.data");
+	// console.log("response.data");
 	await IGProfile.getProfiles(userAccessToken, next_page_url.value)
 		.then(function (response) {
-			console.log(response);
+			// console.log(response);
 
 			// return;
 			const ig_profiles_data = response?.data?.ig_profiles ?? false;
