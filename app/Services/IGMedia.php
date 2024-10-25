@@ -248,8 +248,8 @@ class IGMedia
 
         foreach ($this->commenters_tracker as $key => $value) {
 
-            // if ($value >= 2) {
-            if ($value >= 5) {
+            if ($value >= 2) {
+                // if ($value >= 5) {
                 ig_business_account_post_commenter_to_be_scraped::updateOrCreate([
                     "ig_handle" => $key,
                 ], [
