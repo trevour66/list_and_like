@@ -35,6 +35,7 @@ class ProfileController extends Controller
                     'short_lived_access_token' => $userHasAccessCode[$i]['short_lived_access_token'],
                     'long_lived_access_token' => $userHasAccessCode[$i]['long_lived_access_token'],
                     'long_lived_expires_in' => $userHasAccessCode[$i]['long_lived_expires_in'],
+                    'webhook_status' => $userHasAccessCode[$i]['webhook_status'],
 
                     'created_at' => $userHasAccessCode[$i]['created_at'] ?? false,
                     'updated_at' => $userHasAccessCode[$i]['updated_at'] ?? false,

@@ -65,6 +65,7 @@ Route::get('/privacy', function () {
 })->name('privacy');
 
 Route::get('/webhook-callback', [WebhookController::class, 'verify'])->name(('verify-webhook'));
+Route::post('/webhook-callback', [WebhookController::class, 'handle'])->name(('handle-webhook'));
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -72,6 +73,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/callback', [IGBusinessLoginController::class, 'index'])->name('callback.index');
     Route::post('/new-ig-connection', [IGBusinessLoginController::class, 'store'])->name('authRequest.store');
+    Route::post('/new-webhook-connection', [IGBusinessLoginController::class, 'setupWebhook'])->name('webhook.store');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

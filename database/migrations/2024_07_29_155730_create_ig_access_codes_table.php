@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('long_lived_access_token')->nullable();
             $table->string('long_lived_expires_in')->nullable();
             $table->string('permissions');
+            $table->enum('webhook_status', ['active', 'inactive'])->default('inactive');
 
             $table->foreignId('user_id')->constrained(
                 table: 'users'

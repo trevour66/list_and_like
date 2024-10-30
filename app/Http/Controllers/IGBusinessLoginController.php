@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\authorizationRequests;
 use App\Models\user_mongodb_subprofile;
 use App\Models\ig_data_fetch_process;
+use App\Models\IGAccessCodes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Http\Controllers\WebhookController;
+use Error;
 
 class IGBusinessLoginController extends Controller
 {
@@ -126,7 +129,7 @@ class IGBusinessLoginController extends Controller
 
             $permissions_CS_string = implode(',', $permissions);
 
-            $current_user->IGAccessCodes()->updateOrCreate(
+            $updated_IGAccessCode = $current_user->IGAccessCodes()->updateOrCreate(
                 [
                     'user_id' => $current_user->id,
                     'IG_USERNAME' => $IG_USERNAME
@@ -139,6 +142,8 @@ class IGBusinessLoginController extends Controller
                     'long_lived_expires_in' => $longLivedTokenData['expires_in'] ?? '',
                 ]
             );
+
+            WebhookController::subscribeToWebhook($updated_IGAccessCode);
 
             user_mongodb_subprofile::where("email", "=", $current_user->email)
                 ->push(
@@ -207,6 +212,35 @@ class IGBusinessLoginController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
             logger(print_r($th->getMessage(), true));
+        }
+    }
+
+
+    public function setupWebhook(Request $request)
+    {
+        try {
+            //code...
+            $current_user = $request->user();
+            //code...
+            $validated = $request->validate([
+                'IG_APP_SCOPED_ID' => 'required|numeric',
+                'IG_USERNAME' => 'required|string',
+            ]);
+
+            $IGAccessCode = IGAccessCodes::where('IG_APP_SCOPED_ID', '=', $validated['IG_APP_SCOPED_ID'])
+                ->where('IG_USERNAME', '=', $validated['IG_USERNAME'])
+                ->first() ?? null;
+
+
+            $result = WebhookController::subscribeToWebhook($IGAccessCode);
+
+            if (!$result) {
+                throw new Error('subscribeToWebhook Process Failed');
+            }
+        } catch (\Throwable $th) {
+            logger("setupWebhook Error" . $th->getMessage());
+
+            return back()->withErrors(['general_error_status' => 'error'])->withInput();
         }
     }
 }

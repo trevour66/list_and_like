@@ -7,9 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-use App\Events\NewConnectedIGBusinessAccount;
-
-
 class IGAccessCodes extends Model
 {
     use HasFactory;
@@ -29,10 +26,6 @@ class IGAccessCodes extends Model
         'long_lived_expires_in',
         'permissions'
     ];
-
-    // protected $dispatchesEvents = [
-    //     'created' => NewConnectedIGBusinessAccount::class,
-    // ];
 
     public function user(): BelongsTo
     {
