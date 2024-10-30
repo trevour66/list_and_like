@@ -27,6 +27,8 @@ class WebhookController extends Controller
 
     public function handle(Request $request)
     {
+        logger('called handle webhook');
+
         $data = $request->all();
 
         logger($data);
