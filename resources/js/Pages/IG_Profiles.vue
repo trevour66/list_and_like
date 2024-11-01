@@ -239,7 +239,7 @@ onMounted(() => {
 				>
 					<div>
 						<p class="text-md font-normal text-gray-500">
-							You at not tracking any IG profiles at the moment
+							You are not tracking any IG profiles at the moment
 						</p>
 					</div>
 				</div>
