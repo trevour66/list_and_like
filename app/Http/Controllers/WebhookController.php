@@ -74,13 +74,24 @@ class WebhookController extends Controller
             logger(print_r("called: subscribeToWebhook", true));
             $IGGetAccountURL = "https://graph.instagram.com/v21.0";
 
-            $url = $IGGetAccountURL . "/me/subscribed_apps";
+            $url = $IGGetAccountURL . "/me/subscribed_apps?";
             // $url = $IGGetAccountURL . "/" . $IG_access_codes->IG_APP_SCOPED_ID . "/subscribed_apps";
 
-            $IGWebhookSubscriptionRequest = Http::connectTimeout(60)->timeout(60)->post($url, [
-                "subscribed_fields" => "comments",
-                "access_token" => $IG_access_codes->long_lived_access_token,
+            $subscribed_fields = 'comments'; // List of fields to subscribe to
+
+            $url = $url . http_build_query([
+                'subscribed_fields' => $subscribed_fields,
+                'access_token' => $IG_access_codes->long_lived_access_token,
             ]);
+
+            // $IGWebhookSubscriptionRequest = Http::connectTimeout(60)->timeout(60)->post($url, [
+            //     "subscribed_fields" => "comments",
+            //     "access_token" => $IG_access_codes->long_lived_access_token,
+            // ]);
+
+            $IGWebhookSubscriptionRequest = Http::connectTimeout(60)->timeout(60)->post($url);
+
+
 
             $responseData = $IGWebhookSubscriptionRequest->json() ?? [];
 
