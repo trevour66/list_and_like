@@ -11,6 +11,8 @@ class WebhookController extends Controller
 {
     public function verify(Request $request)
     {
+        logger('called verify webhook');
+
         // Define the verification token (you can set it in the .env file)
         $token = env('WEBHOOK_VERIFY_TOKEN');
 
