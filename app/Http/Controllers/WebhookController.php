@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Http;
 use App\Models\IGAccessCodes;
+use App\Models\ig_business_account_posts;
+use App\Models\ig_business_account_post_comments;
+use App\Models\ig_profiles;
 use Error;
 use Illuminate\Http\Request;
 
@@ -33,37 +36,53 @@ class WebhookController extends Controller
 
         $data = $request->all();
 
+        if (!isset($data['entry'][0]['changes'][0]['value'])) {
+            return response()->json(['error' => 'Invalid data'], 400);
+        }
+
         logger($data);
 
-        // // Ensure the incoming request has the necessary data
-        // if (!isset($data['entry'][0]['changes'][0]['value'])) {
-        //     return response()->json(['error' => 'Invalid data'], 400);
-        // }
+        // Check if 'entry' and 'changes' are present in the data
+        if (isset($data['entry']) && is_array($data['entry'])) {
+            foreach ($data['entry'] as $entry) {
 
-        // $commentData = $data['entry'][0]['changes'][0]['value'];
-        // $commenterId = $commentData['from']['id'];
-        // $commentText = $commentData['text'];
-        // $parentCommentId = $commentData['parent_id'] ?? null; // Check if it’s a reply
+                if (!isset($entry['time'])) continue;
+                $timestamp = $entry['time'] ?? null;
 
-        // // Retrieve the IG App user ID
-        // $appUserId = config('services.instagram.app_user_id'); // Set your IG app user ID in env file
+                if (isset($entry['changes']) && is_array($entry['changes'])) {
+                    foreach ($entry['changes'] as $change) {
+                        if (!isset($change['value']) && !is_array($change['value'])) continue;
 
-        // // Disregard if the commenter is the same as the app user
-        // if ($commenterId == $appUserId) {
-        //     return response()->json(['message' => 'Ignored comment from app user'], 200);
-        // }
+                        // Extract data safely using null coalescence or ternary operators
+                        $fromId = $change['value']['from']['id'] ?? null;
+                        $fromUsername = $change['value']['from']['username'] ?? null;
+                        $mediaId = $change['value']['media']['id'] ?? null;
+                        $mediaProductType = $change['value']['media']['media_product_type'] ?? null;
+                        $commentIG_Id = $change['value']['id'] ?? null;
+                        $commentIG_parentId = $change['value']['parent_id'] ?? null;
+                        $text = $change['value']['text'] ?? null;
 
-        // // Process and save the comment
-        // $comment = new Comment([
-        //     'commenter_id' => $commenterId,
-        //     'text' => $commentText,
-        //     'parent_comment_id' => $parentCommentId,
-        // ]);
-        // $comment->save();
+                        $commenter = ig_profiles::where('ig_handle', '=', $fromUsername)->first() ?? false;
+                        $parent_comment = ig_business_account_post_comments::where('comment_id', '=', $commentIG_parentId)->first() ?? false;
+                        $ig_business_account_posts = ig_business_account_posts::where('id', '=', $mediaId)->first() ?? false;
 
-        // // Notify the app user of a new comment
-        // $user = User::find($appUserId); // Adjust as per app logic
-        // Notification::send($user, new NewCommentNotification($comment));
+                        if (!$commenter || !$ig_business_account_posts) continue;
+
+                        $new_comment = ig_business_account_post_comments::updateOrCreate([
+                            "ig_business_account_posts_id" =>  $mediaId,
+                            "comment_id" =>  $commentIG_Id
+
+                        ], [
+                            "commenter_ig_username" => $fromUsername,
+                            "likesCount" => 0,
+                            "text" => $text ?? '',
+                            "parent_comment_id" => ($parent_comment) ? $commentIG_parentId : '',
+                            "timestamp" => $timestamp,
+                        ]);
+                    }
+                }
+            }
+        }
 
         return response()->json(['message' => 'Comment processed'], 200);
     }
