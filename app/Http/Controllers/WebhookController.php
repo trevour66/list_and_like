@@ -7,6 +7,7 @@ use App\Models\IGAccessCodes;
 use App\Models\ig_business_account_posts;
 use App\Models\ig_business_account_post_comments;
 use App\Models\ig_profiles;
+use Carbon\Carbon;
 use Error;
 use Illuminate\Http\Request;
 
@@ -52,7 +53,10 @@ class WebhookController extends Controller
                         logger('Time not in data');
                         continue;
                     }
+
                     $timestamp = $entry['time'] ?? null;
+                    $carbonDate = Carbon::createFromTimestamp($timestamp);
+                    $formattedDate = $carbonDate->format("Y-m-d\TH:i:s.vP");
 
                     if (isset($entry['changes']) && is_array($entry['changes'])) {
                         foreach ($entry['changes'] as $change) {
@@ -88,7 +92,7 @@ class WebhookController extends Controller
                                 "likesCount" => 0,
                                 "text" => $text ?? '',
                                 "parent_comment_id" => ($parent_comment) ? $commentIG_parentId : '',
-                                "timestamp" => $timestamp,
+                                "timestamp" => $formattedDate,
                             ]);
                         }
                     }
