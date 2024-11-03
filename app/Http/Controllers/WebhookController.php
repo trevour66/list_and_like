@@ -32,59 +32,76 @@ class WebhookController extends Controller
 
     public function handle(Request $request)
     {
-        logger('called handle webhook');
+        try {
+            //code...
+            logger('called handle webhook');
 
-        $data = $request->all();
+            $data = $request->all();
 
-        if (!isset($data['entry'][0]['changes'][0]['value'])) {
-            return response()->json(['error' => 'Invalid data'], 400);
-        }
+            if (!isset($data['entry'][0]['changes'][0]['value'])) {
+                return response()->json(['error' => 'Invalid data'], 400);
+            }
 
-        logger($data);
+            // logger($data);
 
-        // Check if 'entry' and 'changes' are present in the data
-        if (isset($data['entry']) && is_array($data['entry'])) {
-            foreach ($data['entry'] as $entry) {
+            // Check if 'entry' and 'changes' are present in the data
+            if (isset($data['entry']) && is_array($data['entry'])) {
+                foreach ($data['entry'] as $entry) {
 
-                if (!isset($entry['time'])) continue;
-                $timestamp = $entry['time'] ?? null;
+                    if (!isset($entry['time'])) {
+                        logger('Time not in data');
+                        continue;
+                    }
+                    $timestamp = $entry['time'] ?? null;
 
-                if (isset($entry['changes']) && is_array($entry['changes'])) {
-                    foreach ($entry['changes'] as $change) {
-                        if (!isset($change['value']) && !is_array($change['value'])) continue;
+                    if (isset($entry['changes']) && is_array($entry['changes'])) {
+                        foreach ($entry['changes'] as $change) {
+                            if (!isset($change['value']) && !is_array($change['value'])) {
+                                logger('Value Empty');
+                                continue;
+                            }
 
-                        // Extract data safely using null coalescence or ternary operators
-                        $fromId = $change['value']['from']['id'] ?? null;
-                        $fromUsername = $change['value']['from']['username'] ?? null;
-                        $mediaId = $change['value']['media']['id'] ?? null;
-                        $mediaProductType = $change['value']['media']['media_product_type'] ?? null;
-                        $commentIG_Id = $change['value']['id'] ?? null;
-                        $commentIG_parentId = $change['value']['parent_id'] ?? null;
-                        $text = $change['value']['text'] ?? null;
+                            // Extract data safely using null coalescence or ternary operators
+                            $fromId = $change['value']['from']['id'] ?? null;
+                            $fromUsername = $change['value']['from']['username'] ?? null;
+                            $mediaId = $change['value']['media']['id'] ?? null;
+                            $mediaProductType = $change['value']['media']['media_product_type'] ?? null;
+                            $commentIG_Id = $change['value']['id'] ?? null;
+                            $commentIG_parentId = $change['value']['parent_id'] ?? null;
+                            $text = $change['value']['text'] ?? null;
 
-                        $commenter = ig_profiles::where('ig_handle', '=', $fromUsername)->first() ?? false;
-                        $parent_comment = ig_business_account_post_comments::where('comment_id', '=', $commentIG_parentId)->first() ?? false;
-                        $ig_business_account_posts = ig_business_account_posts::where('id', '=', $mediaId)->first() ?? false;
+                            $commenter = ig_profiles::where('ig_handle', '=', $fromUsername)->first() ?? false;
+                            $parent_comment = ig_business_account_post_comments::where('comment_id', '=', $commentIG_parentId)->first() ?? false;
+                            $ig_business_account_posts = ig_business_account_posts::where('id', '=', $mediaId)->first() ?? false;
 
-                        if (!$commenter || !$ig_business_account_posts) continue;
+                            if (!$commenter || !$ig_business_account_posts) {
+                                logger('comment or the IG_business_post not found');
+                                continue;
+                            }
 
-                        $new_comment = ig_business_account_post_comments::updateOrCreate([
-                            "ig_business_account_posts_id" =>  $mediaId,
-                            "comment_id" =>  $commentIG_Id
+                            $new_comment = ig_business_account_post_comments::updateOrCreate([
+                                "ig_business_account_posts_id" =>  $mediaId,
+                                "comment_id" =>  $commentIG_Id
 
-                        ], [
-                            "commenter_ig_username" => $fromUsername,
-                            "likesCount" => 0,
-                            "text" => $text ?? '',
-                            "parent_comment_id" => ($parent_comment) ? $commentIG_parentId : '',
-                            "timestamp" => $timestamp,
-                        ]);
+                            ], [
+                                "commenter_ig_username" => $fromUsername,
+                                "likesCount" => 0,
+                                "text" => $text ?? '',
+                                "parent_comment_id" => ($parent_comment) ? $commentIG_parentId : '',
+                                "timestamp" => $timestamp,
+                            ]);
+                        }
                     }
                 }
             }
-        }
 
-        return response()->json(['message' => 'Comment processed'], 200);
+            return response()->json(['message' => 'Comment processed'], 200);
+        } catch (\Throwable $th) {
+            logger('Error handle webhook');
+
+            logger($th->getMessage());
+            return response()->json(['message' => 'Comment processed'], 200);
+        }
     }
 
     static function subscribeToWebhook(IGAccessCodes $IG_access_codes)
