@@ -28,6 +28,11 @@ class IGBusinessLoginController extends Controller
             "client_secret" => $client_secret
         ]);
 
+        logger("getUserLongLivedToken");
+        logger($IGGetLongLivedTokenRequest->json());
+        logger($IGGetLongLivedTokenRequest->status());
+
+
         $longLivedTokenData = [
             "access_token" => $IGGetLongLivedTokenRequest->json("access_token"),
             "token_type" => $IGGetLongLivedTokenRequest->json("token_type"),
@@ -45,6 +50,11 @@ class IGBusinessLoginController extends Controller
             "fields" => "user_id,username ",
             "access_token" => $access_token
         ]);
+
+
+        logger("getUserIGAccountName");
+        logger($IGGetAccountRequest->json());
+        logger($IGGetAccountRequest->status());
 
         return $IGGetAccountRequest->json("username") ?? false;
     }
@@ -108,6 +118,7 @@ class IGBusinessLoginController extends Controller
                 'code' => $code,
             ]);
 
+            logger("index");
             logger($accessTokenRequest->json());
             logger($accessTokenRequest->status());
 
