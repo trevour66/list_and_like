@@ -12,6 +12,7 @@ use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Http\Controllers\WebhookController;
+use App\Http\Controllers\ProfileController;
 use Error;
 use Illuminate\Support\Facades\DB;
 
@@ -200,7 +201,7 @@ class IGBusinessLoginController extends Controller
 
             DB::rollBack();
 
-            return redirect()->action([ProfileController::class, 'AuthError']);
+            return redirect()->action([ProfileController::class, 'auth_error']);
         }
     }
 

@@ -20,7 +20,7 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function AuthError(Request $request): Response
+    public function auth_error(Request $request): Response
     {
 
         // Check if user is logged in
