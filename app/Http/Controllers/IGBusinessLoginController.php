@@ -13,6 +13,9 @@ use Inertia\Inertia;
 use Inertia\Response;
 use App\Http\Controllers\WebhookController;
 use Error;
+use Illuminate\Support\Facades\DB;
+
+
 
 class IGBusinessLoginController extends Controller
 {
@@ -31,6 +34,13 @@ class IGBusinessLoginController extends Controller
         logger("getUserLongLivedToken");
         logger($IGGetLongLivedTokenRequest->json());
         logger($IGGetLongLivedTokenRequest->status());
+
+        if (
+            !$IGGetLongLivedTokenRequest->ok() ||
+            $IGGetLongLivedTokenRequest->json("code") == 100
+        ) {
+            throw new Error("getUserIGAccountName Error");
+        }
 
 
         $longLivedTokenData = [
@@ -56,6 +66,13 @@ class IGBusinessLoginController extends Controller
         logger($IGGetAccountRequest->json());
         logger($IGGetAccountRequest->status());
 
+        if (
+            !$IGGetAccountRequest->ok() ||
+            $IGGetAccountRequest->json("code") == 100
+        ) {
+            throw new Error("getUserIGAccountName Error");
+        }
+
         return $IGGetAccountRequest->json("username") ?? false;
     }
 
@@ -80,6 +97,9 @@ class IGBusinessLoginController extends Controller
     public function index(Request $request)
     {
         try {
+
+            DB::beginTransaction();
+
             //code...
             $code = $request->query('code') ?? false;
             $error = $request->query('error') ?? false;
@@ -172,12 +192,15 @@ class IGBusinessLoginController extends Controller
 
             $this->syncData($ig_account_entry, $current_user);
 
+            DB::commit();
+
             return redirect()->route('profile.edit');
-        } catch (\Throwable $th) {
-            //throw $th;
+        } catch (\Exception $th) {
             logger(print_r($th->getMessage(), true));
 
-            return redirect()->route('dashboard');
+            DB::rollBack();
+
+            return redirect()->action([ProfileController::class, 'AuthError']);
         }
     }
 
