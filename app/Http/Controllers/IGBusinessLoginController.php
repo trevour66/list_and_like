@@ -195,7 +195,7 @@ class IGBusinessLoginController extends Controller
             DB::commit();
 
             return redirect()->route('profile.edit');
-        } catch (\Exception $th) {
+        } catch (\Throwable $th) {
             logger(print_r($th->getMessage(), true));
 
             DB::rollBack();
