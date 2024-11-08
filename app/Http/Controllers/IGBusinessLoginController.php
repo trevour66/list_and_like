@@ -32,9 +32,9 @@ class IGBusinessLoginController extends Controller
             "client_secret" => $client_secret
         ]);
 
-        logger("getUserLongLivedToken");
-        logger($IGGetLongLivedTokenRequest->json());
-        logger($IGGetLongLivedTokenRequest->status());
+        // logger("getUserLongLivedToken");
+        // logger($IGGetLongLivedTokenRequest->json());
+        // logger($IGGetLongLivedTokenRequest->status());
 
         if (
             !$IGGetLongLivedTokenRequest->ok() ||
@@ -63,9 +63,9 @@ class IGBusinessLoginController extends Controller
         ]);
 
 
-        logger("getUserIGAccountName");
-        logger($IGGetAccountRequest->json());
-        logger($IGGetAccountRequest->status());
+        // logger("getUserIGAccountName");
+        // logger($IGGetAccountRequest->json());
+        // logger($IGGetAccountRequest->status());
 
         if (
             !$IGGetAccountRequest->ok() ||
@@ -139,9 +139,9 @@ class IGBusinessLoginController extends Controller
                 'code' => $code,
             ]);
 
-            logger("index");
-            logger($accessTokenRequest->json());
-            logger($accessTokenRequest->status());
+            // logger("index");
+            // logger($accessTokenRequest->json());
+            // logger($accessTokenRequest->status());
 
             $access_token = $accessTokenRequest["access_token"] ?? false;
             $IG_APP_SCOPED_ID = $accessTokenRequest["user_id"] ?? false;
