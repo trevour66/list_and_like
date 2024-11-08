@@ -143,7 +143,7 @@ class IGBusinessLoginController extends Controller
                 ]
             );
 
-            WebhookController::subscribeToWebhook($updated_IGAccessCode);
+            // WebhookController::subscribeToWebhook($updated_IGAccessCode);
 
             user_mongodb_subprofile::where("email", "=", $current_user->email)
                 ->push(
@@ -216,31 +216,31 @@ class IGBusinessLoginController extends Controller
     }
 
 
-    public function setupWebhook(Request $request)
-    {
-        try {
-            //code...
-            $current_user = $request->user();
-            //code...
-            $validated = $request->validate([
-                'IG_APP_SCOPED_ID' => 'required|numeric',
-                'IG_USERNAME' => 'required|string',
-            ]);
+    // public function setupWebhook(Request $request)
+    // {
+    //     try {
+    //         //code...
+    //         $current_user = $request->user();
+    //         //code...
+    //         $validated = $request->validate([
+    //             'IG_APP_SCOPED_ID' => 'required|numeric',
+    //             'IG_USERNAME' => 'required|string',
+    //         ]);
 
-            $IGAccessCode = IGAccessCodes::where('IG_APP_SCOPED_ID', '=', $validated['IG_APP_SCOPED_ID'])
-                ->where('IG_USERNAME', '=', $validated['IG_USERNAME'])
-                ->first() ?? null;
+    //         $IGAccessCode = IGAccessCodes::where('IG_APP_SCOPED_ID', '=', $validated['IG_APP_SCOPED_ID'])
+    //             ->where('IG_USERNAME', '=', $validated['IG_USERNAME'])
+    //             ->first() ?? null;
 
 
-            $result = WebhookController::subscribeToWebhook($IGAccessCode);
+    //         $result = WebhookController::subscribeToWebhook($IGAccessCode);
 
-            if (!$result) {
-                throw new Error('subscribeToWebhook Process Failed');
-            }
-        } catch (\Throwable $th) {
-            logger("setupWebhook Error" . $th->getMessage());
+    //         if (!$result) {
+    //             throw new Error('subscribeToWebhook Process Failed');
+    //         }
+    //     } catch (\Throwable $th) {
+    //         logger("setupWebhook Error" . $th->getMessage());
 
-            return back()->withErrors(['general_error_status' => 'error'])->withInput();
-        }
-    }
+    //         return back()->withErrors(['general_error_status' => 'error'])->withInput();
+    //     }
+    // }
 }

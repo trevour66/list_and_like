@@ -25,24 +25,24 @@ const submitNewAuthRequest = async () => {
 	newIGConnForm.post(route("authRequest.store"));
 };
 
-const submiNewSubscribeToWebhookRequest = (userAccessCode) => {
-	if (
-		subscribeToWebhookForm.processing ||
-		(userAccessCode.IG_APP_SCOPED_ID ?? "") == "" ||
-		(userAccessCode.IG_USERNAME ?? "") == ""
-	) {
-		return;
-	}
+// const submiNewSubscribeToWebhookRequest = (userAccessCode) => {
+// 	if (
+// 		subscribeToWebhookForm.processing ||
+// 		(userAccessCode.IG_APP_SCOPED_ID ?? "") == "" ||
+// 		(userAccessCode.IG_USERNAME ?? "") == ""
+// 	) {
+// 		return;
+// 	}
 
-	subscribeToWebhookForm.IG_APP_SCOPED_ID = userAccessCode.IG_APP_SCOPED_ID;
-	subscribeToWebhookForm.IG_USERNAME = userAccessCode.IG_USERNAME;
+// 	subscribeToWebhookForm.IG_APP_SCOPED_ID = userAccessCode.IG_APP_SCOPED_ID;
+// 	subscribeToWebhookForm.IG_USERNAME = userAccessCode.IG_USERNAME;
 
-	subscribeToWebhookForm.post(route("webhook.store"), {
-		onSuccess: (response) => {
-			// console.log("Form submitted successfully:", response);
-		},
-	});
-};
+// 	subscribeToWebhookForm.post(route("webhook.store"), {
+// 		onSuccess: (response) => {
+// 			// console.log("Form submitted successfully:", response);
+// 		},
+// 	});
+// };
 </script>
 
 <template>
@@ -103,7 +103,9 @@ const submiNewSubscribeToWebhookRequest = (userAccessCode) => {
 									Refresh token
 								</button>
 
-								<button
+								<!-- WEBHOOK FUNCTIONALITY REMOVED FOR NOW -->
+
+								<!-- <button
 									:disabled="subscribeToWebhookForm.processing"
 									v-if="(userAccessCode?.webhook_status ?? '') === 'inactive'"
 									@click="submiNewSubscribeToWebhookRequest(userAccessCode)"
@@ -129,7 +131,7 @@ const submiNewSubscribeToWebhookRequest = (userAccessCode) => {
 										/>
 									</svg>
 									Activate webhook
-								</button>
+								</button> -->
 							</div>
 							<div class="clear-both"></div>
 						</div>
