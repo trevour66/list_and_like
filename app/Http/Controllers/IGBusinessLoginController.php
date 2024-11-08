@@ -108,6 +108,9 @@ class IGBusinessLoginController extends Controller
                 'code' => $code,
             ]);
 
+            logger($accessTokenRequest->json());
+            logger($accessTokenRequest->status());
+
             $access_token = $accessTokenRequest["access_token"] ?? false;
             $IG_APP_SCOPED_ID = $accessTokenRequest["user_id"] ?? false;
             $permissions = $accessTokenRequest["permissions"] ?? [];
