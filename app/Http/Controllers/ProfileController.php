@@ -16,51 +16,10 @@ use Illuminate\Support\Facades\Http;
 
 class ProfileController extends Controller
 {
-
     /**
      * Display the user's profile form.
      */
-    public function auth_error(Request $request): Response
-    {
-
-        // Check if user is logged in
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
-
-        $userHasAccessCode = $request->user()->IGAccessCodes()->get() ?? [];
-        $userAccessCodes = [];
-
-        if (count($userHasAccessCode) > 0) {
-
-
-            for ($i = 0; $i < count($userHasAccessCode); $i++) {
-                array_push($userAccessCodes, [
-                    'IG_APP_SCOPED_ID' => $userHasAccessCode[$i]['IG_APP_SCOPED_ID'],
-                    'IG_USERNAME' => $userHasAccessCode[$i]['IG_USERNAME'],
-                    'short_lived_access_token' => $userHasAccessCode[$i]['short_lived_access_token'],
-                    'long_lived_access_token' => $userHasAccessCode[$i]['long_lived_access_token'],
-                    'long_lived_expires_in' => $userHasAccessCode[$i]['long_lived_expires_in'],
-                    'webhook_status' => $userHasAccessCode[$i]['webhook_status'],
-
-                    'created_at' => $userHasAccessCode[$i]['created_at'] ?? false,
-                    'updated_at' => $userHasAccessCode[$i]['updated_at'] ?? false,
-                ]);
-            }
-        }
-
-        return Inertia::render('Profile/Edit', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
-            'status' => session('status'),
-            'userAccessCodes' => $userAccessCodes,
-            'AuthError' => true
-        ]);
-    }
-
-    /**
-     * Display the user's profile form.
-     */
-    public function edit(Request $request): Response
+    public function edit(Request $request, $AuthError = false): Response
     {
         $userHasAccessCode = $request->user()->IGAccessCodes()->get() ?? [];
         $userAccessCodes = [];
@@ -87,7 +46,7 @@ class ProfileController extends Controller
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
             'userAccessCodes' => $userAccessCodes,
-            'AuthError' => false
+            'AuthError' => $AuthError
 
         ]);
     }
