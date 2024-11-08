@@ -201,6 +201,8 @@ class IGBusinessLoginController extends Controller
 
             DB::rollBack();
 
+            return redirect()->route('profile.edit')->with('AuthError', true);
+
             return redirect()->action([ProfileController::class, 'edit'], ['AuthError' => true]);
         }
     }

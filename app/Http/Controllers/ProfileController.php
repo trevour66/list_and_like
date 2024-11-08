@@ -19,8 +19,11 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request, $AuthError = false): Response
+    public function edit(Request $request): Response
     {
+        // Retrieve AuthError parameter from the session if exist. This can be set when there is an error during the IG Auth workflow
+        $AuthError = session('AuthError', false);
+
         $userHasAccessCode = $request->user()->IGAccessCodes()->get() ?? [];
         $userAccessCodes = [];
 
