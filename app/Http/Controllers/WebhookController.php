@@ -84,7 +84,7 @@ class WebhookController extends Controller
                             }
 
                             $new_comment = ig_business_account_post_comments::updateOrCreate([
-                                "ig_business_account_posts_id" =>  $mediaId,
+                                "ig_business_account_posts_id" =>  $ig_business_account_posts->_id,
                                 "comment_id" =>  $commentIG_Id
 
                             ], [

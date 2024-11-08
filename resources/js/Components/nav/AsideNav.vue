@@ -72,6 +72,19 @@ const isActive = (parent) => {
 				</li>
 				<li class="w-full">
 					<NavLink_New
+						:href="route('my_post.index')"
+						:active="route().current('my_post.index')"
+					>
+						<template #icon>
+							<!-- <i
+								class="leading-normal text-xl text-gray-500 fa-solid fa-table-columns"
+							></i> -->
+						</template>
+						<template #text>My Posts</template>
+					</NavLink_New>
+				</li>
+				<li class="w-full">
+					<NavLink_New
 						:href="route('user_lists.index')"
 						:active="
 							route().current('user_lists.index') || isActive('/my-lists')
@@ -114,75 +127,6 @@ const isActive = (parent) => {
 						<template #text>Log Out</template>
 					</NavLink_New>
 				</li>
-
-				<!-- 
-				<li class="w-full">
-					<NavLink_New :href="route('list')" :active="route().current('list')">
-						<template #icon>
-							<i
-								class="leading-normal text-xl text-gray-500 fa-solid fa-table-columns"
-							></i>
-						</template>
-						<template #text>List</template>
-					</NavLink_New>
-				</li>
-
-				<li class="py-8 w-full">
-					<NavLink_New
-						:href="route('engaged')"
-						:active="route().current('engaged')"
-					>
-						<template #icon>
-							<i
-								class="leading-normal text-xl text-gray-500 fa-solid fa-table-columns"
-							></i>
-						</template>
-						<template #text>Engaged</template>
-					</NavLink_New>
-				</li>
-
-				<li class="py-8 w-full">
-					<NavLink_New
-						:href="route('replies')"
-						:active="route().current('replies')"
-					>
-						<template #icon>
-							<i
-								class="leading-normal text-xl text-gray-500 fa-solid fa-table-columns"
-							></i>
-						</template>
-						<template #text>Replies</template>
-					</NavLink_New>
-				</li>
-
-				<li class="py-8 w-full">
-					<NavLink_New
-						:href="route('leads')"
-						:active="route().current('leads')"
-					>
-						<template #icon>
-							<i
-								class="leading-normal text-xl text-gray-500 fa-solid fa-table-columns"
-							></i>
-						</template>
-						<template #text>Leads</template>
-					</NavLink_New>
-				</li>
-
-				<li class="py-8 w-full">
-					<NavLink_New
-						:href="route('sign_out')"
-						:active="route().current('sign_out')"
-					>
-						<template #icon>
-							<i
-								class="leading-normal text-xl text-gray-500 fa-solid fa-table-columns"
-							></i>
-						</template>
-						<template #text>Sign Out</template>
-					</NavLink_New>
-				</li>
-				 -->
 			</ul>
 		</div>
 	</aside>

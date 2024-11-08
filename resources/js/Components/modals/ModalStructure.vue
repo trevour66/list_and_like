@@ -14,7 +14,7 @@
 					<slot name="header_text"></slot>
 				</div>
 				<!-- Modal body -->
-				<div class="p-4 md:p-5 space-y-4">
+				<div class="p-4 md:p-5 space-y-4 max-h-[50vh] overflow-y-auto">
 					<slot name="body"></slot>
 				</div>
 				<!-- Modal footer -->

@@ -7,6 +7,8 @@ use App\Http\Controllers\API\API_UserAuth;
 use App\Http\Controllers\IgProfilesController;
 use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\IgBusinessAccountPostsController;
+use App\Http\Controllers\IgBusinessAccountPostCommentsController;
 
 
 /*
@@ -29,6 +31,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/get-analytics', [DashboardController::class, 'fetch_account_analytics_data'])->name('dashboard.fetch_account_analytics_data');
     Route::post('/get-community-dashboard', [DashboardController::class, 'fetch_community_data'])->name('dashboard.fetch_community_data');
+
+    Route::post('/my-posts', [IgBusinessAccountPostsController::class, 'index_api'])->name('my_post.index_api');
+    Route::post('/get-post-comments', [IgBusinessAccountPostCommentsController::class, 'get_comments_api'])->name('my_post.get_comments_api');
+    Route::post('/reply-comment', [IgBusinessAccountPostCommentsController::class, 'reply_to_comment_api'])->name('my_post.reply_to_comment_api');
 });
 
 Route::middleware('auth')->group(function () {});

@@ -14,6 +14,7 @@ use Inertia\Inertia;
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\WebhookController;
+use App\Http\Controllers\IgBusinessAccountPostsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -86,6 +87,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/my-lists', [UserListController::class, 'create'])->name('user_lists.create');
     Route::post('/my-lists/{userList}/add-profile', [UserListController::class, 'store'])->name('user_lists.store_profile');
     Route::post('/my-lists/{userList}/delete', [UserListController::class, 'destroy'])->name('user_lists.destroy_profile');
+
+    Route::get('/my-posts', [IgBusinessAccountPostsController::class, 'index'])->name('my_post.index');
 
     Route::get('/community', [CommunityController::class, 'index'])->name('community.index');
 

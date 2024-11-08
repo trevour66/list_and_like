@@ -2,11 +2,14 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import Analytics from "./parts/analytics.vue";
 import { useForm, Head, router, Link } from "@inertiajs/vue3";
-import IG_black from "@/Components/icons/IG_black.vue";
 import { onMounted, ref, reactive, computed } from "vue";
-import { initDropdowns } from "flowbite";
-import { useCookies } from "@vueuse/integrations/useCookies";
 import { watchEffect } from "vue";
+
+import ActiveIGAccountSelector from "@/Components/ActiveIGAccountSelector.vue";
+
+import usePreferedIgAccountStore from "@/Store/preferedIgAccountStore";
+
+const preferedIgAccountStore = usePreferedIgAccountStore();
 
 const props = defineProps({
 	ig_data_fetch_process: {
@@ -14,139 +17,35 @@ const props = defineProps({
 	},
 });
 
-const cookies_preferedIgBussinessAccount = useCookies([
-	"preferedIgBussinessAccount",
-]);
-
-// console.log(
-// 	cookies_preferedIgBussinessAccount.get("preferedIgBussinessAccount")
-// );
-
-const savedPreferedAccount_onInit =
-	cookies_preferedIgBussinessAccount.get("preferedIgBussinessAccount") ?? null;
-
-if (
-	typeof savedPreferedAccount_onInit !== "undefined" &&
-	savedPreferedAccount_onInit !== null &&
-	(savedPreferedAccount_onInit?.IG_username ?? "") !== ""
-) {
-	const allBussinesAccounts = props?.ig_data_fetch_process ?? [];
-
-	// console.log(allBussinesAccounts);
-
-	const businessAccountOfConcern = allBussinesAccounts.find((elem) => {
-		return (elem?.IG_username ?? "") == savedPreferedAccount_onInit.IG_username;
-	});
-
-	// console.log(businessAccountOfConcern);
-
-	savedPreferedAccount_onInit.most_recent_sync =
-		businessAccountOfConcern?.IG_data_fetch_process ?? null;
-
-	// console.log(savedPreferedAccount_onInit);
-
-	cookies_preferedIgBussinessAccount.set(
-		"preferedIgBussinessAccount",
-		JSON.stringify(savedPreferedAccount_onInit)
-	);
-}
-
-const dropdownSelectPreferedIGAccButton = ref(null);
 const loadingData = ref(false);
-
-const preferedIgBussinessAccount = reactive({
-	IG_username: "",
-	most_recent_sync: null,
-});
 
 const form = useForm({
 	IG_account_id: "",
 });
 
-const allAccounts = computed(() => {
-	const allBussinesAccounts = props?.ig_data_fetch_process ?? [];
-
-	if (allBussinesAccounts.length > 0) {
-		return allBussinesAccounts;
-	}
-
-	return [];
-});
-
 const resync_data = () => {
-	if ((preferedIgBussinessAccount?.IG_account_id ?? "") == "") {
+	if (
+		(preferedIgAccountStore.get_preferedIgBussinessAccount?.IG_account_id ??
+			"") == ""
+	) {
 		return;
 	}
 
-	form.IG_account_id = preferedIgBussinessAccount.IG_account_id;
+	form.IG_account_id =
+		preferedIgAccountStore.get_preferedIgBussinessAccount.IG_account_id;
 
 	form.post("/sync-data", {
 		onSuccess: (response) => {
 			// console.log("Form submitted successfully:", response);
 			window.location.reload();
-			getPreferedIgBussinessAccount();
 		},
 	});
 };
 
-const getPreferedIgBussinessAccount = () => {
-	try {
-		const allBussinesAccounts = props?.ig_data_fetch_process ?? [];
-
-		if (allBussinesAccounts.length === 0) return null;
-
-		if (allBussinesAccounts.length === 1) {
-			preferedIgBussinessAccount.IG_username =
-				allBussinesAccounts[0]?.IG_username;
-
-			preferedIgBussinessAccount.IG_account_id =
-				allBussinesAccounts[0]?.IG_account_id;
-
-			preferedIgBussinessAccount.most_recent_sync =
-				allBussinesAccounts[0]?.IG_data_fetch_process ?? null;
-		}
-
-		if (allBussinesAccounts.length > 1) {
-			let savedPreferedAccount =
-				cookies_preferedIgBussinessAccount.get("preferedIgBussinessAccount") ??
-				null;
-
-			// console.log(savedPreferedAccount);
-
-			if (
-				typeof savedPreferedAccount === "undefined" ||
-				savedPreferedAccount == null
-			) {
-				preferedIgBussinessAccount.IG_username =
-					allBussinesAccounts[0]?.IG_username;
-
-				preferedIgBussinessAccount.IG_account_id =
-					allBussinesAccounts[0]?.IG_account_id;
-
-				preferedIgBussinessAccount.most_recent_sync =
-					allBussinesAccounts[0]?.IG_data_fetch_process ?? null;
-
-				return;
-			}
-
-			preferedIgBussinessAccount.IG_username =
-				savedPreferedAccount?.IG_username;
-
-			preferedIgBussinessAccount.IG_account_id =
-				savedPreferedAccount?.IG_account_id;
-
-			preferedIgBussinessAccount.most_recent_sync =
-				savedPreferedAccount?.most_recent_sync ?? null;
-		}
-	} catch (error) {
-		console.log(error);
-		return null;
-	}
-};
-
 const getLastSyncedDate = computed(() => {
 	const preferedIgBussinessAcc =
-		preferedIgBussinessAccount?.most_recent_sync ?? null;
+		preferedIgAccountStore.get_preferedIgBussinessAccount?.most_recent_sync ??
+		null;
 	// console.log("called");
 	if (preferedIgBussinessAcc == null) return "";
 
@@ -161,11 +60,12 @@ const getLastSyncedDate = computed(() => {
 
 const isMostRecentSyncStillInProcess = computed(() => {
 	const preferedIgBussinessAcc_most_recent_sync =
-		preferedIgBussinessAccount?.most_recent_sync ?? null;
+		preferedIgAccountStore.get_preferedIgBussinessAccount?.most_recent_sync ??
+		null;
 	const preferedIgBussinessAcc_IG_account_id =
-		preferedIgBussinessAccount?.IG_account_id ?? "";
+		preferedIgAccountStore.get_preferedIgBussinessAccount?.IG_account_id ?? "";
 
-	// preferedIgBussinessAccount?.IG_account_id
+	// preferedIgAccountStore.get_preferedIgBussinessAccount?.IG_account_id
 	if (
 		preferedIgBussinessAcc_most_recent_sync == null &&
 		preferedIgBussinessAcc_IG_account_id === ""
@@ -180,37 +80,6 @@ const isMostRecentSyncStillInProcess = computed(() => {
 
 	return false;
 });
-
-const switchAccount = async (acc) => {
-	if (loadingData.value) return;
-	// console.log(acc);
-
-	const IG_account_id = acc?.IG_account_id ?? false;
-	const IG_data_fetch_process = acc?.IG_data_fetch_process ?? false;
-	const IG_username = acc?.IG_username ?? false;
-
-	if (!IG_account_id || !IG_username) {
-		return;
-	}
-
-	if (preferedIgBussinessAccount.IG_username === IG_username) return;
-
-	preferedIgBussinessAccount.IG_username = IG_username;
-	preferedIgBussinessAccount.IG_account_id = IG_account_id;
-	preferedIgBussinessAccount.most_recent_sync = IG_data_fetch_process ?? null;
-
-	cookies_preferedIgBussinessAccount.set(
-		"preferedIgBussinessAccount",
-		JSON.stringify(preferedIgBussinessAccount)
-	);
-
-	dropdownSelectPreferedIGAccButton.value.click();
-};
-
-onMounted(() => {
-	initDropdowns();
-	getPreferedIgBussinessAccount();
-});
 </script>
 
 <template>
@@ -222,77 +91,9 @@ onMounted(() => {
 				class="w-full max-w-full my-6 relative flex flex-col md:flex-row min-w-0 break-words px-4 justify-between items-starts"
 			>
 				<div class="flex-1">
-					<div
-						v-if="preferedIgBussinessAccount?.IG_username"
-						class="inline-flex flex-col gap-y-2"
-					>
-						<p
-							class="text-sm font-normal text-gray-500 dark:text-gray-400 my-2"
-						>
-							Active IG Business Account:
-						</p>
-
-						<!-- {{ allAccounts }} -->
-						<button
-							id="dropdownSelectPreferedIGAccButton"
-							ref="dropdownSelectPreferedIGAccButton"
-							data-dropdown-toggle="dropdownSelectPreferedIGAcc"
-							class="flex items-center text-md pe-1 font-medium text-gray-900 rounded-full hover:text-[#f24b54] md:me-0 focus:ring-4 focus:ring-gray-100"
-							type="button"
-						>
-							<IG_black :class="`w-6 h-6 me-2`" />
-							{{ preferedIgBussinessAccount?.IG_username }}
-							<svg
-								class="w-2.5 h-2.5 ms-3"
-								aria-hidden="true"
-								xmlns="http://www.w3.org/2000/svg"
-								fill="none"
-								viewBox="0 0 10 6"
-							>
-								<path
-									stroke="currentColor"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="m1 1 4 4 4-4"
-								/>
-							</svg>
-						</button>
-
-						<!-- Dropdown menu -->
-						<div
-							id="dropdownSelectPreferedIGAcc"
-							class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
-						>
-							<ul
-								class="py-2 text-sm text-gray-700 dark:text-gray-200"
-								aria-labelledby="dropdownInformdropdownSelectPreferedIGAccButtonationButton"
-							>
-								<li v-for="(acc, index) in allAccounts" :key="index">
-									<div
-										:class="{
-											'bg-gray-100 hover:cursor-not-allowed':
-												((acc?.IG_username ?? '') !== '' &&
-													(preferedIgBussinessAccount.IG_username ===
-														acc?.IG_username ??
-														'')) ||
-												loadingData,
-											'hover:cursor-pointer':
-												(acc?.IG_username ?? '') !== '' &&
-												(preferedIgBussinessAccount.IG_username !==
-													acc?.IG_username ??
-													'') &&
-												!loadingData,
-										}"
-										@click="switchAccount(acc)"
-										class="block px-4 py-2 hover:bg-gray-100"
-									>
-										{{ acc.IG_username }}
-									</div>
-								</li>
-							</ul>
-						</div>
-					</div>
+					<ActiveIGAccountSelector
+						:ig_data_fetch_process="ig_data_fetch_process"
+					/>
 				</div>
 				<div class="">
 					<!-- {{ isMostRecentSyncStillInProcess }} -->
@@ -316,8 +117,9 @@ onMounted(() => {
 
 						<p
 							v-if="
-								(preferedIgBussinessAccount?.most_recent_sync ?? false) !=
-									(null || false) && isMostRecentSyncStillInProcess === false
+								(preferedIgAccountStore.get_preferedIgBussinessAccount
+									?.most_recent_sync ?? false) != (null || false) &&
+								isMostRecentSyncStillInProcess === false
 							"
 							class="text-sm font-normal text-gray-500 dark:text-gray-400 my-2"
 						>
@@ -327,9 +129,16 @@ onMounted(() => {
 				</div>
 			</section>
 
-			<section class="my-6" v-if="preferedIgBussinessAccount?.IG_username">
+			<section
+				class="my-6"
+				v-if="
+					preferedIgAccountStore.get_preferedIgBussinessAccount?.IG_username
+				"
+			>
 				<Analytics
-					:businessAccountUsed="preferedIgBussinessAccount"
+					:businessAccountUsed="
+						preferedIgAccountStore.get_preferedIgBussinessAccount
+					"
 					@loading_starts="loadingData = true"
 					@loading_finishes="loadingData = false"
 				/>
