@@ -7,6 +7,8 @@ use App\Http\Controllers\API\API_UserAuth;
 use App\Http\Controllers\IgProfilesController;
 use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UserEngagementsController;
+
 
 
 /*
@@ -21,6 +23,7 @@ use App\Http\Controllers\DashboardController;
 */
 
 
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/add-ig-profile', [IgProfilesController::class, 'chrome_extension_add_ig_username'])->name('actionStepCore.chrome_extension_add_ig_username');
     Route::get('/community', [CommunityController::class, 'index_api'])->name('community.index_api');
@@ -29,6 +32,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/get-analytics', [DashboardController::class, 'fetch_account_analytics_data'])->name('dashboard.fetch_account_analytics_data');
     Route::post('/get-community-dashboard', [DashboardController::class, 'fetch_community_data'])->name('dashboard.fetch_community_data');
+
+    Route::get('/get-engagement-data', [UserEngagementsController::class, 'engagement_data'])->name('dashboard.engagement_data');
 });
 
 Route::middleware('auth')->group(function () {});

@@ -6,6 +6,7 @@ use App\Models\ig_data_fetch_process;
 use App\Models\IGAccessCodes;
 use App\Models\ig_profile_post;
 use App\Dashboard_Analytics\Dashboard_Analytics;
+use App\Dashboard_Analytics\EngagementService;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -33,7 +34,9 @@ class DashboardController extends Controller
                 // 'peteriniubong_list_and_like@gmail.com',
                 $validated['IG_username']
             );
+            $engagementService = new EngagementService($validated['IG_username']);
 
+            $engagementService->prepareEngagementProfile();
             $analyser->calculateData();
 
             $resData = response(json_encode(
@@ -47,6 +50,12 @@ class DashboardController extends Controller
                         "posts_from_commenters_processed_reactedTo" => $analyser->allIGProfilePostsFromCommentersProcessed_reactedTo,
                         "all_IG_profiles_linked_to_IG_business_account" => $analyser->allIGProfilesLinkedToIGBusinessAccount,
                         "all_user_lists" => $analyser->allUserLists,
+                        "engagement" => [
+                            'highest_engagement_profile' => $engagementService->getHighestEngaged(),
+                            'highest_engagement_profiles' => $engagementService->getHighestEngagers(),
+                            'lowest_engagement_profile' => $engagementService->getLowestEngaged(),
+                            'lowest_engagement_profiles' => $engagementService->getLowestEngagers(),
+                        ]
                     ],
                 ]
             ), 200)

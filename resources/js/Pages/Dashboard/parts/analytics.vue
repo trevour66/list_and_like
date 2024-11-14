@@ -1,5 +1,7 @@
 <script setup>
 import DashboardAnalyticsCard from "@/Components/DashboardAnalyticsCard.vue";
+import DashboardAnalyticsCard_withSlider from "@/Components/DashboardAnalyticsCard_withSlider.vue";
+
 import StackedSlider from "./stackedSlider.vue";
 import { usePage } from "@inertiajs/vue3";
 import { onMounted, ref, watch } from "vue";
@@ -9,6 +11,7 @@ import profile from "./icons/profile.vue";
 import list from "./icons/list.vue";
 
 import DashboardData from "@/Services/DashboardData";
+import { reactive } from "vue";
 
 const props = defineProps({
 	businessAccountUsed: {
@@ -30,6 +33,16 @@ const posts_from_commenters_processed_skipped = ref(0);
 const posts_from_commenters_processed_reactedTo = ref(0);
 const all_IG_profiles_linked_to_IG_business_account = ref(0);
 const all_user_lists = ref(0);
+
+const engagement_data = reactive({
+	highest_engagement_profile: {
+		ig_handle: "",
+	},
+	highest_engagement_profiles: [],
+	lowest_engagement_profile: null,
+	lowest_engagement_profiles: [],
+});
+
 const hasMounted = ref(false);
 
 const fetchAnalytics = async () => {
@@ -62,6 +75,15 @@ const fetchAnalytics = async () => {
 			all_IG_profiles_linked_to_IG_business_account.value =
 				data?.all_IG_profiles_linked_to_IG_business_account ?? 0;
 			all_user_lists.value = data?.all_user_lists ?? 0;
+
+			engagement_data.highest_engagement_profile =
+				data?.engagement?.highest_engagement_profile ?? null;
+			engagement_data.highest_engagement_profiles =
+				data?.engagement?.highest_engagement_profiles ?? [];
+			engagement_data.lowest_engagement_profile =
+				data?.engagement?.lowest_engagement_profile ?? null;
+			engagement_data.lowest_engagement_profiles =
+				data?.engagement?.lowest_engagement_profiles ?? [];
 
 			Loading.value = false;
 			emit("loading_finishes");
@@ -113,6 +135,15 @@ onMounted(async () => {
 					:value="comments_processed"
 					><template #icon><comment /></template
 				></DashboardAnalyticsCard>
+			</div>
+			<div>
+				<DashboardAnalyticsCard_withSlider
+					:isLoading="Loading"
+					title="Highest engaged"
+					:value="engagement_data?.highest_engagement_profile?.ig_handle"
+					:slider_array="engagement_data?.highest_engagement_profiles"
+					><template #icon><comment /></template
+				></DashboardAnalyticsCard_withSlider>
 			</div>
 		</div>
 
