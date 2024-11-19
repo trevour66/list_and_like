@@ -132,12 +132,12 @@ onMounted(() => {
 				</svg>
 				reply
 			</button>
-			<button
+			<!-- <button
 				type="button"
 				class="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium underline decoration-dotted"
 			>
 				view replies
-			</button>
+			</button> -->
 		</div>
 	</article>
 </template>
