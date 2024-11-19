@@ -72,6 +72,19 @@ const isActive = (parent) => {
 				</li>
 				<li class="w-full">
 					<NavLink_New
+						:href="route('my_post.index')"
+						:active="route().current('my_post.index')"
+					>
+						<template #icon>
+							<!-- <i
+								class="leading-normal text-xl text-gray-500 fa-solid fa-table-columns"
+							></i> -->
+						</template>
+						<template #text>My Posts</template>
+					</NavLink_New>
+				</li>
+				<li class="w-full">
+					<NavLink_New
 						:href="route('user_lists.index')"
 						:active="
 							route().current('user_lists.index') || isActive('/my-lists')

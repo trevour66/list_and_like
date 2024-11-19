@@ -94,32 +94,39 @@ onMounted(() => {
 		</template>
 
 		<template #content>
-			<div
-				class="grid lg:grid-cols-2 xl:grid-cols-3 grid-cols-1 pt-6 gap-x-4 gap-y-10 mx-3"
-			>
-				<template v-if="(associated_user_posts ?? []).length > 0">
-					<div v-for="(post, index) in associated_user_posts" :key="index">
-						<!-- {{ post }} -->
-						<IGPostRepresentation
-							:post="post"
-							:index="index"
-							:user_lists="user_lists"
-							@IGProfileAddedToAList="refreshCurrentView"
-						/>
-					</div>
-				</template>
-				<template v-if="!Loading && (associated_user_posts ?? []).length == 0">
-					<div
-						class="flex items-center justify-center w-full h-full bg-gray-50"
-					>
-						<div>
-							<p class="text-md font-normal text-gray-500">
-								You have no community post at the moment
-							</p>
+			<div>
+				<div
+					class="grid lg:grid-cols-2 xl:grid-cols-3 grid-cols-1 pt-6 gap-x-4 gap-y-10 mx-3"
+				>
+					<template v-if="(associated_user_posts ?? []).length > 0">
+						<div v-for="(post, index) in associated_user_posts" :key="index">
+							<!-- {{ post }} -->
+							<IGPostRepresentation
+								:post="post"
+								:index="index"
+								:user_lists="user_lists"
+								@IGProfileAddedToAList="refreshCurrentView"
+							/>
 						</div>
-					</div>
-				</template>
+					</template>
+				</div>
+				<div class="grid grid-cols-1 py-10 gap-x-4 gap-y-10 mx-3">
+					<template
+						v-if="!Loading && (associated_user_posts ?? []).length == 0"
+					>
+						<div
+							class="flex items-center justify-center w-full h-full bg-gray-50"
+						>
+							<div>
+								<p class="text-md font-normal text-gray-500">
+									You have no community post at the moment
+								</p>
+							</div>
+						</div>
+					</template>
+				</div>
 			</div>
+
 			<div v-if="Loading" class="flex items-center justify-center w-full h-32">
 				<InfinityScrollLoader />
 			</div>

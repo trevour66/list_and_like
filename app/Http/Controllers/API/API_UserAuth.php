@@ -43,8 +43,10 @@ class API_UserAuth extends Controller
             $token = null;
 
             if (Hash::check($password, $user->password)) {
-                // The passwords match...
-                $token = $user->createToken('dataAccess',);
+
+                $user->tokens()->where('name', 'dataAccess')->delete();
+
+                $token = $user->createToken('dataAccess');
             } else {
                 throw new Error('Wrong Password');
             }

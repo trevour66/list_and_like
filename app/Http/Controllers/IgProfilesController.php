@@ -57,8 +57,13 @@ class IgProfilesController extends Controller
 
         $user = user_mongodb_subprofile::where('email', '=', $email)->first() ?? false;
 
+        $user_lists = [];
+
+        if ($user) {
+            $user_lists = user_list::where('user_id', '=', $user->user_id)->get() ?? [];
+        }
+
         // logger($user);
-        $user_lists = user_list::where('user_id', '=', $user->user_id)->get() ?? [];
 
         // logger($user_lists);
         return Inertia::render('IG_Profiles', [
@@ -93,7 +98,6 @@ class IgProfilesController extends Controller
                 'ig_handle' => 'string|required',
             ]);
 
-            $user_id = auth()->user()->id;
             $email = auth()->user()->email;
 
             $user = user_mongodb_subprofile::where([
@@ -103,13 +107,7 @@ class IgProfilesController extends Controller
                 ->first() ?? false;
 
             if (!$user) {
-                $user = new user_mongodb_subprofile();
-                $user->fill([
-                    'user_id' => $user_id,
-                    'email' => $email,
-
-                ]);
-                $user->save();
+                throw new Error("Could not identify user");
             }
 
             $ig_profile = ig_profiles::where(['ig_handle' => $validated["ig_handle"]])
@@ -126,7 +124,7 @@ class IgProfilesController extends Controller
                     'followers' => 0,
                     'following' => 0,
                     'verified' => false,
-                    'posts' => []
+                    'posts' => [],
                 ];
 
                 $ig_profile = new ig_profiles();
@@ -139,6 +137,8 @@ class IgProfilesController extends Controller
             }
 
             $ig_profile->users_ids()->attach($user);
+            $ig_profile->directly_added_from_browser_extension_by()->attach($user);
+
             $user->ig_profiles_added()->attach($ig_profile);
 
             $resData = response(json_encode([

@@ -15,6 +15,8 @@ use Inertia\Inertia;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\WebhookController;
 
+use App\Http\Controllers\IgBusinessAccountPostsController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -65,7 +67,7 @@ Route::get('/privacy', function () {
 })->name('privacy');
 
 Route::get('/webhook-callback', [WebhookController::class, 'verify'])->name(('verify-webhook'));
-// Route::post('/webhook-callback', [WebhookController::class, 'handle'])->name(('handle-webhook'));
+Route::post('/webhook-callback', [WebhookController::class, 'handle'])->name(('handle-webhook'));
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -73,7 +75,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/callback', [IGBusinessLoginController::class, 'index'])->name('callback.index');
     Route::post('/new-ig-connection', [IGBusinessLoginController::class, 'store'])->name('authRequest.store');
-    // Route::post('/new-webhook-connection', [IGBusinessLoginController::class, 'setupWebhook'])->name('webhook.store');
+    Route::post('/new-webhook-connection', [IGBusinessLoginController::class, 'setupWebhook'])->name('webhook.store');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -91,6 +93,8 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/ig-post/skip/{post_id}', [IgProfilePostController::class, 'skip'])->name('ig_profile_post.skip');
     Route::post('/ig-post/react/{post_id}', [IgProfilePostController::class, 'react'])->name('ig_profile_post.react');
+
+    Route::get('/my-posts', [IgBusinessAccountPostsController::class, 'index'])->name('my_post.index');
 });
 
 require __DIR__ . '/auth.php';

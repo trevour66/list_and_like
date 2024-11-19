@@ -36,10 +36,14 @@ class ig_profiles extends Model
         'followers' => 0,
         'following' => 0,
         'profile_image_cdn' => '',
-        'directly_added_from_browser_extension_by' => [],
     ];
 
     public function users_ids(): BelongsToMany
+    {
+        return $this->belongsToMany(user_mongodb_subprofile::class);
+    }
+
+    public function directly_added_from_browser_extension_by(): BelongsToMany
     {
         return $this->belongsToMany(user_mongodb_subprofile::class);
     }

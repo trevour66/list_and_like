@@ -1,12 +1,31 @@
 <script setup>
 import { ref } from "vue";
-import ApplicationLogo from "@/Components/ApplicationLogo.vue";
-import NavLink_New from "@/Components/NavLink_New.vue";
-
 import AsideNav from "@/Components/nav/AsideNav.vue";
 
-import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
-import { Link } from "@inertiajs/vue3";
+import { Link, router } from "@inertiajs/vue3";
+import axios from "axios";
+import { onMounted } from "vue";
+import { useCookies } from "@vueuse/integrations/useCookies";
+
+const cookies = useCookies();
+
+onMounted(() => {
+	const XSRF_TOKEN = cookies.get("XSRF-TOKEN") ?? null;
+	// console.log(XSRF_TOKEN);
+	if (
+		typeof XSRF_TOKEN === "undefined" ||
+		XSRF_TOKEN == null ||
+		XSRF_TOKEN == ""
+	) {
+		axios
+			.get("/sanctum/csrf-cookie")
+			.then((res) => {})
+			.catch((err) => {
+				console.log("Error");
+				console.log(err);
+			});
+	}
+});
 
 const showingNavigationBar = ref(true);
 </script>
