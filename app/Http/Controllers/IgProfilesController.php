@@ -25,7 +25,7 @@ class IgProfilesController extends Controller
 
             logger(auth()->user());
             // logger($request->user());
-            // logger($user);
+            logger($user);
             $ig_profiles = [];
 
 
