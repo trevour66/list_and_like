@@ -20,7 +20,6 @@ const next_page_url = ref("");
 
 const Loading = ref(true);
 
-const userAccessToken = usePage().props.auth.user.auth_token;
 const miniVersionActive = usePage().props.mini_version ?? false;
 
 const handleInfiniteScroll = () => {
@@ -40,7 +39,7 @@ const handleInfiniteScroll = () => {
 
 const fetchProfiles = async () => {
 	// console.log("response.data");
-	await IGProfile.getProfiles(userAccessToken, next_page_url.value)
+	await IGProfile.getProfiles(next_page_url.value)
 		.then(function (response) {
 			// console.log(response);
 

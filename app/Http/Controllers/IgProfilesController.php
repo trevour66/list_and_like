@@ -21,8 +21,6 @@ class IgProfilesController extends Controller
             $email = $request->user()->email;
             $user = user_mongodb_subprofile::where(['email' => $email])->first() ?? false;
 
-            logger($request->user());
-            logger($user);
             $ig_profiles = [];
 
 
@@ -38,7 +36,7 @@ class IgProfilesController extends Controller
 
             return $resData;
         } catch (\Throwable $th) {
-            logger("Community API Error" . $th->getMessage());
+            logger("IgProfilesController API Error " . $th->getMessage());
             $resData = response(json_encode(
                 [
                     'status' => "error",

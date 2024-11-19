@@ -17,23 +17,27 @@ const DashboardData = {
 		);
 	},
 
-	async getCommunityData(userAccessToken, IG_username, next_page_url) {
+	async getCommunityData(IG_username, next_page_url) {
 		let url =
 			next_page_url != ""
 				? next_page_url
 				: route("dashboard.fetch_community_data");
 
-		return axios.post(
-			url,
-			{
-				IG_username: IG_username,
-			},
-			{
-				headers: {
-					Authorization: `Bearer ${userAccessToken}`,
-				},
-			}
-		);
+		return axios.post(url, {
+			IG_username: IG_username,
+		});
+
+		// return axios.post(
+		// 	url,
+		// 	{
+		// 		IG_username: IG_username,
+		// 	},
+		// 	{
+		// 		headers: {
+		// 			Authorization: `Bearer ${userAccessToken}`,
+		// 		},
+		// 	}
+		// );
 	},
 };
 

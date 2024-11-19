@@ -52,11 +52,7 @@ const userPostsFetch = async () => {
 	noMorePost.value = false;
 	cards.value = [{ hide: true, dataSlide: 0, data: {}, isPlaceholder: true }];
 
-	await DashboardData.getCommunityData(
-		userAccessToken,
-		IG_username,
-		next_page_url.value
-	)
+	await DashboardData.getCommunityData(IG_username, next_page_url.value)
 		.then(function (response) {
 			// console.log(response);
 			const associated_user_posts_data =

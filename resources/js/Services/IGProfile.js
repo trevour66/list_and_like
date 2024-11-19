@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const IGProfile = {
-	async getProfiles(userAccessToken, nextPageURL = "") {
+	async getProfiles(nextPageURL = "") {
 		let url = route("added_ig_profile.index_api");
 
 		if (nextPageURL != "") {
@@ -9,12 +9,6 @@ const IGProfile = {
 		}
 
 		return axios.get(url);
-
-		// return axios.get(url, {
-		// 	headers: {
-		// 		Authorization: `Bearer ${userAccessToken}`,
-		// 	},
-		// });
 	},
 };
 
