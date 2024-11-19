@@ -43,7 +43,9 @@ onMounted(() => {
 	<AuthenticatedLayout>
 		<template #header>
 			<div>
-				<h2 class="font-semibold text-xl text-gray-800 leading-tight">
+				<h2
+					class="font-semibold text-xl text-gray-800 leading-tight capitalize"
+				>
 					{{ user_list?.list_name ?? "" }}
 				</h2>
 			</div>

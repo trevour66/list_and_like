@@ -163,36 +163,41 @@ onMounted(async () => {
 				</div>
 			</section>
 
-			<div
-				class="grid lg:grid-cols-2 xl:grid-cols-3 grid-cols-1 pt-6 gap-x-4 gap-y-10 mx-3"
-			>
-				<template v-if="(associated_user_IG_Biz_posts ?? []).length > 0">
-					<div
-						v-for="(post, index) in associated_user_IG_Biz_posts"
-						:key="index"
-					>
-						<!-- {{ post }} -->
-						<IGBizPost
-							:post="post"
-							:index="index"
-							@goToComments="goToComments(post._id)"
-						/>
-					</div>
-				</template>
-				<template
-					v-if="!Loading && (associated_user_IG_Biz_posts ?? []).length == 0"
+			<div>
+				<div
+					class="grid lg:grid-cols-2 xl:grid-cols-3 grid-cols-1 pt-6 gap-x-4 gap-y-10 mx-3"
 				>
-					<div
-						class="flex items-center justify-center w-full h-full bg-gray-50"
-					>
-						<div>
-							<p class="text-md font-normal text-gray-500">
-								You have no post at the moment
-							</p>
+					<template v-if="(associated_user_IG_Biz_posts ?? []).length > 0">
+						<div
+							v-for="(post, index) in associated_user_IG_Biz_posts"
+							:key="index"
+						>
+							<!-- {{ post }} -->
+							<IGBizPost
+								:post="post"
+								:index="index"
+								@goToComments="goToComments(post._id)"
+							/>
 						</div>
-					</div>
-				</template>
+					</template>
+				</div>
+				<div class="grid grid-cols-1 pt-6 gap-x-4 gap-y-10 mx-3">
+					<template
+						v-if="!Loading && (associated_user_IG_Biz_posts ?? []).length == 0"
+					>
+						<div
+							class="flex items-center justify-center w-full h-full bg-gray-50"
+						>
+							<div>
+								<p class="text-md font-normal text-gray-500">
+									You have no post at the moment
+								</p>
+							</div>
+						</div>
+					</template>
+				</div>
 			</div>
+
 			<div v-if="Loading" class="flex items-center justify-center w-full h-32">
 				<InfinityScrollLoader />
 			</div>

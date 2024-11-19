@@ -117,7 +117,13 @@ class IgBusinessAccountPostCommentsController extends Controller
             }
 
             $IGMediaCommentsModeration = new IGMediaCommentsModeration($associated_post, $associated_post_owner);
-            $IGMediaCommentsModeration->replyOtherComment($message, $ig_comment_replying_to);
+            $idOfNewlyAddedComment = $IGMediaCommentsModeration->replyOtherComment($message, $ig_comment_replying_to);
+
+            if ($idOfNewlyAddedComment) {
+                $IGMediaCommentsModeration->addCommentToDatabase($message, $idOfNewlyAddedComment, $from, $ig_comment_replying_to);
+            } else {
+                throw new Error("Comment was not sent to IG");
+            }
 
             $resData = response(json_encode(
                 [

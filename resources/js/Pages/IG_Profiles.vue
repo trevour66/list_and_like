@@ -6,6 +6,7 @@ import { onMounted, ref } from "vue";
 import IGProfile from "@/Services/IGProfile";
 
 import { initDropdowns } from "flowbite";
+import { onUpdated } from "vue";
 
 defineProps({
 	user_lists: {
@@ -88,13 +89,18 @@ const addUserToList = (list_id, ig_handle, user_list_ids) => {
 	});
 };
 
-onMounted(() => {
+onUpdated(() => {
 	initDropdowns();
+});
+
+onMounted(async () => {
 	window.document
 		.querySelector("#main")
 		.addEventListener("scroll", handleInfiniteScroll);
 
-	fetchProfiles();
+	await fetchProfiles();
+
+	initDropdowns();
 });
 </script>
 
@@ -137,14 +143,17 @@ onMounted(() => {
 			>
 				<div v-for="(profile, index) in ig_profiles" :key="index">
 					<div
-						class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 px-5"
+						class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 px-5 p-4"
 					>
 						<!-- {{ profile }} -->
 						<!-- {{ user_lists }} -->
-						<div class="flex justify-end px-4 pt-4">
+						<div
+							v-if="(user_lists ?? []).length > 0"
+							class="flex justify-end px-4 pb-4"
+						>
 							<button
 								:id="`${index}_dropdownButton`"
-								:data-dropdown-toggle="`${index}dropdown`"
+								:data-dropdown-toggle="`${index}_dropdown`"
 								data-dropdown-placement="bottom-end"
 								class="inline-block text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-1.5"
 								type="button"
@@ -163,39 +172,41 @@ onMounted(() => {
 								</svg>
 							</button>
 							<!-- Dropdown menu -->
-							<div
-								:id="`${index}dropdown`"
-								class="z-10 hidden text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700"
-							>
-								<div class="px-4 py-3 text-sm text-gray-700">
-									<div class="font-bold truncate">Add to list</div>
-								</div>
-								<ul
-									class="text-sm text-gray-700 dark:text-gray-200 h-36 overflow-y-auto"
-									:aria-labelledby="`${index}_dropdownButton`"
+							<div class="relative">
+								<div
+									:id="`${index}_dropdown`"
+									class="z-10 hidden text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700"
 								>
-									<li v-for="(list, index) in user_lists" :key="index">
-										<div
-											@click="
-												addUserToList(
-													list._id,
-													profile.ig_handle,
-													profile?.user_list_ids ?? []
-												)
-											"
-											class="h-full w-full px-4 py-4 hover:bg-gray-100 hover:cursor-pointer focus:bg-gray-100"
-											:class="{
-												'bg-gray-100': ig_profile_is_already_in_list(
-													profile?.user_list_ids ?? [],
-													list._id
-												),
-											}"
-										>
-											<!-- {{ list }} -->
-											<span class="block">{{ list.list_name }}</span>
-										</div>
-									</li>
-								</ul>
+									<div class="px-4 py-3 text-sm text-gray-700">
+										<div class="font-bold truncate">Add to list</div>
+									</div>
+									<ul
+										class="text-sm text-gray-700 dark:text-gray-200 h-36 overflow-y-auto"
+										:aria-labelledby="`${index}_dropdownButton`"
+									>
+										<li v-for="(list, index) in user_lists" :key="index">
+											<div
+												@click="
+													addUserToList(
+														list._id,
+														profile.ig_handle,
+														profile?.user_list_ids ?? []
+													)
+												"
+												class="h-full w-full px-4 py-4 hover:bg-gray-100 hover:cursor-pointer focus:bg-gray-100"
+												:class="{
+													'bg-gray-100': ig_profile_is_already_in_list(
+														profile?.user_list_ids ?? [],
+														list._id
+													),
+												}"
+											>
+												<!-- {{ list }} -->
+												<span class="block">{{ list.list_name }}</span>
+											</div>
+										</li>
+									</ul>
+								</div>
 							</div>
 						</div>
 						<div class="flex flex-col items-center pb-10">

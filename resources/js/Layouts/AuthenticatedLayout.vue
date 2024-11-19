@@ -122,7 +122,7 @@ const showingNavigationBar = ref(true);
 
 			<div
 				v-if="$slots.header"
-				class="w-full max-w-full mb-3 relative flex flex-col md:flex-row min-w-0 mt-6 break-words bg-white border-0 border-transparent border-solid shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border p-4 mb-0 justify-between items-starts"
+				class="w-full max-w-full mb-3 relative flex flex-col md:flex-row min-w-0 mt-6 break-words bg-white border-0 border-transparent border-solid shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border p-4 mb-0 justify-between items-center"
 			>
 				<slot name="header" />
 			</div>
