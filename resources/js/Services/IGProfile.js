@@ -8,11 +8,13 @@ const IGProfile = {
 			url = nextPageURL;
 		}
 
-		return axios.get(url, {
-			headers: {
-				Authorization: `Bearer ${userAccessToken}`,
-			},
-		});
+		return axios.get(url);
+
+		// return axios.get(url, {
+		// 	headers: {
+		// 		Authorization: `Bearer ${userAccessToken}`,
+		// 	},
+		// });
 	},
 };
 
