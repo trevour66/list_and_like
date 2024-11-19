@@ -21,6 +21,7 @@ class IgProfilesController extends Controller
             $email = $request->user()->email;
             $user = user_mongodb_subprofile::where(['email' => $email])->first() ?? false;
 
+            logger($request->user());
             logger($user);
             $ig_profiles = [];
 
