@@ -19,7 +19,7 @@ class IgProfilesController extends Controller
         try {
 
 
-            $email = auth()->user()->email;
+            $email = (string) auth()->user()->email;
 
             $user = user_mongodb_subprofile::where('email', "=", $email)->first() ?? false;
 
