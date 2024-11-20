@@ -21,8 +21,6 @@ const next_page_url = ref("");
 
 const Loading = ref(true);
 
-const userAccessToken = usePage().props.auth.user.auth_token;
-
 const handleInfiniteScroll = () => {
 	const mainContainer = window.document.querySelector("#main");
 
@@ -40,7 +38,7 @@ const handleInfiniteScroll = () => {
 
 const userPostsFetch = async () => {
 	// console.log("response.data");
-	await IGProfilePost.getCommunityPosts(userAccessToken, next_page_url.value)
+	await IGProfilePost.getCommunityPosts(next_page_url.value)
 		.then(function (response) {
 			// handle success
 			const associated_user_posts_data =

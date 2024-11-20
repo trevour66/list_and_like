@@ -20,6 +20,8 @@ const props = defineProps({
 	},
 });
 
+const emits = defineEmits(["viewReplies"]);
+
 // const emits = defineEmits(["goToComments"]);
 
 const truncateString = (str) => {
@@ -73,13 +75,17 @@ const initReply = () => {
 	);
 };
 
+const initViewReplies = () => {
+	emits("viewReplies");
+};
+
 onMounted(() => {
 	console.log();
 });
 </script>
 
 <template>
-	{{ comment }}
+	<!-- {{ comment }} -->
 	<article class="px-4 py-6 text-base bg-white rounded-lg dark:bg-gray-900">
 		<footer class="flex justify-between items-center mb-2">
 			<div class="flex items-center">
@@ -132,12 +138,13 @@ onMounted(() => {
 				</svg>
 				reply
 			</button>
-			<!-- <button
+			<button
+				@click="initViewReplies"
 				type="button"
 				class="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium underline decoration-dotted"
 			>
 				view replies
-			</button> -->
+			</button>
 		</div>
 	</article>
 </template>

@@ -1,18 +1,20 @@
 import axios from "axios";
 
 const IGProfilePost = {
-	async getCommunityPosts(userAccessToken, nextPageURL = "") {
+	async getCommunityPosts(nextPageURL = "") {
 		let url = route("community.index_api");
 
 		if (nextPageURL != "") {
 			url = nextPageURL;
 		}
 
-		return axios.get(url, {
-			headers: {
-				Authorization: `Bearer ${userAccessToken}`,
-			},
-		});
+		// return axios.get(url, {
+		// 	headers: {
+		// 		Authorization: `Bearer ${userAccessToken}`,
+		// 	},
+		// });
+
+		return axios.get(url);
 	},
 
 	async skipPost(userAccessToken, post_id) {

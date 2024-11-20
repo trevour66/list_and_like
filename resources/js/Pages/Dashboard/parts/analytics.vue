@@ -22,7 +22,6 @@ const props = defineProps({
 
 const emit = defineEmits(["loading_starts", "loading_finishes"]);
 
-const userAccessToken = usePage().props.auth.user.auth_token;
 const miniVersionActive = usePage().props.mini_version ?? false;
 
 const Loading = ref(false);
@@ -59,7 +58,7 @@ const fetchAnalytics = async () => {
 	Loading.value = true;
 	emit("loading_starts");
 
-	await DashboardData.getAnalytics(userAccessToken, IG_username)
+	await DashboardData.getAnalytics(IG_username)
 		.then(function (response) {
 			// console.log(response);
 			const data = response.data.data ?? {};

@@ -27,23 +27,23 @@ use App\Http\Controllers\IgBusinessAccountPostCommentsController;
 
 
 Route::middleware('auth')->group(function () {
+    // In-APP API using SESSION Cookie
     Route::get('/get-added-ig-profiles', [IgProfilesController::class, 'index_api'])->name('added_ig_profile.index_api');
+
     Route::post('/get-community-dashboard', [DashboardController::class, 'fetch_community_data'])->name('dashboard.fetch_community_data');
-});
-
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/add-ig-profile', [IgProfilesController::class, 'chrome_extension_add_ig_username'])->name('actionStepCore.chrome_extension_add_ig_username');
-
-    Route::get('/community', [CommunityController::class, 'index_api'])->name('community.index_api');
-
-
     Route::post('/get-analytics', [DashboardController::class, 'fetch_account_analytics_data'])->name('dashboard.fetch_account_analytics_data');
-
-    Route::get('/get-engagement-data', [UserEngagementsController::class, 'engagement_data'])->name('dashboard.engagement_data');
 
     Route::post('/my-posts', [IgBusinessAccountPostsController::class, 'index_api'])->name('my_post.index_api');
     Route::post('/get-post-comments', [IgBusinessAccountPostCommentsController::class, 'get_comments_api'])->name('my_post.get_comments_api');
     Route::post('/reply-comment', [IgBusinessAccountPostCommentsController::class, 'reply_to_comment_api'])->name('my_post.reply_to_comment_api');
+
+    Route::get('/get-engagement-data', [UserEngagementsController::class, 'engagement_data'])->name('dashboard.engagement_data');
+
+    Route::get('/community', [CommunityController::class, 'index_api'])->name('community.index_api');
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/add-ig-profile', [IgProfilesController::class, 'chrome_extension_add_ig_username'])->name('actionStepCore.chrome_extension_add_ig_username');
 });
 
 

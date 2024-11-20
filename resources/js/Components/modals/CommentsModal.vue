@@ -224,8 +224,7 @@ onBeforeUnmount(() => {
 				<template
 					v-if="(associated_user_IG_Biz_post_comments ?? []).length > 0"
 				>
-					<div
-						class="max-w-2xl mx-auto px-4"
+					<template
 						v-for="(comment, index) in associated_user_IG_Biz_post_comments"
 						:key="index"
 					>
@@ -235,7 +234,7 @@ onBeforeUnmount(() => {
 							:index="index"
 							@commentOnPost="commentOnPost(post._id)"
 						/>
-					</div>
+					</template>
 				</template>
 				<template
 					v-if="

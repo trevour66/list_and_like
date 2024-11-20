@@ -94,7 +94,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/ig-post/skip/{post_id}', [IgProfilePostController::class, 'skip'])->name('ig_profile_post.skip');
     Route::post('/ig-post/react/{post_id}', [IgProfilePostController::class, 'react'])->name('ig_profile_post.react');
 
-    Route::get('/my-posts', [IgBusinessAccountPostsController::class, 'index'])->name('my_post.index');
+    // if (env('APP_MODE', "DEV") === 'PROD') {
+    if (env('APP_MODE', "DEV") === 'DEV') {
+        Route::get('/my-posts', [IgBusinessAccountPostsController::class, 'index'])->name('my_post.index');
+    }
 });
 
 require __DIR__ . '/auth.php';
