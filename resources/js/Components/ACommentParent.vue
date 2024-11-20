@@ -15,44 +15,9 @@ const props = defineProps({
 	},
 });
 
-const emits = defineEmits(["commentOnPost"]);
-
 const hasChildern = computed(() => {
 	return true;
 });
-
-const truncateString = (str) => {
-	const maxLength = 150;
-
-	if (str.length > maxLength) {
-		// Truncate the string and add "..."
-		return str.slice(0, maxLength) + "...";
-	} else {
-		return str;
-	}
-};
-
-const formatDate = (dateStr) => {
-	try {
-		// Convert to a Date object
-		const date = new Date(dateStr);
-
-		// Format to US date format (MM/DD/YYYY hh:mm AM/PM)
-		const usFormattedDate = date.toLocaleString("en-US", {
-			year: "numeric",
-			month: "2-digit",
-			day: "2-digit",
-			hour: "2-digit",
-			minute: "2-digit",
-			second: "2-digit",
-			hour12: true,
-		});
-
-		return usFormattedDate;
-	} catch (error) {
-		return false;
-	}
-};
 
 onMounted(() => {
 	initDropdowns();

@@ -54,23 +54,29 @@ const commentOnPost = async () => {
 		commentStore.get_CommentData?.IG_comment_replying_to ?? "";
 	const post_id = commentStore.get_CommentData?.IG_Post ?? "";
 
-	const commentFinalText =
-		replyingTo_ig_username !== ""
-			? `@${replyingTo_ig_username} ${commentText.value}`
-			: commentText.value;
-
 	const from =
 		preferedIgAccountStore?.get_preferedIgBussinessAccount?.IG_username ?? "";
 
-	// commentStore.addText_CommentData(commentFinalText);
 	commentStore.addText_CommentData(commentText.value);
 
-	await IGBusinessPost.replyComments(
-		post_id,
-		replyingTo_ig_comment,
-		commentText.value,
-		from
-	)
+	let commentAPIReq = null;
+
+	if (replyingTo_ig_comment !== "") {
+		commentAPIReq = IGBusinessPost.replyComments(
+			post_id,
+			replyingTo_ig_comment,
+			commentText.value,
+			from
+		);
+	} else {
+		commentAPIReq = IGBusinessPost.newComments(
+			post_id,
+			commentText.value,
+			from
+		);
+	}
+
+	await commentAPIReq
 		.then(function (response) {
 			console.log(response);
 
@@ -87,9 +93,21 @@ const commentOnPost = async () => {
 				await reAuth();
 			}
 		});
-
-	return;
 };
+
+watch(commentText, (newValue) => {
+	if (newValue) {
+		let IG_Post = props.activePostID ?? "";
+		let from_IG_username =
+			preferedIgAccountStore.get_preferedIgBussinessAccount?.IG_username ?? "";
+
+		commentStore.set_CommentData_directComment(
+			from_IG_username,
+			IG_Post,
+			newValue
+		);
+	}
+});
 
 const closeModal = () => {
 	commentStore.reset_CommentData();
@@ -228,12 +246,7 @@ onBeforeUnmount(() => {
 						v-for="(comment, index) in associated_user_IG_Biz_post_comments"
 						:key="index"
 					>
-						<!-- {{ comment }} -->
-						<ACommentParent
-							:comment="comment"
-							:index="index"
-							@commentOnPost="commentOnPost(post._id)"
-						/>
+						<ACommentParent :comment="comment" :index="index" />
 					</template>
 				</template>
 				<template

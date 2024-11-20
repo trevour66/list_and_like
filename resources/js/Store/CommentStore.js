@@ -29,6 +29,12 @@ const useCommentStore = defineStore("CommentStore", () => {
 		CommentData.text = text;
 	};
 
+	const set_CommentData_directComment = (from_IG_username, IG_Post, text) => {
+		CommentData.from_IG_username = from_IG_username;
+		CommentData.IG_Post = IG_Post;
+		CommentData.text = text;
+	};
+
 	const addText_CommentData = (text) => {
 		CommentData.text = text;
 	};
@@ -50,6 +56,7 @@ const useCommentStore = defineStore("CommentStore", () => {
 		CommentData,
 		get_CommentData,
 		set_CommentData,
+		set_CommentData_directComment,
 		addText_CommentData,
 		reset_CommentData,
 		cancel_ReplyToSpecificUser,

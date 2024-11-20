@@ -52,39 +52,52 @@ class IgBusinessAccountPostCommentsController extends Controller
         }
     }
 
-    public function comment_on_post_api(Request $request)
+    public function new_comment_api(Request $request)
     {
         try {
-            //code...
-            $associated_comments = [];
 
             $validated = $request->validate([
-                'post_id' => 'required|string'
+                'post_id' => 'required|string',
+                'message' => 'required|string',
+                'from' => 'required|string'
             ]);
 
             $ig_business_account_posts_id = $validated['post_id'];
+            $message = $validated['message'];
+            $from = $validated['from'];
 
-            $associated_comments = ig_business_account_post_comments::where('ig_business_account_posts_id', $ig_business_account_posts_id)
-                ->where('parent_comment_id', '')
-                ->orderBy('timestamp', 'desc')
-                ->orderBy('updated_at', 'desc')
-                ->cursorPaginate(10);
+            $associated_post = ig_business_account_posts::where('_id', $ig_business_account_posts_id)->first() ?? false;
+            $associated_post_owner = IGAccessCodes::where('IG_USERNAME', $from)->first() ?? false;
+
+            if (
+                !$associated_post || !$associated_post_owner
+            ) {
+                throw new Error('Associated Post not found');
+            }
+
+            $IGMediaCommentsModeration = new IGMediaCommentsModeration($associated_post, $associated_post_owner);
+            $idOfNewlyAddedComment = $IGMediaCommentsModeration->createNewComment($message);
+
+            if ($idOfNewlyAddedComment) {
+                $IGMediaCommentsModeration->addCommentToDatabase($message, $idOfNewlyAddedComment, $from, '');
+            } else {
+                throw new Error("Comment was not sent to IG");
+            }
 
             $resData = response(json_encode(
                 [
                     'status' => "success",
-                    'associated_comments' => $associated_comments,
                 ]
             ), 200)
                 ->header('Content-Type', 'application/json');
 
             return $resData;
         } catch (\Throwable $th) {
-            logger("get_comments_api API Error" . $th->getMessage());
+            logger("reply_to_comment_api API Error" . $th->getMessage());
             $resData = response(json_encode(
                 [
                     'status' => "error",
-                    "associated_comments" => null
+                    "error" => $th->getMessage()
                 ]
             ), 200)
                 ->header('Content-Type', 'application/json');

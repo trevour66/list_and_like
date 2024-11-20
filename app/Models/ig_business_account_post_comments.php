@@ -23,6 +23,7 @@ class ig_business_account_post_comments extends Model
         'text',
         'timestamp',
         'parent_comment_id',
+
     ];
 
     public function commenter(): BelongsTo

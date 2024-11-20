@@ -95,6 +95,7 @@ class ApifyScraper
                 'displayUrl' => $post['displayUrl'] ?? '',
                 'likesCount' => $post['likesCount'] ?? 0,
                 'timestamp' => $post['timestamp'] ?? '',
+                'error_current_count' => 0
             ];
 
             $createdOrUpdatedIGPost = ig_profile_post::updateOrCreate(

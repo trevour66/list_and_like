@@ -32,28 +32,40 @@ class IGMediaCommentsModeration
 
     public function createNewComment($message)
     {
-        logger(print_r("called: createNewComment", true));
+        try {
+            logger(print_r("called: createNewComment", true));
 
-        $url = $this->IG_URL . "/" . $this->ig_business_account_posts->id . "/comments";
+            $url = $this->IG_URL . "/" . $this->ig_business_account_posts->id . "/comments?";
 
-        $url = $url . http_build_query([
-            'message' => $message,
-        ]);
+            $url = $url . http_build_query([
+                'message' => $message,
+                "access_token" => $this->IG_access_codes->long_lived_access_token,
+            ]);
 
-        $newIGCommentRequest = Http::connectTimeout(60)->timeout(60)->post($url);
+            $newIGCommentRequest = Http::connectTimeout(100)->timeout(100)->post($url);
 
-        $responseData = $newIGCommentRequest->json();
+            $responseData = $newIGCommentRequest->json();
 
-        logger($responseData);
+            // logger($newIGCommentRequest->status());
+            // logger($responseData);
+            // logger($url);
 
-        return;
+            $statusOfRequest = $newIGCommentRequest->status();
+            $idOfNewlyAddedComment = $responseData["id"] ?? false;
 
-        // if (isset($responseData['data'])) {
-        //     $this->allPosts = array_merge($this->allPosts, $responseData['data']);
-        // }
+            if (
+                !$idOfNewlyAddedComment ||
+                $statusOfRequest != 200
+            ) {
+                throw new Error('Error sending comment to IG');
+            }
 
-
-        logger('done createNewComment');
+            return $idOfNewlyAddedComment;
+        } catch (\Throwable $th) {
+            logger("Error createNewComment");
+            logger($th->getMessage());
+            return false;
+        }
     }
 
     public function replyOtherComment($message, $comment_replyingTo)
@@ -70,8 +82,8 @@ class IGMediaCommentsModeration
             $replyToCommentRequest = Http::withHeaders([
                 'Content-Type' => 'application/json',
             ])
-                ->connectTimeout(600)
-                ->timeout(600)
+                ->connectTimeout(100)
+                ->timeout(100)
                 ->post($url, [
                     "message" => $message,
                 ]);
@@ -79,11 +91,11 @@ class IGMediaCommentsModeration
 
             $responseData = $replyToCommentRequest->json();
 
-            logger($replyToCommentRequest->status());
-            logger($responseData);
-            logger($url);
+            // logger($replyToCommentRequest->status());
+            // logger($responseData);
+            // logger($url);
 
-            logger('done replyOtherComment');
+            // logger('done replyOtherComment');
 
             $statusOfRequest = $replyToCommentRequest->status();
             $idOfNewlyAddedComment = $responseData["id"] ?? false;
@@ -124,8 +136,6 @@ class IGMediaCommentsModeration
         ]);
 
         $this->ig_business_account_posts->comments()->save($new_comment);
-
-        return;
 
         logger('done addCommentToDatabase');
     }

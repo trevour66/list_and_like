@@ -50,6 +50,23 @@ const IGBusinessPost = {
 			from: from_IG_username,
 		});
 	},
+
+	async newComments(post_id, message, from_IG_username) {
+		post_id = post_id ?? false;
+		message = message ?? false;
+
+		if (!post_id || !message || !from_IG_username) {
+			throw new Error("required data not supplied");
+		}
+
+		let url = route("my_post.new_comment_api");
+
+		return axios.post(url, {
+			post_id: post_id,
+			message: message,
+			from: from_IG_username,
+		});
+	},
 };
 
 export default IGBusinessPost;

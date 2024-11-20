@@ -36,6 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/my-posts', [IgBusinessAccountPostsController::class, 'index_api'])->name('my_post.index_api');
     Route::post('/get-post-comments', [IgBusinessAccountPostCommentsController::class, 'get_comments_api'])->name('my_post.get_comments_api');
     Route::post('/reply-comment', [IgBusinessAccountPostCommentsController::class, 'reply_to_comment_api'])->name('my_post.reply_to_comment_api');
+    Route::post('/new-comment', [IgBusinessAccountPostCommentsController::class, 'new_comment_api'])->name('my_post.new_comment_api');
 
     Route::get('/get-engagement-data', [UserEngagementsController::class, 'engagement_data'])->name('dashboard.engagement_data');
 
