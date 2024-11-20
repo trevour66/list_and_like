@@ -13,6 +13,7 @@ const props = defineProps({
 });
 
 const miniVersionActive = usePage().props.mini_version ?? false;
+const env = usePage().props.env ?? false;
 
 const isActive = (parent) => {
 	return usePage().url.startsWith(parent);
@@ -70,7 +71,7 @@ const isActive = (parent) => {
 						<template #text>Community</template>
 					</NavLink_New>
 				</li>
-				<li class="w-full">
+				<li v-if="env === 'DEV'" class="w-full">
 					<NavLink_New
 						:href="route('my_post.index')"
 						:active="route().current('my_post.index')"

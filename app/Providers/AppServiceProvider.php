@@ -27,6 +27,7 @@ class AppServiceProvider extends ServiceProvider
 
         Inertia::share([
             'mini_version' => $mini_version,
+            'env' => env('APP_MODE', "DEV")
             // 'mini_version' => true,
         ]);
     }
