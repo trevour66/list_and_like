@@ -43,6 +43,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/community', [CommunityController::class, 'index_api'])->name('community.index_api');
 });
 
+Route::post('/get-all-replies', [IgBusinessAccountPostCommentsController::class, 'get_all_comment_replies_api'])->name('dashboard.get_all_comment_replies_api');
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/add-ig-profile', [IgProfilesController::class, 'chrome_extension_add_ig_username'])->name('actionStepCore.chrome_extension_add_ig_username');
 });

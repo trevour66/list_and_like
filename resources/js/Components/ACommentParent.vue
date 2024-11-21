@@ -16,7 +16,7 @@ const props = defineProps({
 });
 
 const hasChildern = computed(() => {
-	return true;
+	return false;
 });
 
 onMounted(() => {

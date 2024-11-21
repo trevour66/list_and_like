@@ -85,7 +85,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<!-- {{ comment }} -->
+	{{ comment }}
 	<article class="px-4 py-6 text-base bg-white rounded-lg dark:bg-gray-900">
 		<footer class="flex justify-between items-center mb-2">
 			<div class="flex items-center">

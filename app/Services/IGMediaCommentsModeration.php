@@ -18,9 +18,11 @@ class IGMediaCommentsModeration
     private ?ig_business_account_posts $ig_business_account_posts = null;
     private ?IGAccessCodes $IG_access_codes = null;
 
-
     private $IG_URL = 'https://graph.instagram.com';
     private $version = 'v21.0';
+
+    private $parentsStack = [];
+    private $repliesCollection = [];
 
     public function __construct(
         ig_business_account_posts $ig_business_account_posts,
@@ -138,5 +140,48 @@ class IGMediaCommentsModeration
         $this->ig_business_account_posts->comments()->save($new_comment);
 
         logger('done addCommentToDatabase');
+    }
+
+    public function getAllRelatedReplies($parent_comment_id)
+    {
+        logger(print_r("called: getAllRelatedReplies", true));
+
+        array_push($this->parentsStack, $parent_comment_id);
+
+        // logger($this->parentsStack);
+
+        $this->exploreTree();
+
+        // logger($this->repliesCollection);
+        // logger(count($this->repliesCollection));
+        logger('done getAllRelatedReplies');
+
+        if (count(($this->repliesCollection ?? [])) == 0) {
+            return $this->repliesCollection;
+        }
+
+        $repliesCollection = collect($this->repliesCollection);
+
+        $repliesCollection->sortBy('timestamp');
+
+        return $repliesCollection;
+    }
+
+    private function exploreTree()
+    {
+        while (count($this->parentsStack) > 0) {
+            $current_parent_comment_id = array_shift($this->parentsStack);
+
+            $current_children_comments = ig_business_account_post_comments::where("parent_comment_id", "=", $current_parent_comment_id)->without('children')->get() ?? [];
+
+            // logger($current_children_comments);
+
+            foreach ($current_children_comments as $key => $value) {
+                array_push($this->repliesCollection, $value);
+                array_push($this->parentsStack, $value->comment_id);
+            }
+
+            // logger($this->parentsStack);
+        }
     }
 }

@@ -56,6 +56,8 @@ const fetchProfiles = async () => {
 				Array.prototype.push.apply(ig_profiles.value, profiles);
 			}
 
+			initDropdowns();
+
 			Loading.value = false;
 		})
 		.catch(function (error) {
@@ -63,10 +65,6 @@ const fetchProfiles = async () => {
 			console.log(error);
 			Loading.value = false;
 		});
-};
-
-const refreshCurrentView = () => {
-	router.reload();
 };
 
 const ig_profile_is_already_in_list = (user_list_ids, list_id) => {
@@ -88,9 +86,9 @@ const addUserToList = (list_id, ig_handle, user_list_ids) => {
 	});
 };
 
-onUpdated(() => {
-	initDropdowns();
-});
+// onUpdated(() => {
+
+// });
 
 onMounted(async () => {
 	window.document
@@ -138,11 +136,11 @@ onMounted(async () => {
 		<template #content>
 			<!-- {{ ig_profiles }} -->
 			<div
-				class="grid lg:grid-cols-3 xl:grid-cols-4 grid-cols-1 pt-6 gap-x-4 gap-y-3 mx-3"
+				class="grid lg:grid-cols-3 xl:grid-cols-4 grid-cols-1 pt-6 gap-x-4 gap-y-3 mx-3 auto-rows-fr"
 			>
 				<div v-for="(profile, index) in ig_profiles" :key="index">
 					<div
-						class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 px-5 p-4"
+						class="h-full w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 px-5 p-4"
 					>
 						<!-- {{ profile }} -->
 						<!-- {{ user_lists }} -->

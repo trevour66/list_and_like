@@ -100,7 +100,7 @@ const showingNavigationBar = ref(true);
 
 							<!-- notifications -->
 
-							<li class="relative flex items-center pr-2">
+							<!-- <li class="relative flex items-center pr-2">
 								<p class="hidden transform-dropdown-show"></p>
 								<a
 									href="javascript:;"
@@ -110,7 +110,7 @@ const showingNavigationBar = ref(true);
 								>
 									<i class="cursor-pointer fa fa-bell text-xl"></i>
 								</a>
-							</li>
+							</li> -->
 						</ul>
 					</div>
 				</div>

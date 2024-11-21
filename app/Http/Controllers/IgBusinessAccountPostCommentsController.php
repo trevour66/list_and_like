@@ -159,4 +159,51 @@ class IgBusinessAccountPostCommentsController extends Controller
             return $resData;
         }
     }
+
+    public function get_all_comment_replies_api(Request $request)
+    {
+        try {
+
+            $validated = $request->validate([
+                'post_id' => 'required|string',
+                'from' => 'required|string',
+                'parent_comment_id' => 'required|string'
+            ]);
+
+            $parent_comment_id = $validated['parent_comment_id'];
+            $ig_business_account_posts_id = $validated['post_id'];
+            $from = $validated['from'];
+
+            $associated_post = ig_business_account_posts::where('_id', $ig_business_account_posts_id)->first() ?? false;
+            $associated_post_owner = IGAccessCodes::where('IG_USERNAME', $from)->first() ?? false;
+
+            if (!$associated_post || !$associated_post_owner) {
+                throw new Error('Associated Post not found');
+            }
+
+            $IGMediaCommentsModeration = new IGMediaCommentsModeration($associated_post, $associated_post_owner);
+            $repliesCollection = $IGMediaCommentsModeration->getAllRelatedReplies($parent_comment_id);
+
+            $resData = response(json_encode(
+                [
+                    'status' => "success",
+                    'replies' => $repliesCollection
+                ]
+            ), 200)
+                ->header('Content-Type', 'application/json');
+
+            return $resData;
+        } catch (\Throwable $th) {
+            logger("get_all_comment_replies_api API Error " . $th->getMessage());
+            $resData = response(json_encode(
+                [
+                    'status' => "error",
+                    'replies' => []
+                ]
+            ), 200)
+                ->header('Content-Type', 'application/json');
+
+            return $resData;
+        }
+    }
 }

@@ -10,6 +10,10 @@ use App\Models\ig_data_fetch_process;
 use Exception;
 use Illuminate\Queue\InteractsWithQueue;
 
+use App\Notifications\NewDataFetch;
+use App\Notifications\SuccessfulDataFetch;
+use App\Notifications\FailedDataFetch;
+
 class DataFetchRequest_PullRecentData implements ShouldQueue
 {
     use InteractsWithQueue;
@@ -56,6 +60,8 @@ class DataFetchRequest_PullRecentData implements ShouldQueue
             // return;
             $user = $event->ig_data_fetch_process->ig_access_code->user;
 
+            $user->notify(new NewDataFetch($IGAccountUnder));
+
             $IG_MediaService = new IGMedia($IGAccountUnder, $user);
             $IG_MediaService->pullRecentUserPost();
 
@@ -63,6 +69,8 @@ class DataFetchRequest_PullRecentData implements ShouldQueue
                 ->update(
                     ['IDFP_status' => 'finished_success'],
                 );
+
+            $user->notify(new SuccessfulDataFetch($IGAccountUnder));
 
             return;
         } catch (Exception $e) {
@@ -73,6 +81,8 @@ class DataFetchRequest_PullRecentData implements ShouldQueue
                 ->update(
                     ['IDFP_status' => 'finished_error'],
                 );
+
+            $user->notify(new FailedDataFetch($IGAccountUnder));
 
             return;
         }

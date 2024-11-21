@@ -22,6 +22,7 @@ class IGMedia
     private $default_timeFrame = '3 months';
     private $allPosts = [];
     private $commenters_tracker = [];
+    private $repliesIDStack = [];
 
     public function __construct(
         IGAccessCodes $IG_access_codes,
@@ -149,7 +150,7 @@ class IGMedia
         $nextPageURL = true;
 
         $IGPostCommentRequest = Http::connectTimeout(60)->timeout(60)->get($url, [
-            "fields" => "id,from,like_count,parent_id,text,timestamp,username,user",
+            "fields" => "id,from,like_count,parent_id,text,timestamp,username,user,replies{id}",
             "access_token" => $this->IG_access_codes->long_lived_access_token,
             "limit" => 50,
         ]);
@@ -186,6 +187,8 @@ class IGMedia
 
         // logger(print_r($comments, true));
         $this->savePostCommentData($comments, $post);
+
+        $this->exploreReplies($post);
     }
 
     private function savePostCommentData($comments, ig_business_account_posts $post)
@@ -194,8 +197,9 @@ class IGMedia
         for ($i = 0; $i < count($comments); $i++) {
             $current = $comments[$i];
 
+            // logger($current);
+
             if (
-                ($current["username"] ?? '') == $this->IG_access_codes->IG_USERNAME ||
                 !($current["from"]["username"] ?? false) ||
                 !($current["text"] ?? false) ||
                 !($current["timestamp"] ?? false)
@@ -203,13 +207,7 @@ class IGMedia
                 continue;
             }
 
-            $commenter = ig_profiles::where('ig_handle', '=', $current["from"]["username"])->first() ?? false;
-
-            if (!$commenter) {
-                $commenter = new ig_profiles();
-                $commenter->ig_handle = $current["from"]["username"];
-                $commenter->save();
-            }
+            // logger('here');
 
             $new_comment = ig_business_account_post_comments::updateOrCreate([
                 "ig_business_account" =>  $this->IG_access_codes->IG_USERNAME,
@@ -224,19 +222,46 @@ class IGMedia
 
             ]);
 
-            if (($this->commenters_tracker[$current["from"]["username"]] ?? false)) {
-                $this->commenters_tracker[$current["from"]["username"]]++;
-            } else {
-                $this->commenters_tracker[$current["from"]["username"]] = 1;
+            $post->comments()->save($new_comment);
+
+
+            if (
+                ($current["from"]["username"] ?? '') != $this->IG_access_codes->IG_USERNAME
+            ) {
+                $commenter = ig_profiles::where('ig_handle', '=', $current["from"]["username"])->first() ?? false;
+
+                if (!$commenter) {
+                    $commenter = new ig_profiles();
+                    $commenter->ig_handle = $current["from"]["username"];
+                    $commenter->save();
+                }
+
+
+                if (($this->commenters_tracker[$current["from"]["username"]] ?? false)) {
+                    $this->commenters_tracker[$current["from"]["username"]]++;
+                } else {
+                    $this->commenters_tracker[$current["from"]["username"]] = 1;
+                }
+
+                $commenter->ig_bis_account_posts_commented_on()->attach($post);
+                $commenter->comments()->save($new_comment);
+
+                $email = $this->user->email;
+                $user_mongodb = user_mongodb_subprofile::where(['email' => $email])->first();
+                $user_mongodb->ig_profiles_added()->attach($commenter);
             }
 
-            $post->comments()->save($new_comment);
-            $commenter->ig_bis_account_posts_commented_on()->attach($post);
-            $commenter->comments()->save($new_comment);
 
-            $email = $this->user->email;
-            $user_mongodb = user_mongodb_subprofile::where(['email' => $email])->first();
-            $user_mongodb->ig_profiles_added()->attach($commenter);
+            //  Add to the reply stack if there is a reply
+            $replies = $current["replies"] ?? [];
+
+            if (isset($replies['data'])) {
+                foreach ($replies['data'] as $key => $value) {
+                    if ($value['id']) {
+                        array_push($this->repliesIDStack, $value['id']);
+                    }
+                }
+            }
         }
     }
 
@@ -263,6 +288,38 @@ class IGMedia
                         unique: true
                     );
             }
+        }
+    }
+
+    private function exploreReplies(ig_business_account_posts $post)
+    {
+        while (count($this->repliesIDStack) > 0) {
+            $current_reply_id = array_shift($this->repliesIDStack);
+
+            logger(print_r("called exploreReplies: ", true));
+
+            $url = $this->IG_URL . "/" . $current_reply_id;
+
+            $comments = [];
+
+            $IGPostCommentRequest = Http::connectTimeout(60)->timeout(60)->get($url, [
+                "fields" => "id,from,like_count,parent_id,text,timestamp,username,user,replies{id}",
+                "access_token" => $this->IG_access_codes->long_lived_access_token,
+                "limit" => 50,
+            ]);
+
+            $responseData = $IGPostCommentRequest->json();
+
+            // logger($responseData);
+            // return;
+
+            if (isset($responseData['id'])) {
+                $comments[] =  $responseData;
+            }
+
+            // logger("saving reply");
+
+            $this->savePostCommentData($comments, $post);
         }
     }
 }
