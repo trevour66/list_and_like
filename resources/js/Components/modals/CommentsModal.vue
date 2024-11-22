@@ -246,7 +246,11 @@ onBeforeUnmount(() => {
 						v-for="(comment, index) in associated_user_IG_Biz_post_comments"
 						:key="index"
 					>
-						<ACommentParent :comment="comment" :index="index" />
+						<ACommentParent
+							:comment="comment"
+							:index="index"
+							:activePostID="activePostID"
+						/>
 					</template>
 				</template>
 				<template

@@ -1,7 +1,21 @@
-<script setup></script>
+<script setup>
+defineProps({
+	noBackground: {
+		type: Boolean,
+		required: false,
+		default: false,
+	},
+});
+</script>
 
 <template>
-	<div class="flex items-center justify-center w-full h-full bg-gray-50">
+	<div
+		:class="{
+			'bg-white': noBackground,
+			'bg-gray-50': !noBackground,
+		}"
+		class="flex items-center justify-center w-full h-full"
+	>
 		<div role="status">
 			<svg
 				aria-hidden="true"

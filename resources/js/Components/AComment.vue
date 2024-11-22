@@ -18,6 +18,11 @@ const props = defineProps({
 		type: Number,
 		required: true,
 	},
+	is_a_child: {
+		type: Boolean,
+		required: true,
+		default: false,
+	},
 });
 
 const emits = defineEmits(["viewReplies"]);
@@ -85,8 +90,14 @@ onMounted(() => {
 </script>
 
 <template>
-	{{ comment }}
-	<article class="px-4 py-6 text-base bg-white rounded-lg dark:bg-gray-900">
+	<!-- {{ comment }} -->
+	<article
+		:class="{
+			'py-2': is_a_child,
+			'py-6 ': !is_a_child,
+		}"
+		class="px-4 text-base bg-white rounded-lg dark:bg-gray-900"
+	>
 		<footer class="flex justify-between items-center mb-2">
 			<div class="flex items-center">
 				<p
@@ -115,7 +126,7 @@ onMounted(() => {
 			<button
 				v-if="
 					preferedIgAccountStore.get_preferedIgBussinessAccount?.IG_username !==
-					(comment?.commenter_ig_username ?? '')
+						(comment?.commenter_ig_username ?? '') && !is_a_child
 				"
 				@click="initReply"
 				type="button"
@@ -139,6 +150,7 @@ onMounted(() => {
 				reply
 			</button>
 			<button
+				v-if="!is_a_child"
 				@click="initViewReplies"
 				type="button"
 				class="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium underline decoration-dotted"

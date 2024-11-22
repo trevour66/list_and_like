@@ -67,6 +67,24 @@ const IGBusinessPost = {
 			from: from_IG_username,
 		});
 	},
+
+	async getReplies(post_id, parent_comment_id, from) {
+		post_id = post_id ?? false;
+		from = from ?? false;
+		parent_comment_id = parent_comment_id ?? false;
+
+		if (!post_id || !from || !parent_comment_id) {
+			throw new Error("required data not supplied");
+		}
+
+		let url = route("my_post.get_all_comment_replies_api");
+
+		return axios.post(url, {
+			post_id: post_id,
+			from: from,
+			parent_comment_id: parent_comment_id,
+		});
+	},
 };
 
 export default IGBusinessPost;
