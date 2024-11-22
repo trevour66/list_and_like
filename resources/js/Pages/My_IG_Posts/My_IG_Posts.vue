@@ -96,7 +96,7 @@ const IGBusinessPostsFetch = async () => {
 };
 
 const goToComments = (post_id) => {
-	console.log(post_id);
+	// console.log(post_id);
 
 	if (!(post_id ?? false)) return;
 

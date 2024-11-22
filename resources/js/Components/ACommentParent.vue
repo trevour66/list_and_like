@@ -6,6 +6,7 @@ import IGBusinessPost from "@/Services/IGBusinessPost";
 import AComment from "@/Components/AComment.vue";
 import usePreferedIgAccountStore from "@/Store/preferedIgAccountStore";
 import InfinityScrollLoader from "@/Components/InfinityScrollLoader.vue";
+import { watch } from "vue";
 
 const preferedIgAccountStore = usePreferedIgAccountStore();
 
@@ -53,12 +54,17 @@ const viewReplies = async () => {
 		from_IG_username
 	)
 		.then(function (response) {
-			console.log(response);
+			// console.log(response);
 
 			let replies = response.data?.replies ?? [];
 
-			childern.value = replies;
-			hasChildern.value = true;
+			if (replies.length === 0) {
+				hasNoChildern.value = true;
+			} else {
+				childern.value = replies;
+				hasChildern.value = true;
+			}
+
 			Loading.value = false;
 		})
 		.catch(async (error) => {
@@ -79,6 +85,14 @@ const viewReplies = async () => {
 			Loading.value = false;
 		});
 };
+
+watch(hasNoChildern, (newVal) => {
+	if (newVal) {
+		setTimeout(() => {
+			hasNoChildern.value = false;
+		}, 3000);
+	}
+});
 
 onMounted(() => {
 	initDropdowns();
@@ -110,4 +124,29 @@ onMounted(() => {
 			</template>
 		</div>
 	</template>
+	<Transition name="slide-fade">
+		<template v-if="hasNoChildern">
+			<div class="max-w-2xl mx-auto px-8 mb-2">
+				<p class="text-sm font-semibold text-red-600 dark:text-white">
+					No more replies
+				</p>
+			</div>
+		</template>
+	</Transition>
 </template>
+
+<style scoped>
+.slide-fade-enter-active {
+	transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+	transition: all 0.4s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+	transform: translateX(20px);
+	opacity: 0;
+}
+</style>

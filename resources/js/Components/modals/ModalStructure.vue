@@ -1,4 +1,33 @@
-<script setup></script>
+<script setup>
+import useModalStore from "@/Store/ModalStore";
+import { onBeforeUnmount, onMounted, ref, watch, watchEffect } from "vue";
+
+const modalStore = useModalStore();
+
+const handleInfiniteScroll = () => {
+	const mainContainer = window.document.querySelector("#main_modal");
+
+	const endOfContainer =
+		mainContainer.scrollHeight - mainContainer.scrollTop ===
+		mainContainer.clientHeight;
+
+	// console.log(endOfContainer);
+
+	if (endOfContainer) {
+		modalStore.setEndOfModalBodyReached(true);
+	}
+};
+
+onMounted(() => {
+	window.document
+		.querySelector("#main_modal")
+		.addEventListener("scroll", handleInfiniteScroll);
+});
+
+onBeforeUnmount(() => {
+	modalStore.setEndOfModalBodyReached(false);
+});
+</script>
 
 <template>
 	<div
@@ -14,7 +43,10 @@
 					<slot name="header_text"></slot>
 				</div>
 				<!-- Modal body -->
-				<div class="p-4 md:p-5 space-y-4 max-h-[50vh] overflow-y-auto">
+				<div
+					id="main_modal"
+					class="p-4 md:p-5 space-y-4 max-h-[50vh] overflow-y-auto"
+				>
 					<slot name="body"></slot>
 				</div>
 				<!-- Modal footer -->

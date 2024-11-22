@@ -109,6 +109,15 @@ watch(commentText, (newValue) => {
 	}
 });
 
+watchEffect(() => {
+	if (modalStore.getEndOfModalBodyReached && (next_page_url?.value ?? false)) {
+		Loading.value = true;
+		IGBusinessPostCommentsFetch();
+		console.log("end reached");
+		console.log(modalStore.getEndOfModalBodyReached);
+	}
+});
+
 const closeModal = () => {
 	commentStore.reset_CommentData();
 	modalStore.toggelCommentsModal(false);
@@ -122,21 +131,6 @@ const reAuth = async () => {
 			console.log("Error reauth");
 			console.log(err);
 		});
-};
-
-const handleInfiniteScroll = () => {
-	const mainContainer = window.document.querySelector("#main");
-
-	const endOfContainer =
-		mainContainer.scrollHeight - mainContainer.scrollTop ===
-		mainContainer.clientHeight;
-
-	// console.log(endOfContainer);
-
-	if (endOfContainer && (next_page_url?.value ?? false)) {
-		Loading.value = true;
-		IGBusinessPostCommentsFetch();
-	}
 };
 
 const IGBusinessPostCommentsFetch = async () => {
@@ -193,10 +187,6 @@ watchEffect(() => {
 });
 
 onMounted(async () => {
-	window.document
-		.querySelector("#main")
-		.addEventListener("scroll", handleInfiniteScroll);
-
 	await IGBusinessPostCommentsFetch();
 	hasMounted.value = true;
 });
