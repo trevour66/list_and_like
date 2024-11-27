@@ -123,13 +123,13 @@ class WebhookController extends Controller
                 'access_token' => $IG_access_codes->long_lived_access_token,
             ]);
 
-            logger($url);
+            // logger($url);
 
             $IGWebhookSubscriptionRequest = Http::connectTimeout(60)->timeout(60)->post($url);
 
             $responseData = $IGWebhookSubscriptionRequest->json() ?? [];
 
-            logger($responseData);
+            // logger($responseData);
 
             if (! isset($responseData['success'])) {
                 throw new Error('Subscribe to webhook request did not return a response with success field');

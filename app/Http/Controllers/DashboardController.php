@@ -89,7 +89,7 @@ class DashboardController extends Controller
 
             $ig_usernames = [$validated['IG_username']];
 
-            logger(print_r($ig_usernames, true));
+            // logger(print_r($ig_usernames, true));
 
             if (
                 (count($ig_usernames) > 0)

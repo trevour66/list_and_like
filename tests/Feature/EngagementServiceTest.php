@@ -21,8 +21,8 @@ class EngagementServiceTest extends TestCase
 
         $response->prepareEngagementProfile();
 
-        logger($response->getHighestEngaged());
-        logger($response->getLowestEngaged());
+        // logger($response->getHighestEngaged());
+        // logger($response->getLowestEngaged());
         // logger($response->getAllData());
     }
 }

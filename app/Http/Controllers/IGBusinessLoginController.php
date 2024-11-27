@@ -197,6 +197,7 @@ class IGBusinessLoginController extends Controller
 
             return redirect()->route('profile.edit');
         } catch (\Throwable $th) {
+            logger("Error index IGBusinesLoginController");
             logger(print_r($th->getMessage(), true));
 
             DB::rollBack();
@@ -251,6 +252,8 @@ class IGBusinessLoginController extends Controller
             return Inertia::location($IGOauthURL);
         } catch (\Throwable $th) {
             //throw $th;
+            logger("Error store IGBusinesLoginController");
+
             logger(print_r($th->getMessage(), true));
         }
     }

@@ -87,8 +87,8 @@ class UserListController extends Controller
     {
         $ig_profiles = $userList->ig_profiles;
 
-        logger($userList);
-        logger($ig_profiles);
+        // logger($userList);
+        // logger($ig_profiles);
 
         return Inertia::render('User_List/Show', [
             'user_list' => $userList,

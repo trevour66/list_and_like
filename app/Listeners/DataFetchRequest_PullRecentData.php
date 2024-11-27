@@ -55,7 +55,7 @@ class DataFetchRequest_PullRecentData implements ShouldQueue
         try {
 
             $IGAccountUnder = $event->ig_data_fetch_process->ig_access_code;
-            logger($event->ig_data_fetch_process);
+            // logger($event->ig_data_fetch_process);
             // logger($IGAccountUnder);
             // return;
             $user = $event->ig_data_fetch_process->ig_access_code->user;
