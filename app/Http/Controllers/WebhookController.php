@@ -170,7 +170,7 @@ class WebhookController extends Controller
 
             $responseData = $IGWebhookSubscriptionRequest->json() ?? [];
 
-            logger($responseData);
+            // logger($responseData);
 
             if (! isset($responseData['success'])) {
                 throw new Error('Subscribe to webhook request did not return a response with success field');
