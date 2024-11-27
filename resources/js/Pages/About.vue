@@ -31,14 +31,16 @@ defineProps({
 					<div class="container mx-auto px-4 relative">
 						<div class="max-w-3xl mx-auto text-center">
 							<h1 class="font-heading text-5xl sm:text-6xl mb-8">About us</h1>
-							<p class="text-xl text-gray-700 font-medium mb-10">
+							<p class="text-xl text-gray-700 font-medium mb-10 text-left">
 								Welcome to our innovative Instagram engagement application,
 								designed specifically to empower users in cultivating meaningful
 								connections within the platform. In today's fast-paced digital
 								landscape, building and maintaining relationships is paramount
-								for businesses, influencers, and creators alike. Our app
-								provides a comprehensive suite of tools to streamline this
-								process, allowing you to effortlessly manage your current
+								for businesses, influencers, and creators alike.
+							</p>
+							<p class="text-xl text-gray-700 font-medium mb-10 text-left">
+								Our app provides a comprehensive suite of tools to streamline
+								this process, allowing you to effortlessly manage your current
 								clients, past clients, leads, affiliates, and podcast guests.
 								With a user-friendly interface, you can easily add or edit
 								lists. The app also keeps you engaged by automatically tracking
