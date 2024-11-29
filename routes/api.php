@@ -38,8 +38,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/reply-comment', [IgBusinessAccountPostCommentsController::class, 'reply_to_comment_api'])->name('my_post.reply_to_comment_api');
     Route::post('/new-comment', [IgBusinessAccountPostCommentsController::class, 'new_comment_api'])->name('my_post.new_comment_api');
 
-    Route::get('/get-engagement-data', [UserEngagementsController::class, 'engagement_data'])->name('dashboard.engagement_data');
-
     Route::get('/community', [CommunityController::class, 'index_api'])->name('community.index_api');
     Route::post('/get-all-replies', [IgBusinessAccountPostCommentsController::class, 'get_all_comment_replies_api'])->name('my_post.get_all_comment_replies_api');
 });

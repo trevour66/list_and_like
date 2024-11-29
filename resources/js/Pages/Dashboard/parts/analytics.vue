@@ -7,6 +7,7 @@ import { usePage } from "@inertiajs/vue3";
 import { onMounted, ref, watch } from "vue";
 import post from "./icons/post.vue";
 import comment from "./icons/comment.vue";
+import community from "./icons/community.vue";
 import profile from "./icons/profile.vue";
 import list from "./icons/list.vue";
 
@@ -34,12 +35,7 @@ const all_IG_profiles_linked_to_IG_business_account = ref(0);
 const all_user_lists = ref(0);
 
 const engagement_data = reactive({
-	highest_engagement_profile: {
-		ig_handle: "",
-	},
 	highest_engagement_profiles: [],
-	lowest_engagement_profile: null,
-	lowest_engagement_profiles: [],
 });
 
 const hasMounted = ref(false);
@@ -75,14 +71,8 @@ const fetchAnalytics = async () => {
 				data?.all_IG_profiles_linked_to_IG_business_account ?? 0;
 			all_user_lists.value = data?.all_user_lists ?? 0;
 
-			engagement_data.highest_engagement_profile =
-				data?.engagement?.highest_engagement_profile ?? null;
 			engagement_data.highest_engagement_profiles =
-				data?.engagement?.highest_engagement_profiles ?? [];
-			engagement_data.lowest_engagement_profile =
-				data?.engagement?.lowest_engagement_profile ?? null;
-			engagement_data.lowest_engagement_profiles =
-				data?.engagement?.lowest_engagement_profiles ?? [];
+				data?.highest_engagement_profiles ?? [];
 
 			Loading.value = false;
 			emit("loading_finishes");
@@ -139,9 +129,8 @@ onMounted(async () => {
 				<DashboardAnalyticsCard_withSlider
 					:isLoading="Loading"
 					title="Highest engaged"
-					:value="engagement_data?.highest_engagement_profile?.ig_handle"
 					:slider_array="engagement_data?.highest_engagement_profiles"
-					><template #icon><comment /></template
+					><template #icon><community /></template
 				></DashboardAnalyticsCard_withSlider>
 			</div>
 		</div>

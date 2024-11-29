@@ -1,5 +1,6 @@
 <script setup>
 import { randomColor } from "@/config/chartPalette";
+import { watchEffect } from "vue";
 import { onMounted, ref } from "vue";
 
 const props = defineProps({
@@ -10,11 +11,6 @@ const props = defineProps({
 
 	isLoading: {
 		type: Boolean,
-		required: true,
-	},
-
-	value: {
-		type: String,
 		required: true,
 	},
 
@@ -29,13 +25,18 @@ const randomColorPairs = randomColor();
 
 const activeIndex = ref(0);
 
-onMounted(() => {
-	if (props.slider_array.length == 0) return;
+watchEffect(() => {
+	if (props.slider_array.length == 0) {
+		return;
+	}
 
 	setInterval(() => {
+		// console.log("called");
 		activeIndex.value = (activeIndex.value + 1) % props.slider_array.length;
-	}, 2000); // Change active profile every 2 seconds
+	}, 4000); // Change active profile every 2 seconds
 });
+
+onMounted(() => {});
 </script>
 
 <template>
@@ -52,20 +53,16 @@ onMounted(() => {
 							>
 								{{ title }}
 							</p>
-
 							<h5 v-if="!isLoading" class="mt-4 text-gray-700 font-bold">
 								<div v-for="(profile, index) in slider_array">
-									<Transition name="fade">
-										<span v-if="index === activeIndex">
-											{{ profile.ig_handle }} -
-											<span
-												class="inline-flex gap-x-1 justify-center text-gray-400"
-											>
-												({{ profile.postCount }}
-												<i class="fas fa-clipboard"></i>)
-											</span>
+									<span v-if="index === activeIndex">
+										{{ profile.ig_handle }}
+										<span
+											class="inline-flex gap-x-1 justify-center text-gray-400"
+										>
+											({{ profile.postCount }} <i class="fas fa-clipboard"></i>)
 										</span>
-									</Transition>
+									</span>
 								</div>
 							</h5>
 							<h5 v-else class="mt-4 text-gray-800 font-bold animate-pulse">
@@ -89,15 +86,3 @@ onMounted(() => {
 		</div>
 	</div>
 </template>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-	transition: opacity 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-	opacity: 0;
-}
-</style>

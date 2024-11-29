@@ -90,6 +90,7 @@ const isMostRecentSyncStillInProcess = computed(() => {
 				<div class="flex-1">
 					<ActiveIGAccountSelector
 						:ig_data_fetch_process="ig_data_fetch_process"
+						:loadingData="loadingData"
 					/>
 				</div>
 				<div class="">

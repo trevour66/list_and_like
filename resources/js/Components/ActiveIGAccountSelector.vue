@@ -9,10 +9,15 @@ import { watchEffect } from "vue";
 import usePreferedIgAccountStore from "@/Store/preferedIgAccountStore";
 
 const preferedIgAccountStore = usePreferedIgAccountStore();
+const preferedIGAccDropdownButton = ref(null);
 
 const props = defineProps({
 	ig_data_fetch_process: {
 		type: Array,
+	},
+	loadingData: {
+		type: Boolean,
+		required: true,
 	},
 });
 
@@ -108,7 +113,7 @@ const getPreferedIgBussinessAccount = () => {
 };
 
 const switchAccount = async (acc) => {
-	if (loadingData.value) return;
+	if (props.loadingData) return;
 	// console.log(acc);
 
 	const IG_account_id = acc?.IG_account_id ?? false;

@@ -36,7 +36,6 @@ class DashboardController extends Controller
             );
             $engagementService = new EngagementService($validated['IG_username']);
 
-            $engagementService->prepareEngagementProfile();
             $analyser->calculateData();
 
             $resData = response(json_encode(
@@ -50,12 +49,8 @@ class DashboardController extends Controller
                         "posts_from_commenters_processed_reactedTo" => $analyser->allIGProfilePostsFromCommentersProcessed_reactedTo,
                         "all_IG_profiles_linked_to_IG_business_account" => $analyser->allIGProfilesLinkedToIGBusinessAccount,
                         "all_user_lists" => $analyser->allUserLists,
-                        "engagement" => [
-                            'highest_engagement_profile' => $engagementService->getHighestEngaged(),
-                            'highest_engagement_profiles' => $engagementService->getHighestEngagers(),
-                            'lowest_engagement_profile' => $engagementService->getLowestEngaged(),
-                            'lowest_engagement_profiles' => $engagementService->getLowestEngagers(),
-                        ]
+                        'highest_engagement_profiles' => $engagementService->getHighestEngagers(),
+
                     ],
                 ]
             ), 200)

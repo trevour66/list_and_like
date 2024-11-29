@@ -17,6 +17,11 @@ const preferedIgAccountStore = usePreferedIgAccountStore();
 defineProps({
 	ig_data_fetch_process: {
 		type: Array,
+		default: [],
+	},
+	user_lists: {
+		type: Array,
+		default: [],
 	},
 });
 
@@ -25,7 +30,6 @@ const next_page_url = ref("");
 
 const Loading = ref(true);
 const LoadingError = ref(false);
-const retryCount = ref(0);
 const hasMounted = ref(false);
 
 const activePostID = ref("");
@@ -38,21 +42,6 @@ const reAuth = async () => {
 			console.log("Error reauth");
 			console.log(err);
 		});
-};
-
-const handleInfiniteScroll = () => {
-	const mainContainer = window.document.querySelector("#main");
-
-	const endOfContainer =
-		mainContainer.scrollHeight - mainContainer.scrollTop ===
-		mainContainer.clientHeight;
-
-	// console.log(endOfContainer);
-
-	if (endOfContainer && (next_page_url?.value ?? false)) {
-		Loading.value = true;
-		IGBusinessPostsFetch();
-	}
 };
 
 const IGBusinessPostsFetch = async () => {
@@ -122,17 +111,13 @@ watch(
 );
 
 onMounted(async () => {
-	window.document
-		.querySelector("#main")
-		.addEventListener("scroll", handleInfiniteScroll);
-
 	await IGBusinessPostsFetch();
 	hasMounted.value = true;
 });
 </script>
 
 <template>
-	<Head title="My Posts" />
+	<Head title="Engagements" />
 
 	<AuthenticatedLayout>
 		<template #bits>
@@ -144,7 +129,7 @@ onMounted(async () => {
 		<template #header>
 			<div>
 				<h2 class="font-semibold text-xl text-gray-800 leading-tight">
-					My Posts
+					Engagements
 				</h2>
 			</div>
 			<div>
@@ -164,44 +149,10 @@ onMounted(async () => {
 				</div>
 			</section>
 
-			<div>
-				<div
-					class="grid lg:grid-cols-2 xl:grid-cols-3 grid-cols-1 pt-6 gap-x-4 gap-y-10 mx-3"
-				>
-					<template v-if="(associated_user_IG_Biz_posts ?? []).length > 0">
-						<div
-							v-for="(post, index) in associated_user_IG_Biz_posts"
-							:key="index"
-						>
-							<!-- {{ post }} -->
-							<IGBizPost
-								:post="post"
-								:index="index"
-								@goToComments="goToComments(post._id)"
-							/>
-						</div>
-					</template>
-				</div>
-				<div class="grid grid-cols-1 pt-6 gap-x-4 gap-y-10 mx-3">
-					<template
-						v-if="!Loading && (associated_user_IG_Biz_posts ?? []).length == 0"
-					>
-						<div
-							class="flex items-center justify-center w-full h-full bg-gray-50"
-						>
-							<div>
-								<p class="text-md font-normal text-gray-500">
-									You have no post at the moment
-								</p>
-							</div>
-						</div>
-					</template>
-				</div>
-			</div>
-
-			<div v-if="Loading" class="flex items-center justify-center w-full h-32">
-				<InfinityScrollLoader />
-			</div>
+			<section
+				id="top_five"
+				class="max-w-full w-full overflow-x-auto"
+			></section>
 		</template>
 	</AuthenticatedLayout>
 </template>

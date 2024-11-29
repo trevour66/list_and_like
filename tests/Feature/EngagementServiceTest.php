@@ -15,14 +15,21 @@ class EngagementServiceTest extends TestCase
     public function test_get_engagement()
     {
 
-        $IG_username = "systemssavedme";
+        // $IG_username = ["retty_tech", "systemssavedme"];
+        $IG_username = ["systemssavedme", "retty_tech"];
 
-        $response = new EngagementService($IG_username);
+        foreach ($IG_username as $key => $value) {
 
-        $response->prepareEngagementProfile();
+            $response = new EngagementService($value);
 
-        // logger($response->getHighestEngaged());
-        // logger($response->getLowestEngaged());
-        // logger($response->getAllData());
+            // logger($response->getHighestEngagers());
+            // logger($response->getLowestEngagers());
+            // logger($response->getTopFiveEngagers());
+
+            logger($response->getOtherEngagers(true));
+            // logger($response->getTopFiveEngagers(true));
+
+            break;
+        }
     }
 }

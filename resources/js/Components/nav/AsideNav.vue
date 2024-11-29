@@ -73,6 +73,19 @@ const isActive = (parent) => {
 				</li>
 				<li v-if="env === 'DEV'" class="w-full">
 					<NavLink_New
+						:href="route('engagements.index')"
+						:active="route().current('engagements.index')"
+					>
+						<template #icon>
+							<!-- <i
+								class="leading-normal text-xl text-gray-500 fa-solid fa-table-columns"
+							></i> -->
+						</template>
+						<template #text>Engagements</template>
+					</NavLink_New>
+				</li>
+				<li v-if="env === 'DEV'" class="w-full">
+					<NavLink_New
 						:href="route('my_post.index')"
 						:active="route().current('my_post.index')"
 					>
