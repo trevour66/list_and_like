@@ -4,6 +4,14 @@ import { onBeforeUnmount, onMounted, ref, watch, watchEffect } from "vue";
 
 const modalStore = useModalStore();
 
+const props = defineProps({
+	maximize: {
+		type: Boolean,
+		required: false,
+		default: false,
+	},
+});
+
 const handleInfiniteScroll = () => {
 	const mainContainer = window.document.querySelector("#main_modal");
 
@@ -33,7 +41,13 @@ onBeforeUnmount(() => {
 	<div
 		class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-[5000] flex bg-gray-700/20 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
 	>
-		<div class="relative p-4 w-full max-w-2xl max-h-full">
+		<div
+			:class="{
+				'max-w-3xl': maximize,
+				'max-w-2xl': !maximize,
+			}"
+			class="relative p-4 w-full max-h-full"
+		>
 			<!-- Modal content -->
 			<div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
 				<!-- Modal header -->

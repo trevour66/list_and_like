@@ -31,10 +31,10 @@ class EngagementService extends EngagementAnalyzerService
         $paginatedItems = new CursorPaginator(
             $items, // Items for the current page
             $perPage,
-            null
-            // [
-            //     'path' => $request->url(), // Base URL
-            // ]
+            null,
+            [
+                'path' => route('engagements.others')
+            ]
         );
 
         // logger($paginatedItems);

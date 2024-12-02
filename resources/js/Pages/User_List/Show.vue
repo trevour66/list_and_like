@@ -58,7 +58,7 @@ onMounted(() => {
 							<button
 								@click="deleteList(user_list?._id ?? '')"
 								type="button"
-								class="text-white bg-red-800 focus:ring-2 focus:outline-none focus:ring-[#24292F]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2"
+								class="text-white bg-red-800 focus:ring-2 focus:outline-none focus:ring-[#f24b54]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2"
 							>
 								<svg
 									v-if="form.processing"
@@ -82,7 +82,7 @@ onMounted(() => {
 							</button>
 							<Link
 								:href="route('user_lists.index')"
-								class="text-white bg-gray-700 focus:ring-2 focus:outline-none focus:ring-[#24292F]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2"
+								class="text-white bg-gray-700 focus:ring-2 focus:outline-none focus:ring-[#f24b54]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2"
 							>
 								Back to Lists
 							</Link>

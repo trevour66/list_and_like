@@ -16,7 +16,11 @@ class UserEngagementsController extends Controller
     public function top_five(Request $request)
     {
         try {
-            $businessAccountId = $request->input('business_account_id');
+            $validated = $request->validate([
+                'business_account_id' => 'required|string'
+            ]);
+
+            $businessAccountId = $validated['business_account_id'];
 
             $engagementService = new EngagementService($businessAccountId);
 
@@ -41,13 +45,17 @@ class UserEngagementsController extends Controller
     public function others(Request $request)
     {
         try {
-            $businessAccountId = $request->input('business_account_id');
+            $validated = $request->validate([
+                'business_account_id' => 'required|string'
+            ]);
+
+            $businessAccountId = $validated['business_account_id'];
 
             $engagementService = new EngagementService($businessAccountId);
 
             return response()->json([
                 'status' => "success",
-                'data' => $engagementService->getOtherEngagers()
+                'data' => $engagementService->getOtherEngagers__withPagination()
             ]);
         } catch (\Throwable $th) {
             logger("UserEngagementsController API Error " . $th->getMessage());

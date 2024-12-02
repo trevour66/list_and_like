@@ -38,8 +38,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/reply-comment', [IgBusinessAccountPostCommentsController::class, 'reply_to_comment_api'])->name('my_post.reply_to_comment_api');
     Route::post('/new-comment', [IgBusinessAccountPostCommentsController::class, 'new_comment_api'])->name('my_post.new_comment_api');
 
-    Route::get('/community', [CommunityController::class, 'index_api'])->name('community.index_api');
+    Route::post('/community', [CommunityController::class, 'index_api'])->name('community.index_api');
     Route::post('/get-all-replies', [IgBusinessAccountPostCommentsController::class, 'get_all_comment_replies_api'])->name('my_post.get_all_comment_replies_api');
+
+
+    if (env('APP_MODE', "DEV") === 'DEV') {
+        Route::post('/get-top-five-engagements', [UserEngagementsController::class, 'top_five'])->name('engagements.top_five');
+        Route::post('/get-other-engagements', [UserEngagementsController::class, 'others'])->name('engagements.others');
+        Route::post('/get_ig_profile_posts', [CommunityController::class, 'get_ig_profile_posts_api'])->name('community.get_ig_profile_posts_api');
+    }
 });
 
 

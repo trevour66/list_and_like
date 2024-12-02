@@ -4,6 +4,7 @@ import { computed, ref } from "vue";
 const useModalStore = defineStore("modalStore", () => {
 	const showNewListModal = ref(false);
 	const showCommentsModal = ref(false);
+	const show_IGProfilePost_Modal = ref(false);
 
 	const endOfModalBodyReached = ref(false);
 
@@ -13,6 +14,10 @@ const useModalStore = defineStore("modalStore", () => {
 
 	const getCommentsModalStatus = computed(() => {
 		return showCommentsModal.value;
+	});
+
+	const get_IGProfilePost_ModalStatus = computed(() => {
+		return show_IGProfilePost_Modal.value;
 	});
 
 	const getEndOfModalBodyReached = computed(() => {
@@ -27,6 +32,10 @@ const useModalStore = defineStore("modalStore", () => {
 		showCommentsModal.value = status;
 	};
 
+	const toggel_IGProfilePost_Modal = (status) => {
+		show_IGProfilePost_Modal.value = status;
+	};
+
 	const setEndOfModalBodyReached = (status) => {
 		endOfModalBodyReached.value = status;
 	};
@@ -34,12 +43,15 @@ const useModalStore = defineStore("modalStore", () => {
 	return {
 		showNewListModal,
 		showCommentsModal,
+		show_IGProfilePost_Modal,
 		endOfModalBodyReached,
 		getNewListModalStatus,
 		getCommentsModalStatus,
+		get_IGProfilePost_ModalStatus,
 		getEndOfModalBodyReached,
 		toggelNewListModal,
 		toggelCommentsModal,
+		toggel_IGProfilePost_Modal,
 		setEndOfModalBodyReached,
 	};
 });

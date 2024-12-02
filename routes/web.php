@@ -99,8 +99,6 @@ Route::middleware('auth')->group(function () {
     if (env('APP_MODE', "DEV") === 'DEV') {
         Route::get('/my-posts', [IgBusinessAccountPostsController::class, 'index'])->name('my_post.index');
         Route::get('/engagements', [UserEngagementsController::class, 'index'])->name('engagements.index');
-        Route::post('/get-top-five-engagements', [UserEngagementsController::class, 'top_five'])->name('engagements.top_five');
-        Route::post('/get-other-engagements', [UserEngagementsController::class, 'others'])->name('engagements.others');
     }
 });
 

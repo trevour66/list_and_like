@@ -1,7 +1,32 @@
 import axios from "axios";
 
 const IGProfilePost = {
-	async getCommunityPosts(nextPageURL = "") {
+	async getIGProfilePosts(
+		ig_handle = "",
+		business_account_id = "",
+		nextPageURL = ""
+	) {
+		if (ig_handle === "" || business_account_id === "") {
+			return;
+		}
+
+		let url = route("community.get_ig_profile_posts_api");
+
+		if (nextPageURL != "") {
+			url = nextPageURL;
+		}
+
+		return axios.post(url, {
+			ig_handle: ig_handle,
+			business_account_id: business_account_id,
+		});
+	},
+
+	async getCommunityPosts(business_account_id = "", nextPageURL = "") {
+		if (business_account_id === "") {
+			return;
+		}
+
 		let url = route("community.index_api");
 
 		if (nextPageURL != "") {
@@ -14,7 +39,9 @@ const IGProfilePost = {
 		// 	},
 		// });
 
-		return axios.get(url);
+		return axios.post(url, {
+			business_account_id: business_account_id,
+		});
 	},
 
 	async skipPost(userAccessToken, post_id) {

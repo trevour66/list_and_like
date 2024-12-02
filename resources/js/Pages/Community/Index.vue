@@ -5,8 +5,10 @@ import IGPostRepresentation from "@/Components/IGPostRepresentation.vue";
 import { Head, usePage } from "@inertiajs/vue3";
 import { onMounted, ref } from "vue";
 import IGProfilePost from "@/Services/IGProfilePost";
+import usePreferedIgAccountStore from "@/Store/preferedIgAccountStore";
+import { useInstagramAccounts } from "@/Composables/useInstagramAccounts";
 
-defineProps({
+const props = defineProps({
 	IGAccessCodes: {
 		type: Array,
 	},
@@ -18,8 +20,11 @@ defineProps({
 
 const associated_user_posts = ref([]);
 const next_page_url = ref("");
-
+const preferedIgAccountStore = usePreferedIgAccountStore();
 const Loading = ref(true);
+
+const { preferedIGAccDropdownButton, allAccounts, switchAccount } =
+	useInstagramAccounts(props);
 
 const handleInfiniteScroll = () => {
 	const mainContainer = window.document.querySelector("#main");
@@ -36,9 +41,22 @@ const handleInfiniteScroll = () => {
 	}
 };
 
+const reAuth = async () => {
+	await axios
+		.get("/sanctum/csrf-cookie")
+		.then((res) => {})
+		.catch((err) => {
+			console.log("Error reauth");
+			console.log(err);
+		});
+};
+
 const userPostsFetch = async () => {
 	// console.log("response.data");
-	await IGProfilePost.getCommunityPosts(next_page_url.value)
+	await IGProfilePost.getCommunityPosts(
+		preferedIgAccountStore.get_preferedIgBussinessAccount?.IG_username ?? "",
+		next_page_url.value
+	)
 		.then(function (response) {
 			// handle success
 			const associated_user_posts_data =
@@ -56,9 +74,18 @@ const userPostsFetch = async () => {
 
 			Loading.value = false;
 		})
-		.catch(function (error) {
+		.catch(async function (error) {
 			// handle error
 			console.log(error);
+			if (
+				error.status == 419 ||
+				error.status == 401 ||
+				(error.response?.data?.message ?? "").indexOf("CSRF token mismatch") >=
+					0
+			) {
+				await reAuth();
+			}
+
 			Loading.value = false;
 		});
 };

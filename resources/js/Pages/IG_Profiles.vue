@@ -37,6 +37,16 @@ const handleInfiniteScroll = () => {
 	}
 };
 
+const reAuth = async () => {
+	await axios
+		.get("/sanctum/csrf-cookie")
+		.then((res) => {})
+		.catch((err) => {
+			console.log("Error reauth");
+			console.log(err);
+		});
+};
+
 const fetchProfiles = async () => {
 	// console.log("response.data");
 	await IGProfile.getProfiles(next_page_url.value)
@@ -60,9 +70,18 @@ const fetchProfiles = async () => {
 
 			Loading.value = false;
 		})
-		.catch(function (error) {
+		.catch(async function (error) {
 			// handle error
 			console.log(error);
+			if (
+				error.status == 419 ||
+				error.status == 401 ||
+				(error.response?.data?.message ?? "").indexOf("CSRF token mismatch") >=
+					0
+			) {
+				await reAuth();
+			}
+
 			Loading.value = false;
 		});
 };

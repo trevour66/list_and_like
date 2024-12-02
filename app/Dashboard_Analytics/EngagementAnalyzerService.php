@@ -22,14 +22,14 @@ class EngagementAnalyzerService
 
             if ($businessAccountId == '') continue;
 
-            logger($businessAccountId);
+            // logger($businessAccountId);
 
             $this->analyze_business_account($businessAccountId);
 
-            logger(Cache::store('redis')->get($businessAccountId . 'highest_profile'));
-            logger(Cache::store('redis')->get($businessAccountId . 'lowest_profile'));
-            logger(Cache::store('redis')->get($businessAccountId . 'top_five_profiles'));
-            logger(Cache::store('redis')->get($businessAccountId . 'other_profiles'));
+            // logger(Cache::store('redis')->get($businessAccountId . 'highest_profile'));
+            // logger(Cache::store('redis')->get($businessAccountId . 'lowest_profile'));
+            // logger(Cache::store('redis')->get($businessAccountId . 'top_five_profiles'));
+            // logger(Cache::store('redis')->get($businessAccountId . 'other_profiles'));
         }
     }
 
