@@ -146,7 +146,9 @@ onMounted(async () => {
 									</span>
 									<span>
 										<div
-											@click="passthrough_goToIGProfilePosts(col)"
+											@click="
+												passthrough_goToIGProfilePosts(row?.ig_handle ?? '')
+											"
 											class="p-1 rounded-lg border-2 shadow-md hover:shadow-sm hover:cursor-pointer"
 										>
 											<ExpandIcon />
