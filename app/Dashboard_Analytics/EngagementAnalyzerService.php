@@ -87,7 +87,7 @@ class EngagementAnalyzerService
         })->values();
 
         // Save to cache
-        Cache::store('redis')->put($businessAccountId . 'highest_profile', $highest, now()->addHours(4));
+        Cache::store('redis')->put($businessAccountId . 'highest_profile', $highest, now()->addHours(10));
     }
 
     public function save_lowest_toCache($businessAccountId)
@@ -98,7 +98,7 @@ class EngagementAnalyzerService
         })->values();
 
         // Save to cache
-        Cache::store('redis')->put($businessAccountId .  'lowest_profile', $lowest, now()->addHours(4));
+        Cache::store('redis')->put($businessAccountId .  'lowest_profile', $lowest, now()->addHours(10));
     }
 
     public function save_topfive_toCache($businessAccountId)
@@ -107,7 +107,7 @@ class EngagementAnalyzerService
         $topFive = $this->profiles->sortByDesc('postCount')->take(5)->values();
 
         // Save to cache
-        Cache::store('redis')->put($businessAccountId . 'top_five_profiles', $topFive, now()->addHours(4));
+        Cache::store('redis')->put($businessAccountId . 'top_five_profiles', $topFive, now()->addHours(10));
     }
 
     public function save_others_toCache($businessAccountId)
@@ -120,6 +120,6 @@ class EngagementAnalyzerService
         })->sortByDesc('postCount')->values();
 
         // Save to cache
-        Cache::store('redis')->put($businessAccountId . 'other_profiles', $others, now()->addHours(4));
+        Cache::store('redis')->put($businessAccountId . 'other_profiles', $others, now()->addHours(10));
     }
 }
