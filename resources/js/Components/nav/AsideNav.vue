@@ -71,7 +71,7 @@ const isActive = (parent) => {
 						<template #text>Community</template>
 					</NavLink_New>
 				</li>
-				<li v-if="env === 'DEV'" class="w-full">
+				<li class="w-full">
 					<NavLink_New
 						:href="route('engagements.index')"
 						:active="route().current('engagements.index')"
@@ -84,7 +84,7 @@ const isActive = (parent) => {
 						<template #text>Engagements</template>
 					</NavLink_New>
 				</li>
-				<li v-if="env === 'DEV'" class="w-full">
+				<li class="w-full">
 					<NavLink_New
 						:href="route('my_post.index')"
 						:active="route().current('my_post.index')"
