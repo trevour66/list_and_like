@@ -13,17 +13,72 @@ use Illuminate\Support\Facades\Redirect;
 
 class UserListController extends Controller
 {
+    public function index_api(Request $request)
+    {
+        try {
+            //code...
+            $user_lists = [];
+
+            $validated = $request->validate([
+                'IG_username' => 'required|string'
+            ]);
+
+            $ig_username = $validated['IG_username'];
+
+            $user_lists = user_list::where('ig_business_account', $ig_username)
+                ->get() ?? [];
+
+            $resData = response(json_encode(
+                [
+                    'status' => "success",
+                    'user_lists' => $user_lists,
+                ]
+            ), 200)
+                ->header('Content-Type', 'application/json');
+
+            return $resData;
+        } catch (\Throwable $th) {
+            logger("My_IG_Posts API Error" . $th->getMessage());
+            $resData = response(json_encode(
+                [
+                    'status' => "error",
+                    "user_lists" => []
+                ]
+            ), 200)
+                ->header('Content-Type', 'application/json');
+
+            return $resData;
+        }
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request): Response
     {
+
+        $user = $request->user();
+
+        $IGAccessCodes = $user->IGAccessCodes ?? [];
+        $igDataFetchProcess = [];
+
+        foreach ($IGAccessCodes as $code) {
+            $data = [
+                "IG_account_id" => $code["id"] ?? '',
+                "IG_username" => $code["IG_USERNAME"] ?? '',
+                "IG_data_fetch_process" => $code->igDataFetchProcess()->latest()->first() ?? null
+            ];
+
+            array_push($igDataFetchProcess, $data);
+        }
+
         $user_id = $request->user()->id;
 
         $user_lists = user_list::where(['user_id' => $user_id])->get();
 
         return Inertia::render('User_List/Index', [
-            'user_lists' => $user_lists
+            'user_lists' => $user_lists,
+            "ig_data_fetch_process" => $igDataFetchProcess
         ]);
     }
 
@@ -34,6 +89,7 @@ class UserListController extends Controller
     {
         $request->validate([
             'list_name' => 'required|string',
+            'ig_business_account' => 'required|string',
             'list_description' => 'nullable|string',
         ]);
 
@@ -54,6 +110,7 @@ class UserListController extends Controller
         user_list::create([
             'list_name' =>  $list_name,
             'list_description' =>  $request->list_description ?? '',
+            'ig_business_account' => $request->ig_business_account,
             'user_id' => $user_id,
         ]);
 

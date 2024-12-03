@@ -73,7 +73,7 @@ class User extends Authenticatable implements MustVerifyEmail
         $token = $this->getAuthTokenAttribute() ?? null;
 
         if ($token === null) {
-            $token = $this->createToken('auth-token')->plainTextToken;
+            // $token = $this->createToken('auth-token')->plainTextToken;
         }
 
         $array['auth_token'] = $token;

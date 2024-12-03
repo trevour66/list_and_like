@@ -96,10 +96,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/ig-post/react/{post_id}', [IgProfilePostController::class, 'react'])->name('ig_profile_post.react');
 
 
-    if (env('APP_MODE', "DEV") === 'DEV') {
-        Route::get('/my-posts', [IgBusinessAccountPostsController::class, 'index'])->name('my_post.index');
-        Route::get('/engagements', [UserEngagementsController::class, 'index'])->name('engagements.index');
-    }
+    Route::get('/my-posts', [IgBusinessAccountPostsController::class, 'index'])->name('my_post.index');
+    Route::get('/engagements', [UserEngagementsController::class, 'index'])->name('engagements.index');
 });
 
 require __DIR__ . '/auth.php';

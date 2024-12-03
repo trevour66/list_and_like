@@ -32,6 +32,25 @@ const init_goToIGProfilePosts = (ig_handle) => {
 	emits("goToIGProfilePosts", ig_handle);
 };
 
+const ig_profile_is_already_in_list = (user_list_ids, list_id) => {
+	return (user_list_ids ?? []).find((item) => item == list_id) ?? false;
+};
+
+const addUserToList = (list_id, ig_handle, user_list_ids) => {
+	if (ig_profile_is_already_in_list(user_list_ids, list_id)) return;
+
+	const form = useForm({
+		ig_handle: ig_handle,
+	});
+
+	form.post(`/my-lists/${list_id}/add-profile`, {
+		onFinish: () => {
+			window.alert("IG profile added to list");
+			form.reset();
+		},
+	});
+};
+
 onMounted(async () => {
 	initDropdowns();
 });

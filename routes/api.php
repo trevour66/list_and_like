@@ -11,7 +11,7 @@ use App\Http\Controllers\UserEngagementsController;
 
 use App\Http\Controllers\IgBusinessAccountPostsController;
 use App\Http\Controllers\IgBusinessAccountPostCommentsController;
-
+use App\Http\Controllers\UserListController;
 
 
 /*
@@ -41,12 +41,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/community', [CommunityController::class, 'index_api'])->name('community.index_api');
     Route::post('/get-all-replies', [IgBusinessAccountPostCommentsController::class, 'get_all_comment_replies_api'])->name('my_post.get_all_comment_replies_api');
 
+    Route::post('/get-top-five-engagements', [UserEngagementsController::class, 'top_five'])->name('engagements.top_five');
+    Route::post('/get-other-engagements', [UserEngagementsController::class, 'others'])->name('engagements.others');
+    Route::post('/get_ig_profile_posts', [CommunityController::class, 'get_ig_profile_posts_api'])->name('community.get_ig_profile_posts_api');
 
-    if (env('APP_MODE', "DEV") === 'DEV') {
-        Route::post('/get-top-five-engagements', [UserEngagementsController::class, 'top_five'])->name('engagements.top_five');
-        Route::post('/get-other-engagements', [UserEngagementsController::class, 'others'])->name('engagements.others');
-        Route::post('/get_ig_profile_posts', [CommunityController::class, 'get_ig_profile_posts_api'])->name('community.get_ig_profile_posts_api');
-    }
+    Route::post('/my-lists', [UserListController::class, 'index_api'])->name('user_lists.index_api');
 });
 
 

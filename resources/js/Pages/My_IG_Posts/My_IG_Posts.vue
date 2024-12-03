@@ -57,6 +57,7 @@ const handleInfiniteScroll = () => {
 
 const IGBusinessPostsFetch = async () => {
 	// console.log("response.data");
+	Loading.value = true;
 	await IGBusinessPost.getIGBusinessPost(
 		preferedIgAccountStore.get_preferedIgBussinessAccount?.IG_username ?? "",
 		next_page_url.value
@@ -83,9 +84,9 @@ const IGBusinessPostsFetch = async () => {
 			// handle error
 			console.log(error);
 			if (
-				err.status == 419 ||
-				err.status == 401 ||
-				(err.response.data?.message ?? "").indexOf("CSRF token mismatch") >= 0
+				error.status == 419 ||
+				error.status == 401 ||
+				(error.response.data?.message ?? "").indexOf("CSRF token mismatch") >= 0
 			) {
 				await reAuth();
 			}
@@ -115,6 +116,7 @@ watch(
 
 		if (IG_username !== "" && hasMounted.value) {
 			next_page_url.value = "";
+			associated_user_IG_Biz_posts.value = [];
 
 			await IGBusinessPostsFetch();
 		}

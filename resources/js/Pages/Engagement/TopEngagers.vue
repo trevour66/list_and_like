@@ -81,7 +81,7 @@ watch(
 );
 
 const passthrough_goToIGProfilePosts = (ig_handle) => {
-	console.log(ig_handle);
+	// console.log(ig_handle);
 	if ((ig_handle ?? "") === "") return;
 
 	emits("goToIGProfilePosts", ig_handle);

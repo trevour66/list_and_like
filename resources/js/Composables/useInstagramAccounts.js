@@ -90,6 +90,7 @@ export function useInstagramAccounts(props) {
 	};
 
 	onMounted(() => {
+		// console.log("activtaed");
 		initDropdowns();
 		initializeSavedAccount();
 		getPreferedIgBussinessAccount();

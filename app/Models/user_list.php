@@ -18,6 +18,7 @@ class user_list extends Model
     protected $fillable = [
         'list_name',
         'list_description',
+        'ig_business_account',
         'user_id',
     ];
 

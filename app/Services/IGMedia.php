@@ -98,81 +98,72 @@ class IGMedia
 
     private function savePostData()
     {
-        $email = $this->user->email;
+        try {
+            //code...
+            $email = $this->user->email;
 
-        $user_mongodb = user_mongodb_subprofile::where(['email' => $email])->first();
+            $user_mongodb = user_mongodb_subprofile::where(['email' => $email])->first();
 
-        for ($i = 0; $i < count($this->allPosts); $i++) {
-            $current = $this->allPosts[$i];
+            for ($i = 0; $i < count($this->allPosts); $i++) {
+                $current = $this->allPosts[$i];
 
-            // $ig_bis_post = new ig_business_account_posts();
+                // $ig_bis_post = new ig_business_account_posts();
 
-            $ig_bis_post = ig_business_account_posts::updateOrCreate([
-                "ig_business_account" =>  $this->IG_access_codes->IG_USERNAME,
-                "id" =>  $current["id"],
+                $ig_bis_post = ig_business_account_posts::updateOrCreate([
+                    "ig_business_account" =>  $this->IG_access_codes->IG_USERNAME,
+                    "id" =>  $current["id"],
 
-            ], [
-                "caption" => $current["caption"],
-                "commentsCount" => $current["comments_count"],
-                "likesCount" => $current["like_count"],
-                "displayUrl" => $current["media_url"],
-                "timestamp" => $current["timestamp"],
-                "url" => $current["permalink"],
-                "media_product_type" => $current["media_product_type"],
+                ], [
+                    "caption" => $current["caption"],
+                    "commentsCount" => $current["comments_count"],
+                    "likesCount" => $current["like_count"],
+                    "displayUrl" => $current["media_url"],
+                    "timestamp" => $current["timestamp"],
+                    "url" => $current["permalink"],
+                    "media_product_type" => $current["media_product_type"],
 
-            ]);
+                ]);
 
-            $user_mongodb->ig_business_account_posts_added()->save($ig_bis_post);
+                $user_mongodb->ig_business_account_posts_added()->save($ig_bis_post);
 
-            // logger(print_r($ig_bis_post, true));
+                // logger(print_r($ig_bis_post, true));
 
 
-            $this->pullPostComment($ig_bis_post);
+                $this->pullPostComment($ig_bis_post);
+
+                // logger(print_r($this->commenters_tracker, true));
+            }
 
             // logger(print_r($this->commenters_tracker, true));
+
+            $this->allPosts = [];
+            $this->saveCommentersWithFiveOrMoreCommentsForScraping();
+        } catch (\Throwable $th) {
+            logger(print_r("Error saving PostData: ", true));
+            logger(print_r($th->getMessage(), true));
         }
-
-        // logger(print_r($this->commenters_tracker, true));
-
-        $this->allPosts = [];
-        $this->saveCommentersWithFiveOrMoreCommentsForScraping();
     }
 
     public function pullPostComment(ig_business_account_posts $post)
     {
-        logger(print_r("called pullPostComment: ", true));
+        try {
+            //code...
+            // logger(print_r("called pullPostComment: ", true));
 
-        $url = $this->IG_URL . "/" . $post->id . "/comments";
+            $url = $this->IG_URL . "/" . $post->id . "/comments";
 
-        $comments = [];
+            $comments = [];
 
-        $hasNextPage = true;
-        $nextPageURL = true;
+            $hasNextPage = true;
+            $nextPageURL = true;
 
-        $IGPostCommentRequest = Http::connectTimeout(60)->timeout(60)->get($url, [
-            "fields" => "id,from,like_count,parent_id,text,timestamp,username,user,replies{id}",
-            "access_token" => $this->IG_access_codes->long_lived_access_token,
-            "limit" => 50,
-        ]);
+            $IGPostCommentRequest = Http::connectTimeout(60)->timeout(60)->get($url, [
+                "fields" => "id,from,like_count,parent_id,text,timestamp,username,user,replies{id}",
+                "access_token" => $this->IG_access_codes->long_lived_access_token,
+                "limit" => 50,
+            ]);
 
-        $responseData = $IGPostCommentRequest->json();
-
-        if (isset($responseData['data'])) {
-            $comments = array_merge($comments, $responseData['data']);
-        }
-
-        if (isset($responseData['paging']['next'])) {
-            $nextPageURL = $responseData['paging']['next'];
-        } else {
-            $hasNextPage = false;
-        }
-
-
-        while ($hasNextPage) {
-            $response = Http::connectTimeout(60)->timeout(60)->get($nextPageURL);
-            $responseData = $response->json();
-            // logger(print_r($responseData, true));
-
+            $responseData = $IGPostCommentRequest->json();
 
             if (isset($responseData['data'])) {
                 $comments = array_merge($comments, $responseData['data']);
@@ -183,12 +174,34 @@ class IGMedia
             } else {
                 $hasNextPage = false;
             }
+
+
+            while ($hasNextPage) {
+                $response = Http::connectTimeout(60)->timeout(60)->get($nextPageURL);
+                $responseData = $response->json();
+                // logger(print_r($responseData, true));
+
+
+                if (isset($responseData['data'])) {
+                    $comments = array_merge($comments, $responseData['data']);
+                }
+
+                if (isset($responseData['paging']['next'])) {
+                    $nextPageURL = $responseData['paging']['next'];
+                } else {
+                    $hasNextPage = false;
+                }
+            }
+
+            // logger(print_r($comments, true));
+            $this->savePostCommentData($comments, $post);
+
+            $this->exploreReplies($post);
+        } catch (\Throwable $th) {
+            //throw $th;
+            logger(print_r("Error pulling PostComment: ", true));
+            logger(print_r($th->getMessage(), true));
         }
-
-        // logger(print_r($comments, true));
-        $this->savePostCommentData($comments, $post);
-
-        $this->exploreReplies($post);
     }
 
     private function savePostCommentData($comments, ig_business_account_posts $post)
@@ -293,33 +306,40 @@ class IGMedia
 
     private function exploreReplies(ig_business_account_posts $post)
     {
-        while (count($this->repliesIDStack) > 0) {
-            $current_reply_id = array_shift($this->repliesIDStack);
+        try {
+            //code...
+            while (count($this->repliesIDStack) > 0) {
+                $current_reply_id = array_shift($this->repliesIDStack);
 
-            logger(print_r("called exploreReplies: ", true));
+                // logger(print_r("called exploreReplies: ", true));
 
-            $url = $this->IG_URL . "/" . $current_reply_id;
+                $url = $this->IG_URL . "/" . $current_reply_id;
 
-            $comments = [];
+                $comments = [];
 
-            $IGPostCommentRequest = Http::connectTimeout(60)->timeout(60)->get($url, [
-                "fields" => "id,from,like_count,parent_id,text,timestamp,username,user,replies{id}",
-                "access_token" => $this->IG_access_codes->long_lived_access_token,
-                "limit" => 50,
-            ]);
+                $IGPostCommentRequest = Http::connectTimeout(60)->timeout(60)->get($url, [
+                    "fields" => "id,from,like_count,parent_id,text,timestamp,username,user,replies{id}",
+                    "access_token" => $this->IG_access_codes->long_lived_access_token,
+                    "limit" => 50,
+                ]);
 
-            $responseData = $IGPostCommentRequest->json();
+                $responseData = $IGPostCommentRequest->json();
 
-            // logger($responseData);
-            // return;
+                // logger($responseData);
+                // return;
 
-            if (isset($responseData['id'])) {
-                $comments[] =  $responseData;
+                if (isset($responseData['id'])) {
+                    $comments[] =  $responseData;
+                }
+
+                // logger("saving reply");
+
+                $this->savePostCommentData($comments, $post);
             }
-
-            // logger("saving reply");
-
-            $this->savePostCommentData($comments, $post);
+        } catch (\Throwable $th) {
+            //throw $th;
+            logger(print_r("Error exploring Replies: ", true));
+            logger(print_r($th->getMessage(), true));
         }
     }
 }

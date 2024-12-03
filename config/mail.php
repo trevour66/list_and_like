@@ -95,9 +95,9 @@ return [
             ],
         ],
 
-        'resend' => [
-            'transport' => 'resend',
-        ],
+        // 'resend' => [
+        //     'transport' => 'resend',
+        // ],
     ],
 
     /*

@@ -8,6 +8,13 @@ const IGProfile = {
 			url = nextPageURL;
 		}
 
+		if (nextPageURL == null) {
+			// console.log("hhghg");
+			return;
+		}
+
+		// console.log(url);
+
 		return axios.get(url);
 	},
 };

@@ -7,11 +7,19 @@ import { ref } from "vue";
 import { watchEffect } from "vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 
+import usePreferedIgAccountStore from "@/Store/preferedIgAccountStore";
+import { useInstagramAccounts } from "@/Composables/useInstagramAccounts";
+import { onMounted } from "vue";
+
+const preferedIgAccountStore = usePreferedIgAccountStore();
 const modalStore = useModalStore();
+const instagramAccounts = useInstagramAccounts();
 
 const form = useForm({
 	list_name: "",
 	list_description: "",
+	ig_business_account:
+		preferedIgAccountStore.get_preferedIgBussinessAccount?.IG_username ?? "",
 });
 
 const success_submission = ref(false);

@@ -17,12 +17,40 @@ const props = defineProps({
 	},
 });
 
+const emits = defineEmits(["goToIGProfilePosts"]);
+
 const index = computed(() => {
 	const seed = "ig_profile";
 	const randomCharacter = Math.random().toString(36).charAt(2);
 
 	return `${seed}__${randomCharacter}`;
 });
+
+const init_goToIGProfilePosts = (ig_handle) => {
+	// console.log(ig_handle);
+	if ((ig_handle ?? "") === "") return;
+
+	emits("goToIGProfilePosts", ig_handle);
+};
+
+const ig_profile_is_already_in_list = (user_list_ids, list_id) => {
+	return (user_list_ids ?? []).find((item) => item == list_id) ?? false;
+};
+
+const addUserToList = (list_id, ig_handle, user_list_ids) => {
+	if (ig_profile_is_already_in_list(user_list_ids, list_id)) return;
+
+	const form = useForm({
+		ig_handle: ig_handle,
+	});
+
+	form.post(`/my-lists/${list_id}/add-profile`, {
+		onFinish: () => {
+			window.alert("IG profile added to list");
+			form.reset();
+		},
+	});
+};
 
 onMounted(async () => {
 	initDropdowns();
@@ -103,7 +131,7 @@ onMounted(async () => {
 								alt="Bonnie image"
 							/> -->
 			<h5
-				class="mb-1 text-xl font-medium text-gray-900 dark:text-white break-all"
+				class="mb-1 text-md font-semibold text-gray-900 dark:text-white break-all"
 			>
 				{{ profile.ig_handle }}
 			</h5>
@@ -113,20 +141,40 @@ onMounted(async () => {
 			>
 				<span>{{ profile.bio }}</span>
 			</div>
-			<div v-if="!miniVersionActive" class="flex my-3 gap-2">
-				<span class="py-2 text-sm font-medium text-gray-700"
-					>{{ profile.followers }}
+			<div v-if="!miniVersionActive" class="flex my-3 gap-4">
+				<span
+					class="py-2 text-sm font-medium text-gray-700 flex flex-col items-center"
+				>
+					<span>
+						{{ profile?.followers ?? 0 }}
+					</span>
 					<span class="text-gray-500 text-xs">followers</span>
 				</span>
-				<span class="py-2 text-sm font-medium text-gray-700"
-					>{{ profile.following }}
+				<span
+					class="py-2 text-sm font-medium text-gray-700 flex flex-col items-center"
+				>
+					<span>
+						{{ profile?.following ?? 0 }}
+					</span>
 					<span class="text-gray-500 text-xs">following</span>
 				</span>
-				<span class="py-2 text-sm font-medium text-gray-700"
-					>{{ profile.post_count }}
+				<span
+					class="py-2 text-sm font-medium text-gray-700 flex flex-col items-center"
+				>
+					<span>
+						{{ profile?.post_count ?? 0 }}
+					</span>
 					<span class="text-gray-500 text-xs">posts</span>
 				</span>
 			</div>
+		</div>
+		<div class="flex mt-4 md:mt-6 w-full items-center justify-center">
+			<button
+				@click="init_goToIGProfilePosts(profile.ig_handle)"
+				class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-[#f24b54] rounded-lg hover:opacity-70 focus:ring-2 focus:outline-none focus:ring-[#f24b54] dark:bg-[#f24b54] dark:hover:bg-[#f24b54] dark:focus:ring-[#f24b54]"
+			>
+				View tracked posts
+			</button>
 		</div>
 	</div>
 </template>

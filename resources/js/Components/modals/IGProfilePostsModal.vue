@@ -40,7 +40,7 @@ const hasMounted = ref(false);
 watchEffect(() => {
 	if (modalStore.getEndOfModalBodyReached && (next_page_url?.value ?? false)) {
 		Loading.value = true;
-		IGBusinessPostCommentsFetch();
+		userPostsFetch();
 		console.log("end reached");
 		console.log(modalStore.getEndOfModalBodyReached);
 	}
@@ -167,12 +167,7 @@ onMounted(async () => {
 					<template v-if="(associated_user_posts ?? []).length > 0">
 						<div v-for="(post, index) in associated_user_posts" :key="index">
 							<!-- {{ post }} -->
-							<IGPostRepresentation
-								:post="post"
-								:index="index"
-								:user_lists="user_lists"
-								@IGProfileAddedToAList="refreshCurrentView"
-							/>
+							<IGPostRepresentation :post="post" :index="index" />
 						</div>
 					</template>
 				</div>

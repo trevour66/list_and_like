@@ -8,6 +8,16 @@ import IGProfile from "@/Services/IGProfile";
 import { initDropdowns } from "flowbite";
 import AnIGProfile from "@/Components/AnIGProfile.vue";
 
+import usePreferedIgAccountStore from "@/Store/preferedIgAccountStore";
+
+import useModalStore from "@/Store/ModalStore";
+import IGProfilePostsModal from "@/Components/modals/IGProfilePostsModal.vue";
+import { useInstagramAccounts } from "@/Composables/useInstagramAccounts";
+
+const modalStore = useModalStore();
+const preferedIgAccountStore = usePreferedIgAccountStore();
+const instagramAccounts = useInstagramAccounts();
+
 defineProps({
 	user_lists: {
 		type: Array,
@@ -17,10 +27,20 @@ defineProps({
 
 const ig_profiles = ref([]);
 const next_page_url = ref("");
-
 const Loading = ref(true);
 
 const miniVersionActive = usePage().props.mini_version ?? false;
+
+const ig_handle = ref("");
+
+const goToIGProfilePosts = (ig_handle_passedThrough) => {
+	// console.log(ig_handle_passedThrough);
+
+	if (!(ig_handle_passedThrough ?? false)) return;
+
+	ig_handle.value = ig_handle_passedThrough;
+	modalStore.toggel_IGProfilePost_Modal(true);
+};
 
 const handleInfiniteScroll = () => {
 	const mainContainer = window.document.querySelector("#main");
@@ -86,25 +106,6 @@ const fetchProfiles = async () => {
 		});
 };
 
-const ig_profile_is_already_in_list = (user_list_ids, list_id) => {
-	return (user_list_ids ?? []).find((item) => item == list_id) ?? false;
-};
-
-const addUserToList = (list_id, ig_handle, user_list_ids) => {
-	if (ig_profile_is_already_in_list(user_list_ids, list_id)) return;
-
-	const form = useForm({
-		ig_handle: ig_handle,
-	});
-
-	form.post(`/my-lists/${list_id}/add-profile`, {
-		onFinish: () => {
-			window.alert("IG profile added to list");
-			form.reset();
-		},
-	});
-};
-
 // onUpdated(() => {
 
 // });
@@ -124,6 +125,17 @@ onMounted(async () => {
 	<Head title="IG Profiles" />
 
 	<AuthenticatedLayout>
+		<template #bits>
+			<IGProfilePostsModal
+				v-if="modalStore.get_IGProfilePost_ModalStatus"
+				:ig_handle="ig_handle"
+				:business_account_id="
+					preferedIgAccountStore.get_preferedIgBussinessAccount?.IG_username ??
+					''
+				"
+			/>
+		</template>
+
 		<template #header>
 			<div>
 				<h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -158,7 +170,11 @@ onMounted(async () => {
 				class="grid lg:grid-cols-3 xl:grid-cols-4 grid-cols-1 pt-6 gap-x-4 gap-y-3 mx-3 auto-rows-fr"
 			>
 				<div v-for="(profile, index) in ig_profiles" :key="index">
-					<AnIGProfile :profile="profile" :user_lists="user_lists" />
+					<AnIGProfile
+						:profile="profile"
+						:user_lists="user_lists"
+						@go-to-i-g-profile-posts="goToIGProfilePosts"
+					/>
 				</div>
 			</div>
 			<template v-if="!Loading && (ig_profiles ?? []).length == 0">

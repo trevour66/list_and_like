@@ -33,7 +33,7 @@ const fetchOthers = async () => {
 		next_page_url.value
 	)
 		.then(function (response) {
-			console.log(response);
+			// console.log(response);
 
 			const status = response?.data?.status ?? false;
 			const data = response?.data?.data?.data ?? [];

@@ -3,6 +3,17 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, useForm, Link } from "@inertiajs/vue3";
 import { initDropdowns } from "flowbite";
 import { onMounted, ref } from "vue";
+import AnIGProfile from "@/Components/AnIGProfile.vue";
+
+import usePreferedIgAccountStore from "@/Store/preferedIgAccountStore";
+import { useInstagramAccounts } from "@/Composables/useInstagramAccounts";
+
+import useModalStore from "@/Store/ModalStore";
+import IGProfilePostsModal from "@/Components/modals/IGProfilePostsModal.vue";
+
+const modalStore = useModalStore();
+const preferedIgAccountStore = usePreferedIgAccountStore();
+const instagramAccounts = useInstagramAccounts();
 
 defineProps({
 	user_list: {
@@ -18,6 +29,17 @@ defineProps({
 const form = useForm({
 	user_list_id: "",
 });
+
+const ig_handle = ref("");
+
+const goToIGProfilePosts = (ig_handle_passedThrough) => {
+	// console.log(ig_handle_passedThrough);
+
+	if (!(ig_handle_passedThrough ?? false)) return;
+
+	ig_handle.value = ig_handle_passedThrough;
+	modalStore.toggel_IGProfilePost_Modal(true);
+};
 
 const deleteList = (userListId) => {
 	if (form.processing || (userListId ?? "") == "") return;
@@ -41,6 +63,16 @@ onMounted(() => {
 	<Head :title="`${user_list?.list_name ?? ''}`" />
 
 	<AuthenticatedLayout>
+		<template #bits>
+			<IGProfilePostsModal
+				v-if="modalStore.get_IGProfilePost_ModalStatus"
+				:ig_handle="ig_handle"
+				:business_account_id="
+					preferedIgAccountStore.get_preferedIgBussinessAccount?.IG_username ??
+					''
+				"
+			/>
+		</template>
 		<template #header>
 			<div>
 				<h2
@@ -97,41 +129,10 @@ onMounted(() => {
 				class="grid lg:grid-cols-3 xl:grid-cols-4 grid-cols-1 pt-6 gap-3 mx-3"
 			>
 				<div v-for="(profile, index) in ig_profiles" :key="index">
-					<div
-						class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 px-5"
-					>
-						<div class="flex flex-col items-center py-10">
-							<!-- <img
-								class="w-24 h-24 mb-3 rounded-full shadow-lg"
-								:src="profile.profile_pic"
-								alt="Bonnie image"
-							/> -->
-							<h5
-								class="mb-1 text-xl font-medium text-gray-900 dark:text-white"
-							>
-								{{ profile.ig_handle }}
-							</h5>
-							<div
-								class="text-sm text-gray-500 my-2 h-[100px] flex items-center"
-							>
-								<span>{{ profile.bio }}</span>
-							</div>
-							<div class="flex my-3 gap-2">
-								<span class="py-2 text-sm font-medium text-gray-700"
-									>{{ profile.followers }}
-									<span class="text-gray-500 text-xs">followers</span>
-								</span>
-								<span class="py-2 text-sm font-medium text-gray-700"
-									>{{ profile.following }}
-									<span class="text-gray-500 text-xs">following</span>
-								</span>
-								<span class="py-2 text-sm font-medium text-gray-700"
-									>{{ profile.post_count }}
-									<span class="text-gray-500 text-xs">posts</span>
-								</span>
-							</div>
-						</div>
-					</div>
+					<AnIGProfile
+						:profile="profile"
+						@go-to-i-g-profile-posts="goToIGProfilePosts"
+					/>
 				</div>
 			</div>
 		</template>
