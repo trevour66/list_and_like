@@ -15,7 +15,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->job(new ScrapeInstagramProfiles)->everyTenMinutes()->withoutOverlapping();
-        $schedule->job(new AnalyzeIGData)->everySixHours()->withoutOverlapping();
+        $schedule->job(new AnalyzeIGData)->everyTenMinutes()->withoutOverlapping();
+        // $schedule->job(new AnalyzeIGData)->everySixHours()->withoutOverlapping();
     }
 
     /**
