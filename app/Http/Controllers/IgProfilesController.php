@@ -42,7 +42,7 @@ class IgProfilesController extends Controller
 
             return $resData;
         } catch (\Throwable $th) {
-            logger("IgProfilesController API Error " . $th->getMessage());
+            logger("IgProfilesController API Error (index_api) " . $th->getMessage());
             $resData = response(json_encode(
                 [
                     'status' => "error",

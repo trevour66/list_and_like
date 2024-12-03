@@ -5,6 +5,7 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Jobs\ScrapeInstagramProfiles;
+use App\Jobs\AnalyzeIGData;
 
 class Kernel extends ConsoleKernel
 {
@@ -14,6 +15,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->job(new ScrapeInstagramProfiles)->everyTenMinutes()->withoutOverlapping();
+        $schedule->job(new AnalyzeIGData)->everySixHours()->withoutOverlapping();
     }
 
     /**
