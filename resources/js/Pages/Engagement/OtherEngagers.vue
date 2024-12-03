@@ -5,6 +5,7 @@ import { Head, usePage, useForm } from "@inertiajs/vue3";
 import { onMounted, ref, watch } from "vue";
 import UserEngagement from "@/Services/UserEngagement";
 import usePreferedIgAccountStore from "@/Store/preferedIgAccountStore";
+import { onUpdated } from "vue";
 
 const emits = defineEmits(["goToIGProfilePosts"]);
 
@@ -100,6 +101,12 @@ watch(
 		}
 	}
 );
+
+onUpdated(() => {
+	window.document
+		.querySelector("#other_engagers") // from parent
+		.addEventListener("scroll", handleInfiniteScroll);
+});
 
 onMounted(async () => {
 	window.document
