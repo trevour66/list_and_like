@@ -114,7 +114,7 @@ onMounted(async () => {
 	<div class="relative shadow-md sm:rounded-lg p-2 bg-white">
 		<template v-if="(tableRows ?? []).length == 0">
 			<div
-				class="flex items-center justify-center w-full h-full bg-gray-50 mt-10"
+				class="flex items-center justify-center w-full h-full min-h-32 bg-gray-50 mt-10"
 			>
 				<div>
 					<p class="text-md font-normal text-gray-500">
