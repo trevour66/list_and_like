@@ -16,6 +16,9 @@ const preferedIgAccountStore = usePreferedIgAccountStore();
 
 const tableHeaders = ref(["Username", "Interaction Count"]);
 const tableRows = ref([]);
+const hasMounted = ref(false);
+
+const other_engagers = ref(null);
 
 const reAuth = async () => {
 	await axios
@@ -39,11 +42,15 @@ const fetchOthers = async () => {
 			const status = response?.data?.status ?? false;
 			const data = response?.data?.data?.data ?? [];
 
-			if (data && data.length > 0) {
+			if (Array.isArray(data) && data.length > 0) {
 				Array.prototype.push.apply(tableRows.value, data);
+			} else if (typeof data === "object") {
+				Array.prototype.push.apply(tableRows.value, Object.values(data));
 			}
 
 			next_page_url.value = response?.data?.data?.next_page_url ?? "";
+
+			// console.log(next_page_url.value);
 			Loading.value = false;
 		})
 		.catch(async (error) => {
@@ -63,13 +70,14 @@ const fetchOthers = async () => {
 };
 
 const passthrough_goToIGProfilePosts = (ig_handle) => {
-	console.log(ig_handle);
+	// console.log(ig_handle);
 	if ((ig_handle ?? "") === "") return;
 
 	emits("goToIGProfilePosts", ig_handle);
 };
 
 const handleInfiniteScroll = () => {
+	// console.log("hhh");
 	const mainContainer = window.document.querySelector("#other_engagers");
 
 	const endOfContainer =
@@ -84,6 +92,14 @@ const handleInfiniteScroll = () => {
 	}
 };
 
+watch(other_engagers, (newval) => {
+	// console.log(newval);
+
+	if (newval) {
+		newval.addEventListener("scroll", handleInfiniteScroll);
+	}
+});
+
 watch(
 	preferedIgAccountStore.get_preferedIgBussinessAccount,
 	async (newValue) => {
@@ -93,7 +109,7 @@ watch(
 		let IG_username =
 			preferedIgAccountStore.get_preferedIgBussinessAccount?.IG_username ?? "";
 
-		if (IG_username !== "") {
+		if (IG_username !== "" && hasMounted.value) {
 			tableRows.value = [];
 			next_page_url.value = "";
 
@@ -102,18 +118,13 @@ watch(
 	}
 );
 
-onUpdated(() => {
-	window.document
-		.querySelector("#other_engagers") // from parent
-		.addEventListener("scroll", handleInfiniteScroll);
-});
-
 onMounted(async () => {
-	window.document
-		.querySelector("#other_engagers") // from parent
-		.addEventListener("scroll", handleInfiniteScroll);
+	// window.document
+	// 	.querySelector("#other_engagers") // from parent
+	// 	.addEventListener("scroll", handleInfiniteScroll);
 
 	await fetchOthers();
+	hasMounted.value = true;
 });
 </script>
 
@@ -133,7 +144,11 @@ onMounted(async () => {
 
 		<template v-else>
 			<div class="max-w-full overflow-x-auto">
-				<div class="max-h-[600px] overflow-y-auto" id="other_engagers">
+				<div
+					class="max-h-[600px] overflow-y-auto"
+					id="other_engagers"
+					ref="other_engagers"
+				>
 					<table
 						class="table-auto w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
 					>

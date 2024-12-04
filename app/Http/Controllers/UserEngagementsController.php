@@ -29,7 +29,7 @@ class UserEngagementsController extends Controller
                 'data' => $engagementService->getTopFiveEngagers()
             ]);
         } catch (\Throwable $th) {
-            logger("UserEngagementsController API Error " . $th->getMessage());
+            logger("UserEngagementsController API Error (top_five) " . $th->getMessage());
             $resData = response(json_encode(
                 [
                     'status' => "error",
@@ -49,16 +49,18 @@ class UserEngagementsController extends Controller
                 'business_account_id' => 'required|string'
             ]);
 
+            $cursor = request('cursor', null); // Retrieve the 'cursor' query parameter
+
             $businessAccountId = $validated['business_account_id'];
 
             $engagementService = new EngagementService($businessAccountId);
 
             return response()->json([
                 'status' => "success",
-                'data' => $engagementService->getOtherEngagers__withPagination()
+                'data' => $engagementService->getOtherEngagers__withPagination($request)
             ]);
         } catch (\Throwable $th) {
-            logger("UserEngagementsController API Error " . $th->getMessage());
+            logger("UserEngagementsController API Error (others) " . $th->getMessage());
             $resData = response(json_encode(
                 [
                     'status' => "error",

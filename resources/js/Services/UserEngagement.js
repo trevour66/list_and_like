@@ -24,6 +24,8 @@ const UserEngagement = {
 			url = nextPageURL;
 		}
 
+		// console.log(url);
+
 		return axios.post(url, {
 			business_account_id: business_account_id,
 		});

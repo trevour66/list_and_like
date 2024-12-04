@@ -8,6 +8,11 @@ use App\Dashboard_Analytics\EngagementAnalyzerService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Pagination\Cursor;
+use Illuminate\Http\Request;
+
+
+use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 
 class EngagementService extends EngagementAnalyzerService
@@ -20,24 +25,27 @@ class EngagementService extends EngagementAnalyzerService
         $this->IG_BusinessAccount_Username = $businessAccountId;
     }
 
-    public function fetch_data($data)
+    public function fetch_data($data, Request $request)
     {
         $items = json_decode($data, true) ?? [];
 
         // logger($items);
+        // logger(count($items));
 
-        $perPage = 10;
+        $total = count($items);
+        $per_page = 20;
+        $current_page = $request->input("page") ?? 1;
 
-        $paginatedItems = new CursorPaginator(
-            $items, // Items for the current page
-            $perPage,
-            null,
-            [
-                'path' => route('engagements.others')
-            ]
-        );
+        // logger($current_page);
 
-        // logger($paginatedItems);
+        $starting_point = ($current_page * $per_page) - $per_page;
+
+        $array = array_slice($items, $starting_point, $per_page, true);
+
+        $paginatedItems = new LengthAwarePaginator($array, $total, $per_page, $current_page, [
+            'path' => $request->url(),
+            'query' => $request->query(),
+        ]);
 
         return $paginatedItems;
     }
@@ -74,11 +82,11 @@ class EngagementService extends EngagementAnalyzerService
         return $profiles_other_Engagement;
     }
 
-    public function getOtherEngagers__withPagination()
+    public function getOtherEngagers__withPagination(Request $request)
     {
         $profiles_other_Engagement = Cache::store('redis')->get($this->IG_BusinessAccount_Username . 'other_profiles', collect());
         // logger($profiles_other_Engagement);
 
-        return $this->fetch_data($profiles_other_Engagement);
+        return $this->fetch_data($profiles_other_Engagement, $request);
     }
 }
