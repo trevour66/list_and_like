@@ -13,6 +13,7 @@ import usePreferedIgAccountStore from "@/Store/preferedIgAccountStore";
 import useModalStore from "@/Store/ModalStore";
 import IGProfilePostsModal from "@/Components/modals/IGProfilePostsModal.vue";
 import { useInstagramAccounts } from "@/Composables/useInstagramAccounts";
+import { watch } from "vue";
 
 const modalStore = useModalStore();
 const preferedIgAccountStore = usePreferedIgAccountStore();
@@ -160,9 +161,17 @@ const backToMainView = async () => {
 	ig_profiles.value = [];
 	Loading.value = true;
 	next_page_url.value = "";
+	search___next_page_url.value = "";
+
 	await fetchProfiles();
 	search___active.value = false;
 };
+
+watch(ig_username_search, (newval) => {
+	if (newval) {
+		search___next_page_url.value = "";
+	}
+});
 
 onMounted(async () => {
 	window.document
