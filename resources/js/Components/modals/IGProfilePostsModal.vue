@@ -131,7 +131,7 @@ onMounted(async () => {
 					</g>
 				</svg>
 				<h3
-					class="text-xl font-semibold text-gray-900 dark:text-white uppercase"
+					class="text-lg font-semibold text-gray-900 dark:text-white uppercase"
 				>
 					{{ ig_handle }}
 				</h3>

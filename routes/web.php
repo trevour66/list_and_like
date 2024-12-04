@@ -70,6 +70,8 @@ Route::get('/privacy', function () {
 Route::get('/webhook-callback', [WebhookController::class, 'verify'])->name(('verify-webhook'));
 Route::post('/webhook-callback', [WebhookController::class, 'handle'])->name(('handle-webhook'));
 
+Route::post('/ingest/{list_webhook_id}', [WebhookController::class, 'ingest_ighandle_webhook_entry'])->name(('ingest_ighandle_webhook_entry'));
+
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/sync-data', [DashboardController::class, 'sync_data'])->name('dashboard.sync_data');

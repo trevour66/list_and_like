@@ -5,6 +5,7 @@ const useModalStore = defineStore("modalStore", () => {
 	const showNewListModal = ref(false);
 	const showCommentsModal = ref(false);
 	const show_IGProfilePost_Modal = ref(false);
+	const show_UserListWebHookDetails_Modal = ref(false);
 
 	const endOfModalBodyReached = ref(false);
 
@@ -18,6 +19,10 @@ const useModalStore = defineStore("modalStore", () => {
 
 	const get_IGProfilePost_ModalStatus = computed(() => {
 		return show_IGProfilePost_Modal.value;
+	});
+
+	const get_UserListWebHookDetails_ModalStatus = computed(() => {
+		return show_UserListWebHookDetails_Modal.value;
 	});
 
 	const getEndOfModalBodyReached = computed(() => {
@@ -36,6 +41,10 @@ const useModalStore = defineStore("modalStore", () => {
 		show_IGProfilePost_Modal.value = status;
 	};
 
+	const toggel_UserListWebHookDetails_Modal = (status) => {
+		show_UserListWebHookDetails_Modal.value = status;
+	};
+
 	const setEndOfModalBodyReached = (status) => {
 		endOfModalBodyReached.value = status;
 	};
@@ -44,14 +53,17 @@ const useModalStore = defineStore("modalStore", () => {
 		showNewListModal,
 		showCommentsModal,
 		show_IGProfilePost_Modal,
+		show_UserListWebHookDetails_Modal,
 		endOfModalBodyReached,
 		getNewListModalStatus,
 		getCommentsModalStatus,
 		get_IGProfilePost_ModalStatus,
+		get_UserListWebHookDetails_ModalStatus,
 		getEndOfModalBodyReached,
 		toggelNewListModal,
 		toggelCommentsModal,
 		toggel_IGProfilePost_Modal,
+		toggel_UserListWebHookDetails_Modal,
 		setEndOfModalBodyReached,
 	};
 });

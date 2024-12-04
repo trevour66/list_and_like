@@ -48,6 +48,12 @@ class ig_profiles extends Model
         return $this->belongsToMany(user_mongodb_subprofile::class);
     }
 
+    public function directly_added_through_a_list_webhook(): BelongsToMany
+    {
+        return $this->belongsToMany(user_list::class);
+    }
+
+
     public function ig_posts(): HasMany
     {
         return $this->hasMany(ig_profile_post::class);

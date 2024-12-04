@@ -22,29 +22,21 @@ const form = useForm({
 		preferedIgAccountStore.get_preferedIgBussinessAccount?.IG_username ?? "",
 });
 
-const success_submission = ref(false);
-
 const submitForm = () => {
 	form.post("/my-lists", {
 		onSuccess: (response) => {
 			// console.log("Form submitted successfully:", response);
+			location.reload();
 			modalStore.toggelNewListModal(false);
 		},
 	});
 };
-
-watchEffect(() => {
-	if (success_submission.value) {
-		router.reload();
-		modalStore.toggelNewListModal(false);
-	}
-});
 </script>
 
 <template>
 	<ModalStructure>
 		<template #header_text>
-			<h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+			<h3 class="text-lg font-semibold text-gray-900 dark:text-white">
 				Create New list
 			</h3>
 

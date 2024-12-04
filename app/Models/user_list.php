@@ -20,6 +20,7 @@ class user_list extends Model
         'list_description',
         'ig_business_account',
         'user_id',
+        'list_webhook_id'
     ];
 
     public function user_mongodb_subprofile(): BelongsTo

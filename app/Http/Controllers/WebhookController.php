@@ -10,6 +10,9 @@ use App\Models\ig_profiles;
 use Carbon\Carbon;
 use Error;
 use Illuminate\Http\Request;
+use App\Models\user_list;
+use App\Services\ApifyScraper;
+
 
 class WebhookController extends Controller
 {
@@ -191,6 +194,56 @@ class WebhookController extends Controller
         } catch (\Exception $th) {
             logger($th->getMessage());
             return false;
+        }
+    }
+
+    public function ingest_ighandle_webhook_entry(Request $request, string $list_webhook_id)
+    {
+
+        try {
+            // Validate the request
+            $validatedData = $request->validate([
+                'ig_handle' => 'required|string', // Ensure 'ig_handle' is provided
+            ]);
+
+            $igHandle = $validatedData['ig_handle'];
+
+            $user_list = user_list::where('list_webhook_id', '=',  $list_webhook_id)->first() ?? null;
+
+            if ($user_list === null) {
+                throw new Error('User list does not exist');
+            }
+
+            $ig_business_account = $user_list->ig_business_account ?? null;
+
+            if ($ig_business_account === null) {
+                throw new Error('User list does not have an attached ig_business_account');
+            }
+
+            $scrapper = new ApifyScraper();
+
+            $scrape_response =  $scrapper->scrape_single($igHandle, $ig_business_account);
+
+            $ig_profile = ig_profiles::where(['ig_handle' => $igHandle])
+                ->orderBy('_id')
+                ->first() ?? false;
+
+            $user_list->ig_profiles()->attach($ig_profile);
+            $ig_profile->directly_added_through_a_list_webhook()->attach($user_list);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Instagram handle processed successfully.',
+            ], 200);
+        } catch (\Exception $e) {
+            // Log the exception
+            logger('Error processing Instagram handle:');
+            logger($e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'An error occurred while processing the Instagram handle.',
+            ], 500);
         }
     }
 }

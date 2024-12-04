@@ -68,6 +68,89 @@ class ApifyScraper
         logger(print_r("API scraping done", true));
     }
 
+    public function scrape_single($ig_handle, $associated_ig_business_accounts)
+    {
+        $url = $this->base_uri . 'acts/apify~instagram-profile-scraper/run-sync-get-dataset-items';
+
+        $response = Http::withHeaders($this->headers)
+            ->withQueryParameters(
+                [
+                    'token' => config('apify.APIFY_TOKEN')
+                ]
+            )
+            ->timeout(3000)
+            ->post($url, [
+                "usernames" => [$ig_handle]
+            ]);
+
+        $data = $response->json() ?? [];
+
+        // logger(print_r($data, true));
+
+        foreach ($data as $item) {
+            $profileData = [
+                'ig_handle' => $item['username'] ?? '',
+                'account_link' => $item['url'] ?? '',
+                'profile_pic' => $item['profilePicUrl'] ?? '',
+                'bio' => $item['biography'] ?? '',
+                'post_count' => $item['postsCount'] ?? 0,
+                'followers' => $item['followersCount'] ?? 0,
+                'following' => $item['followsCount'] ?? 0,
+                'verified' => $item['verified'] ?? false,
+            ];
+
+            $latest_posts = $item['latestPosts'] ?? [];
+
+            if (!($profileData["ig_handle"] ?? false)) {
+                continue;
+            }
+
+            $createdOrUpdatedIGProfile = ig_profiles::updateOrCreate(
+                ['ig_handle' => $profileData["ig_handle"]],
+                $profileData
+            );
+
+
+            foreach ($latest_posts as $post) {
+                if (!($post['id'] ?? false)) {
+                    continue;
+                }
+                $postdataArray = [
+                    'ig_profile_handle' => $profileData["ig_handle"],
+                    'post_id' => $post['id'],
+                    'post_type' => $post['type'] ?? '',
+                    'caption' => $post['caption'] ?? '',
+                    'hashtags' => $post['hashtags'] ?? [],
+                    'url' => $post['url'] ?? '',
+                    'commentsCount' => $post['commentsCount'] ?? 0,
+                    'displayUrl' => $post['displayUrl'] ?? '',
+                    'likesCount' => $post['likesCount'] ?? 0,
+                    'timestamp' => $post['timestamp'] ?? '',
+                    'error_current_count' => 0
+                ];
+
+                $createdOrUpdatedIGPost = ig_profile_post::updateOrCreate(
+                    ['post_id' => $post['id']],
+                    $postdataArray
+                );
+
+                $createdOrUpdatedIGProfile->ig_posts()->save($createdOrUpdatedIGPost);
+
+
+                ig_profile_post::where('post_id', $post['id'])
+                    ->push(
+                        'associated_ig_business_accounts',
+                        $associated_ig_business_accounts,
+                        unique: true
+                    );
+            }
+        }
+
+
+        logger(print_r("API scraping done", true));
+        return true;
+    }
+
     protected function updateIGProfile($data, $latest_posts)
     {
         if (!($data["ig_handle"] ?? false)) {

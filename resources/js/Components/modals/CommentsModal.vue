@@ -199,7 +199,7 @@ onBeforeUnmount(() => {
 <template>
 	<ModalStructure>
 		<template #header_text>
-			<h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+			<h3 class="text-lg font-semibold text-gray-900 dark:text-white">
 				Comments
 			</h3>
 
