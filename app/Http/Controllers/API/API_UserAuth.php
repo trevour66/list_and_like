@@ -51,12 +51,28 @@ class API_UserAuth extends Controller
                 throw new Error('Wrong Password');
             }
 
+            $IGAccessCodes = $user->IGAccessCodes ?? [];
+            $igDataFetchProcess = [];
+
+            foreach ($IGAccessCodes as $code) {
+                $data = [
+                    "IG_account_id" => $code["id"] ?? '',
+                    "IG_username" => $code["IG_USERNAME"] ?? '',
+                    "IG_data_fetch_process" => $code->igDataFetchProcess()->latest()->first() ?? null
+                ];
+
+                array_push($igDataFetchProcess, $data);
+            }
+
+            // logger($igDataFetchProcess);
 
             $resData = response(json_encode(
                 [
                     'status' => "success",
                     "token" => $token,
                     "message" => "success",
+                    "ig_data_fetch_process" => $igDataFetchProcess
+
                 ]
             ), 200)
                 ->header('Content-Type', 'application/json');

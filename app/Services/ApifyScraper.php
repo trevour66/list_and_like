@@ -147,7 +147,7 @@ class ApifyScraper
         }
 
 
-        logger(print_r("API scraping done", true));
+        logger(print_r("API scraping [scrape_single] done", true));
         return true;
     }
 

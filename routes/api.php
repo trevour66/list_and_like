@@ -29,6 +29,8 @@ use App\Http\Controllers\UserListController;
 Route::middleware('auth')->group(function () {
     // In-APP API using SESSION Cookie
     Route::get('/get-added-ig-profiles', [IgProfilesController::class, 'index_api'])->name('added_ig_profile.index_api');
+    Route::post('/added-ig-profiles/search', [IgProfilesController::class, 'search_api'])->name('added_ig_profile.search_api');
+
 
     Route::post('/get-community-dashboard', [DashboardController::class, 'fetch_community_data'])->name('dashboard.fetch_community_data');
     Route::post('/get-analytics', [DashboardController::class, 'fetch_account_analytics_data'])->name('dashboard.fetch_account_analytics_data');

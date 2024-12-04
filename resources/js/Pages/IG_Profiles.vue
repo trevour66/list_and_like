@@ -27,11 +27,15 @@ defineProps({
 
 const ig_profiles = ref([]);
 const next_page_url = ref("");
+const search___next_page_url = ref("");
+const search___active = ref(false);
+
 const Loading = ref(true);
 
 const miniVersionActive = usePage().props.mini_version ?? false;
 
 const ig_handle = ref("");
+const ig_username_search = ref("");
 
 const goToIGProfilePosts = (ig_handle_passedThrough) => {
 	// console.log(ig_handle_passedThrough);
@@ -106,9 +110,59 @@ const fetchProfiles = async () => {
 		});
 };
 
-// onUpdated(() => {
+const searchForIGUsername = async () => {
+	// console.log("response.data");
+	ig_profiles.value = [];
+	Loading.value = true;
 
-// });
+	await IGProfile.searchProfiles(
+		search___next_page_url.value,
+		ig_username_search.value
+	)
+		.then(function (response) {
+			// console.log(response);
+
+			// return;
+			const ig_profiles_data = response?.data?.ig_profiles ?? false;
+			const status = response?.data?.status ?? false;
+
+			const profiles = ig_profiles_data?.data ?? [];
+			// const prev_cursor = ig_profiles_data?.prev_cursor ?? null;
+
+			search___next_page_url.value = ig_profiles_data?.next_page_url ?? null;
+
+			if (profiles && profiles.length > 0) {
+				Array.prototype.push.apply(ig_profiles.value, profiles);
+			}
+
+			initDropdowns();
+			search___active.value = true;
+			Loading.value = false;
+		})
+		.catch(async function (error) {
+			// handle error
+			console.log(error);
+			if (
+				error.status == 419 ||
+				error.status == 401 ||
+				(error.response?.data?.message ?? "").indexOf("CSRF token mismatch") >=
+					0
+			) {
+				await reAuth();
+			}
+
+			Loading.value = false;
+		});
+};
+
+const backToMainView = async () => {
+	// console.log("response.data");
+	ig_profiles.value = [];
+	Loading.value = true;
+	next_page_url.value = "";
+	await fetchProfiles();
+	search___active.value = false;
+};
 
 onMounted(async () => {
 	window.document
@@ -142,25 +196,41 @@ onMounted(async () => {
 					IG Profiles
 				</h2>
 			</div>
-			<div>
-				<div class="flex flex-wrap -mx-3">
-					<div v-show="false" class="flex items-center md:ml-auto md:pr-4">
-						<div
-							class="relative flex flex-wrap items-stretch w-full transition-all rounded-lg ease"
-						>
-							<input
-								type="text"
-								class="pl-3 text-sm focus:shadow-primary-outline ease w-1/100 leading-5.6 relative -ml-px block min-w-0 flex-auto rounded-lg border border-solid border-gray-300 dark:bg-slate-850 dark:text-white bg-white bg-clip-padding py-2 pr-9 text-gray-700 transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none focus:transition-shadow"
-								placeholder="Type here..."
-							/>
-							<span
-								class="text-md ease leading-5.6 absolute right-0 z-50 -ml-px flex h-full items-center whitespace-nowrap rounded-lg rounded-tr-none rounded-br-none border border-r-0 border-transparent bg-transparent py-2 px-2.5 text-center font-normal text-slate-500 transition-all"
+			<div class="sm:min-w-full md:min-w-[300px]">
+				<form @submit.prevent="">
+					<label
+						for="search"
+						class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
+						>Search</label
+					>
+					<div class="relative">
+						<input
+							v-model="ig_username_search"
+							type="search"
+							id="search"
+							class="block w-full p-4 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+							placeholder="Enter IG Username"
+							required
+						/>
+						<div class="absolute end-2.5 bottom-2.5 flex items-center gap-x-2">
+							<button
+								@click.prevent="searchForIGUsername"
+								type="submit"
+								class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
 							>
-								<i class="fas fa-search"></i>
-							</span>
+								Search
+							</button>
+							<button
+								v-if="search___active"
+								@click.prevent="backToMainView"
+								class="inline-flex justify-center px-2.5 py-1 text-red-600 rounded-full cursor-pointer bg-red-100 hover:bg-red-200"
+							>
+								<i class="fas fa-times text-xl"></i>
+								<span class="sr-only">cancel</span>
+							</button>
 						</div>
 					</div>
-				</div>
+				</form>
 			</div>
 		</template>
 
