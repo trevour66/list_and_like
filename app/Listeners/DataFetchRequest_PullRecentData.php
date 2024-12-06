@@ -60,7 +60,12 @@ class DataFetchRequest_PullRecentData implements ShouldQueue
             // return;
             $user = $event->ig_data_fetch_process->ig_access_code->user;
 
-            $user->notify(new NewDataFetch($IGAccountUnder));
+            try {
+                $user->notify(new NewDataFetch($IGAccountUnder));
+            } catch (\Throwable $th) {
+                logger(print_r("handle: NewDataFetchRequest NEWDATAFETCH Notify Error:", true));
+                logger(print_r($th->getMessage(), true));
+            }
 
             $IG_MediaService = new IGMedia($IGAccountUnder, $user);
             $IG_MediaService->pullRecentUserPost();
@@ -70,9 +75,13 @@ class DataFetchRequest_PullRecentData implements ShouldQueue
                     ['IDFP_status' => 'finished_success'],
                 );
 
-            $user->notify(new SuccessfulDataFetch($IGAccountUnder));
 
-            return;
+            try {
+                $user->notify(new SuccessfulDataFetch($IGAccountUnder));
+            } catch (\Throwable $th) {
+                logger(print_r("handle: NewDataFetchRequest SUCCESSFUL FETCH Notify Error:", true));
+                logger(print_r($th->getMessage(), true));
+            }
         } catch (Exception $e) {
             logger(print_r("handle: NewDataFetchRequest Error:", true));
             logger(print_r($e->getMessage(), true));
@@ -82,9 +91,13 @@ class DataFetchRequest_PullRecentData implements ShouldQueue
                     ['IDFP_status' => 'finished_error'],
                 );
 
-            $user->notify(new FailedDataFetch($IGAccountUnder));
 
-            return;
+            try {
+                $user->notify(new FailedDataFetch($IGAccountUnder));
+            } catch (\Throwable $th) {
+                logger(print_r("handle: NewDataFetchRequest FailedDataFetch Notify Error:", true));
+                logger(print_r($th->getMessage(), true));
+            }
         }
     }
 
