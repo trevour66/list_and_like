@@ -30,7 +30,8 @@ const form = useForm({
 	list_description: "",
 });
 
-const success_submission = ref(false);
+const success_submission = ref(null);
+const error_submission = ref(null);
 
 const associated_user_IG_Biz_post_comments = ref([]);
 const next_page_url = ref("");
@@ -47,6 +48,9 @@ const commentOnPost = async () => {
 	if ((commentText.value ?? "") == "" || submitting.value) return;
 
 	submitting.value = true;
+
+	error_submission.value = null;
+	success_submission.value = null;
 
 	const replyingTo_ig_username =
 		commentStore.get_CommentData?.IG_username_replying_to ?? "";
@@ -88,7 +92,8 @@ const commentOnPost = async () => {
 		})
 		.catch(async (error) => {
 			// handle error
-			console.log(error);
+			// console.log(error);
+			error_submission.value = true;
 			if (
 				err.status == 419 ||
 				err.status == 401 ||
@@ -338,9 +343,15 @@ onBeforeUnmount(() => {
 						</div>
 
 						<span
-							v-if="success_submission"
+							v-if="success_submission && !error_submission"
 							class="text-xs text-gray-700 font-semibold"
 							>Sent</span
+						>
+
+						<span
+							v-if="!success_submission && error_submission"
+							class="text-xs text-red-700 font-semibold"
+							>There was an error while sending please try again</span
 						>
 					</form>
 				</div>
