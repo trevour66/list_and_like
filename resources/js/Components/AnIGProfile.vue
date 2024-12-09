@@ -1,12 +1,21 @@
 <script setup>
 import { Head, usePage, useForm } from "@inertiajs/vue3";
 import { initDropdowns } from "flowbite";
-import { onUpdated } from "vue";
-import { computed, onMounted } from "vue";
+import { onUpdated, ref, computed, onMounted } from "vue";
 
 const miniVersionActive = usePage().props.mini_version ?? false;
 
 const props = defineProps({
+	disable_view_post_button: {
+		type: Boolean,
+		default: false,
+		required: false,
+	},
+	showed_from_A_list: {
+		type: Boolean,
+		default: false,
+		required: false,
+	},
 	profile: {
 		type: Object,
 		required: true,
@@ -18,7 +27,9 @@ const props = defineProps({
 	},
 });
 
-const emits = defineEmits(["goToIGProfilePosts"]);
+const dropdownButtonInitator = ref(null);
+
+const emits = defineEmits(["goToIGProfilePosts", "deleteFromList"]);
 
 const index = computed(() => {
 	const seed = "ig_profile";
@@ -41,16 +52,24 @@ const ig_profile_is_already_in_list = (user_list_ids, list_id) => {
 const addUserToList = (list_id, ig_handle, user_list_ids) => {
 	if (ig_profile_is_already_in_list(user_list_ids, list_id)) return;
 
+	const dropdownButton = dropdownButtonInitator;
+
 	const form = useForm({
 		ig_handle: ig_handle,
 	});
 
 	form.post(`/my-lists/${list_id}/add-profile`, {
 		onFinish: () => {
+			dropdownButton.value.click();
+
 			window.alert("IG profile added to list");
 			form.reset();
 		},
 	});
+};
+
+const deleteFromList = () => {
+	emits("deleteFromList", props.profile);
 };
 
 onUpdated(() => {
@@ -67,11 +86,72 @@ onMounted(() => {
 	>
 		<!-- {{ profile }} -->
 		<!-- {{ user_lists }} -->
+		<div class="flex justify-end px-4 pb-4" v-if="showed_from_A_list">
+			<button
+				@click="deleteFromList"
+				class="inline-block text-gray-500 bg-gray-200 hover:bg-gray-400 focus:ring-2 focus:outline-none focus:ring-gray-200 rounded-lg text-sm p-1.5"
+				type="button"
+			>
+				<span class="sr-only">delete from list</span>
+
+				<svg
+					class="w-5 h-5"
+					viewBox="0 0 24 24"
+					fill="none"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+					<g
+						id="SVGRepo_tracerCarrier"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					></g>
+					<g id="SVGRepo_iconCarrier">
+						<path
+							d="M10 11V17"
+							stroke="#ff1111"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						></path>
+						<path
+							d="M14 11V17"
+							stroke="#ff1111"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						></path>
+						<path
+							d="M4 7H20"
+							stroke="#ff1111"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						></path>
+						<path
+							d="M6 7H12H18V18C18 19.6569 16.6569 21 15 21H9C7.34315 21 6 19.6569 6 18V7Z"
+							stroke="#ff1111"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						></path>
+						<path
+							d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z"
+							stroke="#ff1111"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						></path>
+					</g>
+				</svg>
+			</button>
+		</div>
 		<div
 			v-if="(user_lists ?? []).length > 0"
 			class="flex justify-end px-4 pb-4"
 		>
 			<button
+				ref="dropdownButtonInitator"
 				:id="`${index}_dropdownButton`"
 				:data-dropdown-toggle="`${index}_dropdown`"
 				data-dropdown-placement="bottom-end"
@@ -110,7 +190,8 @@ onMounted(() => {
 									addUserToList(
 										list._id,
 										profile.ig_handle,
-										profile?.user_list_ids ?? []
+										profile?.user_list_ids ?? [],
+										index
 									)
 								"
 								class="h-full w-full px-4 py-4 hover:bg-gray-100 hover:cursor-pointer focus:bg-gray-100"
@@ -173,7 +254,10 @@ onMounted(() => {
 				</span>
 			</div>
 		</div>
-		<div class="flex mt-4 md:mt-6 w-full items-center justify-center">
+		<div
+			v-if="!disable_view_post_button"
+			class="flex mt-4 md:mt-6 w-full items-center justify-center"
+		>
 			<button
 				@click="init_goToIGProfilePosts(profile.ig_handle)"
 				class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-[#f24b54] rounded-lg hover:opacity-70 focus:ring-2 focus:outline-none focus:ring-[#f24b54] dark:bg-[#f24b54] dark:hover:bg-[#f24b54] dark:focus:ring-[#f24b54]"

@@ -25,7 +25,7 @@ class user_list extends Model
 
     public function user_mongodb_subprofile(): BelongsTo
     {
-        return $this->belongsTo(user_mongodb_subprofile::class);
+        return $this->belongsTo(user_mongodb_subprofile::class, 'user_mongodb_subprofile_user_id');
     }
 
     // public function ig_profiles(): HasMany

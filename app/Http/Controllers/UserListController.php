@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ig_profile_post;
 use App\Models\ig_profiles;
+use App\Models\user_mongodb_subprofile;
 use App\Models\user_list;
 
 use Illuminate\Http\Request;
@@ -115,6 +116,15 @@ class UserListController extends Controller
             } while (!$list_webhook_id___is_unique);
 
             $user_id = $request->user()->id;
+            $email = auth()->user()->email;
+
+            $user_mongodb = user_mongodb_subprofile::where([
+                'email' => $email,
+            ])
+                ->orderBy('_id')
+                ->first() ?? false;
+
+
             $list_name = strtolower($request->list_name);
 
             // Check if the list name is unique for the user
@@ -128,13 +138,15 @@ class UserListController extends Controller
                     ->withInput();
             }
 
-            user_list::create([
+            $exist = user_list::create([
                 'list_name' =>  $list_name,
                 'list_description' =>  $request->list_description ?? '',
                 'ig_business_account' => $request->ig_business_account,
                 'user_id' => $user_id,
                 'list_webhook_id' => $list_webhook_id
             ]);
+
+            $user_mongodb->userlists()->save($exist);
 
 
             return redirect()->route('user_lists.index')->with('success', 'User list created successfully.');
@@ -260,6 +272,41 @@ class UserListController extends Controller
                     'status' => "error",
                     'user_list' => [],
                     'associated_user_posts' => [],
+                ]
+            ), 200)
+                ->header('Content-Type', 'application/json');
+
+            return $resData;
+        }
+    }
+
+    public function delete_IG_profile_from_list(Request $request, user_list $userList)
+    {
+        try {
+            //code...
+            $validated = $request->validate([
+                'ig_profile_id' => 'required|string',
+            ]);
+
+            $ig_profile_id = $validated['ig_profile_id'];
+
+            $userList->ig_profiles()->detach($ig_profile_id);
+
+            $resData = response(json_encode(
+                [
+                    'status' => "success",
+
+                ]
+            ), 200)
+                ->header('Content-Type', 'application/json');
+
+            return $resData;
+        } catch (\Throwable $th) {
+            logger("delete_IG_profile_from_list API Error" . $th->getMessage());
+            $resData = response(json_encode(
+                [
+                    'status' => "error",
+
                 ]
             ), 200)
                 ->header('Content-Type', 'application/json');

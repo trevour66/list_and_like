@@ -50,6 +50,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/my-lists', [UserListController::class, 'index_api'])->name('user_lists.index_api');
     Route::post('/my-lists-profiles/{userList}', [UserListController::class, 'show_profiles_api'])->name('user_lists.show_profiles_api');
     Route::post('/my-lists-posts/{userList}', [UserListController::class, 'show_posts_api'])->name('user_lists.show_posts_api');
+    Route::post('/delete-ig-profile-from-list/{userList}', [UserListController::class, 'delete_IG_profile_from_list'])->name('user_lists.delete_IG_profile_from_list');
 });
 
 

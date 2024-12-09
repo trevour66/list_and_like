@@ -31,4 +31,9 @@ class user_mongodb_subprofile extends Model
     {
         return $this->hasMany(ig_business_account_posts::class);
     }
+
+    public function userlists(): HasMany
+    {
+        return $this->hasMany(user_list::class, 'user_mongodb_subprofile_user_id');
+    }
 }

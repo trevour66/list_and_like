@@ -47,6 +47,19 @@ const UserList = {
 
 		return axios.post(url);
 	},
+
+	async delete_IG_profile_from_list(userList_id, ig_profile_id) {
+		if (userList_id === "" || ig_profile_id === "") {
+			return;
+		}
+
+		let url = route("user_lists.delete_IG_profile_from_list", {
+			userList: userList_id,
+			ig_profile_id: ig_profile_id,
+		});
+
+		return axios.post(url);
+	},
 };
 
 export default UserList;

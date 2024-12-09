@@ -95,7 +95,49 @@ const userProfilesFetch = async () => {
 };
 
 const refreshCurrentView = () => {
-	router.reload();
+	Loading.value = true;
+	ig_profiles.value = [];
+	next_page_url.value = "";
+
+	userProfilesFetch();
+};
+
+const deleteFromList = async (profile) => {
+	// console.log(profile);
+	// return
+
+	const ig_profile_id = profile?._id ?? "";
+	const list_id = props?.user_list?._id ?? "";
+
+	await UserList.delete_IG_profile_from_list(list_id, ig_profile_id)
+		.then(function (response) {
+			// console.log(response.data);
+			refreshCurrentView();
+		})
+		.catch(async function (error) {
+			// handle error
+			console.log(error);
+			if (
+				error.status == 419 ||
+				error.status == 401 ||
+				(error.response?.data?.message ?? "").indexOf("CSRF token mismatch") >=
+					0
+			) {
+				await reAuth();
+			}
+
+			Loading.value = false;
+		});
+
+	// if (form.processing || (userListId ?? "") == "") return;
+
+	// form.user_list_id = userListId;
+
+	// form.post(`/my-lists/${userListId}/delete`, {
+	// 	onSuccess: (response) => {
+	// 		refreshCurrentView();
+	// 	},
+	// });
 };
 
 onMounted(() => {
@@ -110,10 +152,15 @@ onMounted(() => {
 <template>
 	<div>
 		<div
-			class="grid lg:grid-cols-2 xl:grid-cols-3 grid-cols-1 pt-6 gap-x-4 gap-y-10 mx-3"
+			class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 grid-cols-1 pt-6 gap-x-4 gap-y-10 mx-3"
 		>
 			<div v-for="(profile, index) in ig_profiles" :key="index">
-				<AnIGProfile :profile="profile" />
+				<AnIGProfile
+					:profile="profile"
+					:disable_view_post_button="true"
+					:showed_from_A_list="true"
+					@deleteFromList="deleteFromList"
+				/>
 			</div>
 		</div>
 		<div class="grid grid-cols-1 py-10 gap-x-4 gap-y-10 mx-3">

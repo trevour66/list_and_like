@@ -231,6 +231,14 @@ class WebhookController extends Controller
             $user_list->ig_profiles()->attach($ig_profile);
             $ig_profile->directly_added_through_a_list_webhook()->attach($user_list);
 
+            $user = $user_list->user_mongodb_subprofile ?? false;
+
+
+            if ($user) {
+                $ig_profile->users_ids()->attach($user);
+                $user->ig_profiles_added()->attach($ig_profile);
+            }
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Instagram handle processed successfully.',

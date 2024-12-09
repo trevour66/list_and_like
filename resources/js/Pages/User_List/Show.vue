@@ -38,17 +38,7 @@ const form = useForm({
 });
 
 const ig_handle = ref("");
-
 const activeTab = ref(tabs.posts);
-
-const goToIGProfilePosts = (ig_handle_passedThrough) => {
-	// console.log(ig_handle_passedThrough);
-
-	if (!(ig_handle_passedThrough ?? false)) return;
-
-	ig_handle.value = ig_handle_passedThrough;
-	modalStore.toggel_IGProfilePost_Modal(true);
-};
 
 const deleteList = (userListId) => {
 	if (form.processing || (userListId ?? "") == "") return;
@@ -154,7 +144,9 @@ onMounted(() => {
 		<template #content>
 			<!-- {{ user_list }}
 			{{ getWebhookURL }} -->
-			<div class="my-6 w-full px-4 flex items-center justify-between">
+			<div
+				class="my-6 w-full px-4 flex flex-col gap-3 md:flex-row items-center justify-between"
+			>
 				<div class="inline-flex rounded-md shadow-sm" role="group">
 					<button
 						@click="activeTab = tabs.posts"
@@ -212,12 +204,12 @@ onMounted(() => {
 			</div>
 
 			<section v-if="activeTab === tabs.posts">
-				{{ user_list }}
+				<!-- {{ user_list }} -->
 				<UserList__Posts :user_list="user_list" />
 			</section>
 
 			<section v-if="activeTab === tabs.profiles">
-				{{ user_list }}
+				<!-- {{ user_list }} -->
 				<UserList__Profile :user_list="user_list" />
 			</section>
 		</template>
