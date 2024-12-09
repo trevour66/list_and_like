@@ -44,7 +44,7 @@ const commentText = ref("");
 const submitting = ref(false);
 
 const commentOnPost = async () => {
-	if ((commentText.value ?? "") == "") return;
+	if ((commentText.value ?? "") == "" || submitting.value) return;
 
 	submitting.value = true;
 
@@ -80,6 +80,10 @@ const commentOnPost = async () => {
 		.then(function (response) {
 			console.log(response);
 
+			if (response?.data?.status ?? "") {
+				success_submission.value = true;
+			}
+
 			// handle success
 		})
 		.catch(async (error) => {
@@ -93,6 +97,8 @@ const commentOnPost = async () => {
 				await reAuth();
 			}
 		});
+
+	submitting.value = false;
 };
 
 watch(commentText, (newValue) => {
@@ -183,6 +189,12 @@ watch(commentStore.get_CommentData, (newValue) => {
 watchEffect(() => {
 	if (success_submission.value) {
 		router.reload();
+
+		setTimeout(() => {
+			commentStore.reset_CommentData();
+
+			success_submission.value = false;
+		}, 3000);
 	}
 });
 
@@ -292,7 +304,7 @@ onBeforeUnmount(() => {
 							></textarea>
 							<div class="inline-block flex items-center gap-x-3">
 								<button
-									:disabled="(commentText ?? '') === ''"
+									:disabled="(commentText ?? '') === '' || submitting"
 									@click.prevent="commentStore.cancel_ReplyToSpecificUser()"
 									class="inline-flex justify-center px-3 py-1.5 text-red-600 rounded-full cursor-pointer bg-red-100 hover:bg-red-200"
 								>
@@ -300,6 +312,7 @@ onBeforeUnmount(() => {
 									<span class="sr-only">cancel</span>
 								</button>
 								<button
+									:disabled="submitting"
 									@click.prevent="commentOnPost"
 									type="submit"
 									class="inline-flex justify-center px-3 py-1.5 text-blue-600 rounded-full cursor-pointer bg-blue-100 hover:bg-blue-200"
@@ -309,6 +322,8 @@ onBeforeUnmount(() => {
 								</button>
 							</div>
 						</div>
+
+						<span v-if="success_submission">Sent</span>
 					</form>
 				</div>
 			</div>
