@@ -136,7 +136,7 @@ onMounted(async () => {
 			>
 				<div>
 					<p class="text-md font-normal text-gray-500">
-						You does not have an item in this list
+						You do not have an item in this list
 					</p>
 				</div>
 			</div>

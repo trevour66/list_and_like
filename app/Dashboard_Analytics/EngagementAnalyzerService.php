@@ -106,6 +106,8 @@ class EngagementAnalyzerService
         // Get top 5 profiles with the highest postCount
         $topFive = $this->profiles->sortByDesc('postCount')->take(5)->values();
 
+        // logger($topFive);
+
         // Save to cache
         Cache::store('redis')->put($businessAccountId . 'top_five_profiles', $topFive, now()->addHours(10));
     }

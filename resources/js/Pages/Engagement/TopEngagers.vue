@@ -20,6 +20,7 @@ const ig_profiles = ref([]);
 
 const Loading = ref(true);
 const preferedIgAccountStore = usePreferedIgAccountStore();
+const hasMounted = ref(false);
 
 const reAuth = async () => {
 	await axios
@@ -73,7 +74,7 @@ watch(
 		let IG_username =
 			preferedIgAccountStore.get_preferedIgBussinessAccount?.IG_username ?? "";
 
-		if (IG_username !== "") {
+		if (IG_username !== "" && hasMounted.value) {
 			ig_profiles.value = [];
 			await fetchTopFive();
 		}
@@ -89,6 +90,7 @@ const passthrough_goToIGProfilePosts = (ig_handle) => {
 
 onMounted(async () => {
 	await fetchTopFive();
+	hasMounted.value = true;
 });
 </script>
 
@@ -112,7 +114,7 @@ onMounted(async () => {
 			>
 				<div>
 					<p class="text-md font-normal text-gray-500">
-						You does not have an item in this list
+						You do not have an item in this list
 					</p>
 				</div>
 			</div>
