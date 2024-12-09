@@ -189,10 +189,10 @@ watch(commentStore.get_CommentData, (newValue) => {
 watchEffect(() => {
 	if (success_submission.value) {
 		router.reload();
+		commentStore.reset_CommentData();
+		commentText.value = "";
 
 		setTimeout(() => {
-			commentStore.reset_CommentData();
-			commentText.value = "";
 			success_submission.value = false;
 		}, 2500);
 	}
