@@ -78,7 +78,7 @@ const commentOnPost = async () => {
 
 	await commentAPIReq
 		.then(function (response) {
-			console.log(response);
+			// console.log(response);
 
 			if (response?.data?.status ?? "") {
 				success_submission.value = true;
@@ -192,9 +192,9 @@ watchEffect(() => {
 
 		setTimeout(() => {
 			commentStore.reset_CommentData();
-
+			commentText.value = "";
 			success_submission.value = false;
-		}, 3000);
+		}, 2500);
 	}
 });
 
@@ -306,16 +306,30 @@ onBeforeUnmount(() => {
 								<button
 									:disabled="(commentText ?? '') === '' || submitting"
 									@click.prevent="commentStore.cancel_ReplyToSpecificUser()"
-									class="inline-flex justify-center px-3 py-1.5 text-red-600 rounded-full cursor-pointer bg-red-100 hover:bg-red-200"
+									:class="{
+										'cursor-not-allowed':
+											(commentText ?? '') === '' || submitting,
+										'cursor-pointer': !(
+											(commentText ?? '') === '' || submitting
+										),
+									}"
+									class="inline-flex justify-center px-3 py-1.5 text-red-600 rounded-full bg-red-100 hover:bg-red-200"
 								>
 									<i class="fas fa-times text-xl"></i>
 									<span class="sr-only">cancel</span>
 								</button>
 								<button
-									:disabled="submitting"
+									:disabled="(commentText ?? '') === '' || submitting"
 									@click.prevent="commentOnPost"
 									type="submit"
-									class="inline-flex justify-center px-3 py-1.5 text-blue-600 rounded-full cursor-pointer bg-blue-100 hover:bg-blue-200"
+									:class="{
+										'cursor-not-allowed':
+											(commentText ?? '') === '' || submitting,
+										'cursor-pointer': !(
+											(commentText ?? '') === '' || submitting
+										),
+									}"
+									class="inline-flex justify-center px-3 py-1.5 text-blue-600 rounded-full bg-blue-100 hover:bg-blue-200"
 								>
 									<i class="fas fa-paper-plane text-xl"></i>
 									<span class="sr-only">Send message</span>
@@ -323,7 +337,11 @@ onBeforeUnmount(() => {
 							</div>
 						</div>
 
-						<span v-if="success_submission">Sent</span>
+						<span
+							v-if="success_submission"
+							class="text-xs text-gray-700 font-semibold"
+							>Sent</span
+						>
 					</form>
 				</div>
 			</div>
