@@ -48,10 +48,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/get_ig_profile_posts', [CommunityController::class, 'get_ig_profile_posts_api'])->name('community.get_ig_profile_posts_api');
 
     Route::post('/my-lists', [UserListController::class, 'index_api'])->name('user_lists.index_api');
+    Route::post('/my-lists-profiles/{userList}', [UserListController::class, 'show_profiles_api'])->name('user_lists.show_profiles_api');
+    Route::post('/my-lists-posts/{userList}', [UserListController::class, 'show_posts_api'])->name('user_lists.show_posts_api');
 });
 
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/my-lists', [UserListController::class, 'index_api'])->name('user_lists.index_api');
     Route::post('/add-ig-profile', [IgProfilesController::class, 'chrome_extension_add_ig_username'])->name('actionStepCore.chrome_extension_add_ig_username');
 });
 

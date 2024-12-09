@@ -9,6 +9,44 @@ const UserList = {
 			IG_username: IG_username,
 		});
 	},
+
+	async getUserList_posts(
+		userList_id,
+		business_account_id = "",
+		nextPageURL = ""
+	) {
+		if (userList_id === "" || business_account_id === "") {
+			return;
+		}
+
+		let url = route("user_lists.show_posts_api", {
+			userList: userList_id,
+		});
+
+		if (nextPageURL != "") {
+			url = nextPageURL;
+		}
+
+		return axios.post(url, {
+			business_account_id: business_account_id,
+		});
+	},
+
+	async getUserList_profiles(userList_id, nextPageURL = "") {
+		if (userList_id === "") {
+			return;
+		}
+
+		let url = route("user_lists.show_profiles_api", {
+			userList: userList_id,
+		});
+
+		if (nextPageURL != "") {
+			url = nextPageURL;
+		}
+
+		return axios.post(url);
+	},
 };
 
 export default UserList;

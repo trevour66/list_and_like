@@ -1,6 +1,7 @@
 <script setup>
 import { Head, usePage, useForm } from "@inertiajs/vue3";
 import { initDropdowns } from "flowbite";
+import { onUpdated } from "vue";
 import { computed, onMounted } from "vue";
 
 const miniVersionActive = usePage().props.mini_version ?? false;
@@ -21,7 +22,7 @@ const emits = defineEmits(["goToIGProfilePosts"]);
 
 const index = computed(() => {
 	const seed = "ig_profile";
-	const randomCharacter = Math.random().toString(36).charAt(2);
+	const randomCharacter = Math.random().toString(36);
 
 	return `${seed}__${randomCharacter}`;
 });
@@ -52,7 +53,11 @@ const addUserToList = (list_id, ig_handle, user_list_ids) => {
 	});
 };
 
-onMounted(async () => {
+onUpdated(() => {
+	initDropdowns();
+});
+
+onMounted(() => {
 	initDropdowns();
 });
 </script>

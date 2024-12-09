@@ -15,14 +15,19 @@ const confirmCookieClearing = () => {
 	confirmingCookieClearing.value = true;
 };
 
-const clearCookie = () => {
+const clearCookie = async () => {
 	try {
 		cookies.remove("preferedIgBussinessAccount");
 		CookieClearingSuccess.value = true;
 
-		setInterval(() => {
-			closeModal();
-		}, 3000);
+		await new Promise((resolve, reject) => {
+			setInterval(() => {
+				closeModal();
+				resolve();
+			}, 3000);
+		});
+
+		window.location.reload();
 	} catch (error) {}
 };
 

@@ -13,18 +13,23 @@ import IGProfilePostsModal from "@/Components/modals/IGProfilePostsModal.vue";
 import UserListWebHookDetails from "@/Components/modals/UserListWebHookDetails.vue";
 import { computed } from "vue";
 
+import UserList__Posts from "@/Pages/User_List/UserList__Posts.vue";
+import UserList__Profile from "@/Pages/User_List/UserList__Profile.vue";
+
 const modalStore = useModalStore();
 const preferedIgAccountStore = usePreferedIgAccountStore();
 const instagramAccounts = useInstagramAccounts();
+
+const tabs = {
+	posts: "posts",
+	profiles: "profiles",
+};
 
 const props = defineProps({
 	user_list: {
 		type: Object,
 		default: {},
-	},
-	ig_profiles: {
-		type: Array,
-		default: [],
+		required: true,
 	},
 });
 
@@ -33,6 +38,8 @@ const form = useForm({
 });
 
 const ig_handle = ref("");
+
+const activeTab = ref(tabs.posts);
 
 const goToIGProfilePosts = (ig_handle_passedThrough) => {
 	// console.log(ig_handle_passedThrough);
@@ -147,14 +154,40 @@ onMounted(() => {
 		<template #content>
 			<!-- {{ user_list }}
 			{{ getWebhookURL }} -->
-			<div class="my-6 w-full">
-				<div class="float-right mx-4">
+			<div class="my-6 w-full px-4 flex items-center justify-between">
+				<div class="inline-flex rounded-md shadow-sm" role="group">
+					<button
+						@click="activeTab = tabs.posts"
+						:class="{
+							'bg-gray-900 text-white': activeTab === tabs.posts,
+							'bg-transparent text-gray-900': activeTab !== tabs.posts,
+						}"
+						type="button"
+						class="px-4 py-2 text-sm font-medium border-l border-t border-b border-gray-900 rounded-s-lg hover:bg-gray-800 hover:text-white focus:z-10 focus:bg-gray-900 focus:text-white"
+					>
+						Posts
+					</button>
+
+					<button
+						@click="activeTab = tabs.profiles"
+						:class="{
+							'bg-gray-900 text-white': activeTab === tabs.profiles,
+							'bg-transparent text-gray-900': activeTab !== tabs.profiles,
+						}"
+						type="button"
+						class="px-4 py-2 text-sm font-medium border border-gray-900 rounded-e-lg hover:bg-gray-800 hover:text-white focus:z-10 focus:bg-gray-900 focus:text-white"
+					>
+						Profiles
+					</button>
+				</div>
+
+				<div>
 					<button
 						@click="modalStore.toggel_UserListWebHookDetails_Modal(true)"
-						class="py-2 px-4 ms-2 text-xs font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-[#f24b54] focus:z-10 focus:ring-2 focus:ring-gray-100 flex items-center justify-center gap-x-2"
+						class="py-2 px-4 text-xs font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-[#f24b54] focus:z-10 focus:ring-2 focus:ring-gray-100 flex items-center justify-center gap-x-2"
 					>
 						<svg
-							class="h-7 w-7 fill-[#f24b54]"
+							class="h-6 w-6 fill-[#f24b54]"
 							viewBox="0 0 24 24"
 							xmlns="http://www.w3.org/2000/svg"
 						>
@@ -176,18 +209,17 @@ onMounted(() => {
 						Add IG Profile (Webhook)
 					</button>
 				</div>
-				<div class="clear-both"></div>
 			</div>
-			<div
-				class="grid lg:grid-cols-3 xl:grid-cols-4 grid-cols-1 pt-6 gap-3 mx-3"
-			>
-				<div v-for="(profile, index) in ig_profiles" :key="index">
-					<AnIGProfile
-						:profile="profile"
-						@go-to-i-g-profile-posts="goToIGProfilePosts"
-					/>
-				</div>
-			</div>
+
+			<section v-if="activeTab === tabs.posts">
+				{{ user_list }}
+				<UserList__Posts :user_list="user_list" />
+			</section>
+
+			<section v-if="activeTab === tabs.profiles">
+				{{ user_list }}
+				<UserList__Profile :user_list="user_list" />
+			</section>
 		</template>
 	</AuthenticatedLayout>
 </template>

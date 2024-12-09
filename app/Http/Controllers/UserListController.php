@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ig_profile_post;
 use App\Models\ig_profiles;
 use App\Models\user_list;
 
@@ -171,15 +172,100 @@ class UserListController extends Controller
      */
     public function show(user_list $userList)
     {
-        $ig_profiles = $userList->ig_profiles;
 
-        // logger($userList);
-        // logger($ig_profiles);
+        unset($userList->ig_profiles);
 
         return Inertia::render('User_List/Show', [
             'user_list' => $userList,
-            'ig_profiles' => $ig_profiles
+
         ]);
+    }
+
+    public function show_profiles_api(user_list $userList)
+    {
+        try {
+            //code...
+            $ig_profiles = $userList->ig_profiles()->cursorPaginate(10);;
+
+            $resData = response(json_encode(
+                [
+                    'status' => "success",
+                    'user_list' => $userList,
+                    'ig_profiles' => $ig_profiles
+                ]
+            ), 200)
+                ->header('Content-Type', 'application/json');
+
+            return $resData;
+        } catch (\Throwable $th) {
+            logger("show_profiles_api API Error" . $th->getMessage());
+            $resData = response(json_encode(
+                [
+                    'status' => "error",
+                    'user_list' => [],
+                    'ig_profiles' => [],
+                ]
+            ), 200)
+                ->header('Content-Type', 'application/json');
+
+            return $resData;
+        }
+    }
+
+
+    public function show_posts_api(Request $request, user_list $userList)
+    {
+        try {
+            //code...
+            $validated = $request->validate([
+                'business_account_id' => 'required|string',
+            ]);
+
+            $businessAccountId = $validated['business_account_id'];
+
+            $associated_user_posts = [];
+
+            $ig_usernames = [$businessAccountId];
+
+            $associated_profiles = $userList->ig_profiles;
+            // logger($associated_profiles);
+
+            $associated_profiles = collect($associated_profiles ?? [])->pluck('ig_handle') ?? [];
+
+            $associated_user_posts = ig_profile_post::whereNotIn('skipped_by', $ig_usernames)
+                ->whereNotIn('reactedTo_by', $ig_usernames)
+                ->orderBy('timestamp', 'desc')
+                ->orderBy('updated_at', 'desc')
+                ->whereIn('ig_profile_handle', $associated_profiles)
+                ->cursorPaginate(10);
+
+            unset(
+                $userList->ig_profiles
+            );
+
+            $resData = response(json_encode(
+                [
+                    'status' => "success",
+                    'user_list' => $userList,
+                    'associated_user_posts' => $associated_user_posts
+                ]
+            ), 200)
+                ->header('Content-Type', 'application/json');
+
+            return $resData;
+        } catch (\Throwable $th) {
+            logger("show_profiles_api API Error" . $th->getMessage());
+            $resData = response(json_encode(
+                [
+                    'status' => "error",
+                    'user_list' => [],
+                    'associated_user_posts' => [],
+                ]
+            ), 200)
+                ->header('Content-Type', 'application/json');
+
+            return $resData;
+        }
     }
 
     /**

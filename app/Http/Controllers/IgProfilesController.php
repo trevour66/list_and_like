@@ -143,6 +143,7 @@ class IgProfilesController extends Controller
             $validated = $request->validate([
                 'ig_handle' => 'string|required',
                 'ig_business_account' => 'string|required',
+                'user_list' => 'string|nullable',
             ]);
 
             $email = auth()->user()->email;
@@ -167,6 +168,17 @@ class IgProfilesController extends Controller
 
             if (!$ig_profile) {
                 throw new Error("Could not add IG Profile");
+            }
+
+            $user_lists = null;
+
+            if ($validated["user_list"]) {
+                $user_lists = user_list::where("ig_business_account", "=", $validated["ig_business_account"])
+                    ->where("list_name", "=", $validated["user_list"])->first() ?? false;
+            }
+
+            if ($user_lists) {
+                $user_lists->ig_profiles()->attach($ig_profile);
             }
 
             $ig_profile->users_ids()->attach($user);

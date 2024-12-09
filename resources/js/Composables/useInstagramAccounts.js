@@ -13,6 +13,7 @@ export function useInstagramAccounts(props) {
 	const initializeSavedAccount = () => {
 		const savedAccount = cookies.get("preferedIgBussinessAccount") ?? null;
 
+		if (savedAccount == null) return;
 		// console.log(savedAccount);
 
 		preferedIgAccountStore.set_preferedIgBussinessAccount(
