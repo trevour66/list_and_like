@@ -203,7 +203,7 @@ onMounted(() => {
 								}"
 							>
 								<!-- {{ list }} -->
-								<span class="block uppercase text-sm">{{
+								<span class="block uppercase text-xs font-semibold">{{
 									list.list_name
 								}}</span>
 							</div>
