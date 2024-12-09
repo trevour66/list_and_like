@@ -124,8 +124,8 @@ watchEffect(() => {
 	if (modalStore.getEndOfModalBodyReached && (next_page_url?.value ?? false)) {
 		Loading.value = true;
 		IGBusinessPostCommentsFetch();
-		console.log("end reached");
-		console.log(modalStore.getEndOfModalBodyReached);
+		// console.log("end reached");
+		// console.log(modalStore.getEndOfModalBodyReached);
 	}
 });
 
@@ -186,10 +186,6 @@ const IGBusinessPostCommentsFetch = async () => {
 			Loading.value = false;
 		});
 };
-
-watch(commentStore.get_CommentData, (newValue) => {
-	console.log(newValue);
-});
 
 watchEffect(() => {
 	if (success_submission.value) {
