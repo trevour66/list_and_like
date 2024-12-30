@@ -2,8 +2,7 @@
 
 namespace App\Dashboard_Analytics;
 
-use App\Models\ig_profile_post;
-use App\Models\ig_profiles;
+
 use App\Dashboard_Analytics\EngagementAnalyzerService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Pagination\CursorPaginator;

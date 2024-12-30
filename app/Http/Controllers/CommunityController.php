@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\user_list;
 use App\Models\ig_profile_post;
-use App\Models\ig_profiles;
-use App\Models\user_mongodb_subprofile;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -42,6 +40,8 @@ class CommunityController extends Controller
                     ->orderBy('updated_at', 'desc')
                     ->cursorPaginate(10);
             }
+
+            logger($associated_user_posts);
 
             foreach ($associated_user_posts as $post) {
                 // logger(print_r($post->owner_ig_profile, true));

@@ -11,10 +11,10 @@ const toggleNavbar = ref(false);
 		<div class="w-full max-w-full px-3 flex-0">
 			<!-- Navbar -->
 			<nav
-				class="z-30 flex flex-wrap flex-col items-center px-4 py-2 m-6 mb-0 shadow-md rounded-xl bg-white/80 backdrop-blur-2xl backdrop-saturate-200 lg:flex-nowrap lg:justify-start gap-3"
+				class="z-30 flex flex-wrap flex-col items-center px-4 py-2 lg:m-6 m-2 mb-0 shadow-md rounded-xl bg-white/80 backdrop-blur-2xl backdrop-saturate-200 lg:flex-nowrap lg:justify-start gap-3"
 			>
 				<div
-					class="flex items-center justify-between w-full py-2 px-6 mx-auto flex-wrap-inherit"
+					class="flex items-center justify-between w-full py-2 lg:px-6 mx-auto flex-wrap-inherit"
 				>
 					<Link
 						:href="route('home')"

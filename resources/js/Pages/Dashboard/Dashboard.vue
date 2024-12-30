@@ -146,14 +146,18 @@ const isMostRecentSyncStillInProcess = computed(() => {
 				<div class="flex items-center justify-center min-h-32">
 					<div class="rounded-lg px-16 my-24 w-[50%]">
 						<h3 class="my-4 text-center text-3xl font-semibold text-gray-700">
-							No IG Bussiness Account connected!!
+							Welcome to List & Like!
 						</h3>
 						<p class="text-center font-normal text-gray-600">
+							The first step is to connect your Instagram Business Account.
+						</p>
+
+						<p class="text-center font-normal text-gray-600">
 							To make the most of our application, it's essential to connect
-							your Instagram Business account. Without this connection, some
+							your Instagram Business account. Without that connection, some
 							features and functionalities will be limited. Please take a moment
 							to link your Instagram Business account to unlock all the tools
-							and insights that can help you grow your online presence!
+							and insights that can help you grow your business!
 						</p>
 
 						<div class="w-full inline-flex items-center justify-center my-3">
@@ -161,7 +165,7 @@ const isMostRecentSyncStillInProcess = computed(() => {
 								class="inline-flex items-center justify-center px-5 py-2.5 mt-4 mb-0 font-bold leading-normal text-center text-white align-middle transition-all bg-[#f24b54] border-0 rounded-lg cursor-pointer active:opacity-85 hover:shadow-xs text-sm ease-in tracking-tight-rem shadow-md bg-150 bg-x-25"
 								:href="route('profile.edit')"
 							>
-								Add new IG bussines account
+								Add Your Instagram Business Account
 							</Link>
 						</div>
 					</div>

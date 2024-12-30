@@ -52,8 +52,8 @@ const closeModal = () => {
 			<p class="mt-1 text-sm text-gray-600">
 				We use cookies to improve your experience and make our website work
 				properly. Clearing your data will remove saved preferences, such as the
-				prefered IG Bussiness Account. Please note that you can always reset
-				this with fresh data.
+				prefered Instagram Business Account. Please note that you can always
+				reset this with fresh data.
 			</p>
 		</header>
 
@@ -66,8 +66,8 @@ const closeModal = () => {
 				</h2>
 
 				<p class="mt-1 text-sm text-gray-600">
-					What happens when you clear your data? Your Prefered IG Bussiness
-					Account would be reset.
+					What happens when you clear your data? Your Prefered Instagram
+					Business Account would be reset.
 				</p>
 
 				<p v-if="CookieClearingSuccess !== null" class="my-2 text-sm">

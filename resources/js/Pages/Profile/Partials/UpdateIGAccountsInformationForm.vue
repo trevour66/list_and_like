@@ -51,7 +51,9 @@ const submiNewSubscribeToWebhookRequest = (userAccessCode) => {
 			<div>
 				<h2 class="text-lg font-medium text-gray-900">IG Accounts</h2>
 
-				<p class="mt-1 text-sm text-gray-600">Manage your IG connections</p>
+				<p class="mt-1 text-sm text-gray-600">
+					Manage your Instagram Business Accounts.
+				</p>
 			</div>
 		</header>
 		<div class="mt-6 space-y-6">
@@ -141,7 +143,7 @@ const submiNewSubscribeToWebhookRequest = (userAccessCode) => {
 			<template v-else>
 				<div class="mr-auto space-y-2">
 					<p class="font-normal text-gray-500 leading-none">
-						Make you first connection!
+						Make your first connection!
 					</p>
 				</div>
 			</template>
@@ -162,7 +164,8 @@ const submiNewSubscribeToWebhookRequest = (userAccessCode) => {
 					:class="{
 						'cursor-not-allowed': newIGConnForm.processing,
 					}"
-					>Add new IG bussines account
+				>
+					Add new Instagram Business Account
 				</PrimaryButton>
 			</div>
 

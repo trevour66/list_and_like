@@ -80,6 +80,12 @@ const submit = () => {
 											required
 											autocomplete="new-password"
 										/>
+										<label
+											class="font-normal cursor-pointer select-none text-xs text-slate-700"
+											for="password"
+											>Ensure your account is using a password of atleast least
+											8 characters</label
+										>
 
 										<InputError class="mt-2" :message="form.errors.password" />
 									</div>

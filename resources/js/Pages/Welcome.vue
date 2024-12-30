@@ -50,7 +50,7 @@ defineProps({
 						>
 							<div>
 								<div
-									class="h-16 w-16 bg-red-50 dark:bg-red-800/20 flex items-center justify-center rounded-full"
+									class="h-28 w-28 p-4 bg-red-50 dark:bg-red-800/20 flex items-center justify-center rounded-full"
 								>
 									<ApplicationLogo />
 								</div>
@@ -78,7 +78,7 @@ defineProps({
 						>
 							<div>
 								<div
-									class="h-16 w-16 bg-red-50 dark:bg-red-800/20 flex items-center justify-center rounded-full"
+									class="h-28 w-28 p-4 bg-red-50 dark:bg-red-800/20 flex items-center justify-center rounded-full"
 								>
 									<ApplicationLogo />
 								</div>
