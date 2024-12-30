@@ -37,12 +37,18 @@ class SuccessfulDataFetch extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
+
+
+        // Jordan
+        // List & Like
+
         return (new MailMessage)
-            ->subject("Data Sync Completed Successfully - {$this->IGAccessCodes->IG_USERNAME}")
-            ->greeting("Hurray")
-            ->line('We are pleased to inform you that the data sync process has been completed successfully. All updates are now available, and your data is up to date.')
-            ->line('If you have any questions or need further assistance, please do not hesitate to contact us.')
-            ->line('Thank you for using our application!');
+            // ->subject("Data Sync Completed Successfully - {$this->IGAccessCodes->IG_USERNAME}")
+            ->subject("Your List & Like Account is Ready!")
+            ->greeting("Hooray!")
+            ->line('We are pleased to share that your data syncing process is complete! Aka you will start to see your Dashboard, Community, Engagements and IG Profiles populated with your highest engaged folks.')
+            ->line('You will receive an additional email with how to best move forward with adding more profiles from Webhooks or our Google Chrome extension.')
+            ->line('Happy engaging!');
     }
 
     /**

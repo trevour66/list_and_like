@@ -40,7 +40,8 @@ class AppServiceProvider extends ServiceProvider
                 ->greeting("Hello! ")
                 ->line("Please click the button below to verify your email address for your account inside List & Like.")
                 ->action("Verify Email Address", $url)
-                ->line("If you didn't create an account, no further action is required.");
+                ->line("If you didn't create an account, no further action is required.")
+            ;
         });
     }
 }
