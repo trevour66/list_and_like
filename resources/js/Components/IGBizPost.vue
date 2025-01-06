@@ -2,6 +2,7 @@
 import { router, usePage, useForm } from "@inertiajs/vue3";
 import { onMounted, ref } from "vue";
 import { initDropdowns } from "flowbite";
+import MissingImage from "@/Components/icons/MissingImage.vue";
 
 const props = defineProps({
 	post: {
@@ -63,12 +64,22 @@ onMounted(() => {
 			<div
 				class="md:w-6/12 w-full bg-gray-50 relative inline-flex items-center justify-center text-white transition-all duration-200 ease-in-out text-base h-60 rounded-xl"
 			>
-				<img
-					v-if="post?.image_cdn ?? false"
-					:src="post.image_cdn"
-					alt="profile_image"
-					class="max-h-60 shadow-lg rounded-xl"
-				/>
+				<div v-if="post?.image_cdn ?? false" class="w-full h-full">
+					<img
+						:src="post.image_cdn"
+						alt="profile_image"
+						class="max-h-60 shadow-lg rounded-xl"
+					/>
+				</div>
+				<div
+					v-else
+					class="w-full h-full flex flex-col items-center justify-center gap-3"
+				>
+					<MissingImage class="w-8" />
+					<span class="text-gray-700 text-center text-xs md:w-[80%]"
+						>Image not yet available</span
+					>
+				</div>
 				<div class="absolute top-3 right-2 bg-white p-1 rounded-lg">
 					<svg
 						v-if="(post?.media_product_type ?? '') == 'FEED'"
