@@ -227,24 +227,32 @@ class ApifyScraper
             // logger(print_r($value->resulting_ig_data_fetch_processes, true));
             $resulting_ig_data_fetch_processes =  $value->resulting_ig_data_fetch_processes ?? [];
 
+
             foreach ($resulting_ig_data_fetch_processes as $key => $value) {
-                logger(print_r($value, true));
+                // logger(print_r($value, true));
 
                 $resulting_ig_data_fetch_process = $value;
 
                 $result = ig_business_account_post_commenter_to_be_scraped::where('resulting_ig_data_fetch_processes', 'elemMatch', ['$in' => [$resulting_ig_data_fetch_process]])
-                    ->get() ?? false;
+                    ->get() ?? [];
 
                 // logger(print_r($result, true));
+                // logger(print_r(count($result), true));
                 // logger(print_r("result", true));
 
-                if ($result) {
+                if (count($result) !== 0) {
                     continue;
                 }
+
 
                 list($IG_Business_account, $fetch_proccess_id) = $this->separateString($resulting_ig_data_fetch_process);
 
                 $current_ig_data_fetch_process = ig_data_fetch_process::find($fetch_proccess_id);
+
+                // logger(print_r("result_after 2", true));
+                // logger(print_r($fetch_proccess_id, true));
+                // logger(print_r($IG_Business_account, true));
+
                 $current_ig_data_fetch_process->IDFP_status = 'finished_success';
                 $current_ig_data_fetch_process->save();
 
@@ -252,9 +260,10 @@ class ApifyScraper
                 $user = $current_ig_data_fetch_process->ig_access_code->user;
 
                 try {
+
                     $user->notify(new SuccessfulDataFetch($IGAccountUnder));
                 } catch (\Throwable $th) {
-                    logger(print_r("handle: NewDataFetchRequest SUCCESSFUL FETCH Notify Error:", true));
+                    logger(print_r("sendSuccessNotification Notify Error:", true));
                     logger(print_r($th->getMessage(), true));
                 }
             }
