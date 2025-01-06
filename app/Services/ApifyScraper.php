@@ -14,7 +14,7 @@ class ApifyScraper
 {
     private $base_uri = 'https://api.apify.com/v2/';
     private $headers = [];
-    private $usernames_resulting_ig_business_acc_array = [];
+    private $usernames_resulting_ig_business_acc_array = null;
 
     public function __construct()
     {
@@ -195,12 +195,27 @@ class ApifyScraper
 
             $createdOrUpdatedIGProfile->ig_posts()->save($createdOrUpdatedIGPost);
 
+            $usernames_resulting_ig_business_acc_array = $this->usernames_resulting_ig_business_acc_array->toArray();
 
-            if (count($this->usernames_resulting_ig_business_acc_array[$data["ig_handle"]] ?? []) > 0) {
+            // logger(print_r($usernames_resulting_ig_business_acc_array, true));
+
+            $property = 'ig_handle';
+            $value = $data["ig_handle"];
+
+            $current_model = $this->usernames_resulting_ig_business_acc_array->first(function ($item) use ($property, $value) {
+                return isset($item->$property) && $item->$property === $value;
+            });
+
+            // logger(print_r($current_model, true));
+
+            if (
+                $current_model !== null  &&
+                count($current_model->resulting_ig_business_accounts ?? []) > 0
+            ) {
                 ig_profile_post::where('post_id', $post['id'])
                     ->push(
                         'associated_ig_business_accounts',
-                        $this->usernames_resulting_ig_business_acc_array[$data["ig_handle"]],
+                        $current_model->resulting_ig_business_accounts,
                         unique: true
                     );
             }
