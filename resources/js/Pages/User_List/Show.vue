@@ -1,5 +1,7 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import EditListModal from "@/Components/modals/EditListModal.vue";
+
 import { Head, useForm, Link, router } from "@inertiajs/vue3";
 import { initDropdowns } from "flowbite";
 import { onMounted, ref } from "vue";
@@ -71,6 +73,13 @@ onMounted(() => {
 
 	<AuthenticatedLayout>
 		<template #bits>
+			<EditListModal
+				v-if="modalStore.getEditListModalStatus"
+				:list_id="user_list._id"
+				:list_name="user_list?.list_name"
+				:list_description="user_list?.list_description ?? ''"
+			/>
+
 			<IGProfilePostsModal
 				v-if="modalStore.get_IGProfilePost_ModalStatus"
 				:ig_handle="ig_handle"
@@ -93,10 +102,14 @@ onMounted(() => {
 		<template #header>
 			<div>
 				<h2
-					class="font-semibold text-xl text-gray-800 leading-tight capitalize"
+					class="font-semibold text-xl text-gray-800 leading-tight capitalize mb-6"
 				>
 					{{ user_list?.list_name ?? "" }}
 				</h2>
+				<p class="text-gray-700 text-sm max-w-md">
+					{{ user_list?.list_description ?? "" }}
+					<!-- {{ user_list ?? "" }} -->
+				</p>
 			</div>
 			<div>
 				<div class="flex flex-wrap">
@@ -129,12 +142,13 @@ onMounted(() => {
 								</svg>
 								Delete List
 							</button>
-							<Link
-								:href="route('user_lists.index')"
+							<button
+								@click="modalStore.toggelEditListModal(true)"
+								type="button"
 								class="text-white bg-gray-700 focus:ring-2 focus:outline-none focus:ring-[#f24b54]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center"
 							>
-								Back to Lists
-							</Link>
+								Edit List
+							</button>
 						</div>
 					</div>
 				</div>

@@ -91,6 +91,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/my-lists', [UserListController::class, 'create'])->name('user_lists.create');
     Route::post('/my-lists/{userList}/add-profile', [UserListController::class, 'store'])->name('user_lists.store_profile');
     Route::post('/my-lists/{userList}/delete', [UserListController::class, 'destroy'])->name('user_lists.destroy_profile');
+    Route::put('/my-lists/{userList}', [UserListController::class, 'update'])->name('user_list.update');
 
     Route::get('/community', [CommunityController::class, 'index'])->name('community.index');
 

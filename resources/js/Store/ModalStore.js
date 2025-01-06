@@ -3,6 +3,7 @@ import { computed, ref } from "vue";
 
 const useModalStore = defineStore("modalStore", () => {
 	const showNewListModal = ref(false);
+	const showEditListModal = ref(false);
 	const showCommentsModal = ref(false);
 	const show_IGProfilePost_Modal = ref(false);
 	const show_UserListWebHookDetails_Modal = ref(false);
@@ -11,6 +12,10 @@ const useModalStore = defineStore("modalStore", () => {
 
 	const getNewListModalStatus = computed(() => {
 		return showNewListModal.value;
+	});
+
+	const getEditListModalStatus = computed(() => {
+		return showEditListModal.value;
 	});
 
 	const getCommentsModalStatus = computed(() => {
@@ -33,6 +38,10 @@ const useModalStore = defineStore("modalStore", () => {
 		showNewListModal.value = status;
 	};
 
+	const toggelEditListModal = (status) => {
+		showEditListModal.value = status;
+	};
+
 	const toggelCommentsModal = (status) => {
 		showCommentsModal.value = status;
 	};
@@ -51,16 +60,19 @@ const useModalStore = defineStore("modalStore", () => {
 
 	return {
 		showNewListModal,
+		showEditListModal,
 		showCommentsModal,
 		show_IGProfilePost_Modal,
 		show_UserListWebHookDetails_Modal,
 		endOfModalBodyReached,
 		getNewListModalStatus,
+		getEditListModalStatus,
 		getCommentsModalStatus,
 		get_IGProfilePost_ModalStatus,
 		get_UserListWebHookDetails_ModalStatus,
 		getEndOfModalBodyReached,
 		toggelNewListModal,
+		toggelEditListModal,
 		toggelCommentsModal,
 		toggel_IGProfilePost_Modal,
 		toggel_UserListWebHookDetails_Modal,

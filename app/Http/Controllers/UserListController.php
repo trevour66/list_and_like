@@ -316,19 +316,25 @@ class UserListController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(user_list $userList)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, user_list $userList)
     {
-        //
+        // Validate incoming request
+        $validated = $request->validate([
+            'list_name' => "required|string",
+            'list_description' => 'nullable|string',
+        ]);
+
+        // Perform manual uniqueness check for 'list_name'
+        if ($request->has('list_name') && user_list::where('list_name', $request->list_name)->where('_id', '!=', $userList->_id)->exists()) {
+            return redirect()->back()
+                ->withErrors(['list_name' => 'The list name must be unique. List with the same name exist'])
+                ->withInput();
+        }
+
+        // Update the record with validated data
+        $userList->update($validated);
     }
 
     /**
