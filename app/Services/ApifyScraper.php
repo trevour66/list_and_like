@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Http;
 use App\Models\ig_business_account_post_commenter_to_be_scraped;
 use App\Models\ig_profiles;
 use App\Models\ig_profile_post;
+use App\Models\ig_data_fetch_process;
+use App\Notifications\SuccessfulDataFetch;
 use App\Models\user_mongodb_subprofile;
 
 class ApifyScraper
@@ -23,15 +25,22 @@ class ApifyScraper
     {
         $url = $this->base_uri . 'acts/apify~instagram-profile-scraper/run-sync-get-dataset-items';
 
-        // $usernames = ig_business_account_post_commenter_to_be_scraped::take(1)->pluck('ig_handle')->toArray();
-        $this->usernames_resulting_ig_business_acc_array = ig_business_account_post_commenter_to_be_scraped::take(10)->pluck('resulting_ig_business_accounts', 'ig_handle')->toArray();
+        $this->usernames_resulting_ig_business_acc_array = ig_business_account_post_commenter_to_be_scraped::select('resulting_ig_data_fetch_processes', 'resulting_ig_business_accounts', 'ig_handle')->latest()->limit(10)->get();
+
+        $usernames =  [];
+
+        foreach ($this->usernames_resulting_ig_business_acc_array as $key => $value) {
+            array_push($usernames, $value->ig_handle);
+        }
 
         // logger(print_r($this->usernames_resulting_ig_business_acc_array, true));
-
-        $usernames = array_keys($this->usernames_resulting_ig_business_acc_array);
         // logger(print_r($usernames, true));
 
-        // return;
+
+        $this->sendSuccessNotification();
+
+        return;
+
 
         $response = Http::withHeaders($this->headers)
             ->withQueryParameters(
@@ -196,6 +205,60 @@ class ApifyScraper
                         $this->usernames_resulting_ig_business_acc_array[$data["ig_handle"]],
                         unique: true
                     );
+            }
+        }
+    }
+
+    private function separateString($input)
+    {
+        $parts = explode("%__%", $input);
+
+        if (count($parts) === 2) {
+            $IG_Business_account = $parts[0]; // First part before the separator
+            $fetch_proccess_id = $parts[1]; // Second part after the separator
+
+            return [$IG_Business_account, $fetch_proccess_id];
+        } else {
+            return [null, null];
+        }
+    }
+
+    private function sendSuccessNotification()
+    {
+        foreach ($this->usernames_resulting_ig_business_acc_array as $key => $value) {
+            // logger(print_r($value->resulting_ig_data_fetch_processes, true));
+            $resulting_ig_data_fetch_processes =  $value->resulting_ig_data_fetch_processes ?? [];
+
+            foreach ($resulting_ig_data_fetch_processes as $key => $value) {
+                logger(print_r($value, true));
+
+                $resulting_ig_data_fetch_process = $value;
+
+                $result = ig_business_account_post_commenter_to_be_scraped::where('resulting_ig_data_fetch_processes', 'elemMatch', ['$in' => [$resulting_ig_data_fetch_process]])
+                    ->get() ?? false;
+
+                // logger(print_r($result, true));
+                // logger(print_r("result", true));
+
+                if ($result) {
+                    continue;
+                }
+
+                list($IG_Business_account, $fetch_proccess_id) = $this->separateString($resulting_ig_data_fetch_process);
+
+                $current_ig_data_fetch_process = ig_data_fetch_process::find($fetch_proccess_id);
+                $current_ig_data_fetch_process->IDFP_status = 'finished_success';
+                $current_ig_data_fetch_process->save();
+
+                $IGAccountUnder = $current_ig_data_fetch_process->ig_access_code;
+                $user = $current_ig_data_fetch_process->ig_access_code->user;
+
+                try {
+                    $user->notify(new SuccessfulDataFetch($IGAccountUnder));
+                } catch (\Throwable $th) {
+                    logger(print_r("handle: NewDataFetchRequest SUCCESSFUL FETCH Notify Error:", true));
+                    logger(print_r($th->getMessage(), true));
+                }
             }
         }
     }

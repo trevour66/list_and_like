@@ -10,13 +10,15 @@ use App\Models\IGAccessCodes;
 use App\Models\user_mongodb_subprofile;
 use App\Models\ig_business_account_post_commenter_to_be_scraped;
 use Illuminate\Support\Facades\Http;
-
+use Illuminate\Support\Number;
 
 class IGMedia
 {
 
     private ?IGAccessCodes $IG_access_codes = null;
     private ?User $user = null;
+    private $ig_data_fetch_process_id = 0;
+
 
     private $IG_URL = 'graph.instagram.com';
     private $default_timeFrame = '3 months';
@@ -27,9 +29,11 @@ class IGMedia
     public function __construct(
         IGAccessCodes $IG_access_codes,
         User $user,
+        $ig_data_fetch_process_id,
     ) {
         $this->IG_access_codes = $IG_access_codes;
         $this->user = $user;
+        $this->ig_data_fetch_process_id = $ig_data_fetch_process_id;
     }
 
     public function pullRecentUserPost()
@@ -298,6 +302,17 @@ class IGMedia
                     ->push(
                         'resulting_ig_business_accounts',
                         [$this->IG_access_codes->IG_USERNAME],
+                        unique: true
+                    );
+
+
+                $resulting_ig_data_fetch_processes = $this->IG_access_codes->IG_USERNAME . "%__%" .
+                    $this->ig_data_fetch_process_id;
+
+                ig_business_account_post_commenter_to_be_scraped::where('ig_handle', $key)
+                    ->push(
+                        'resulting_ig_data_fetch_processes',
+                        [$resulting_ig_data_fetch_processes],
                         unique: true
                     );
             }
