@@ -36,11 +36,7 @@ class ApifyScraper
         // logger(print_r($this->usernames_resulting_ig_business_acc_array, true));
         // logger(print_r($usernames, true));
 
-
-        $this->sendSuccessNotification();
-
-        return;
-
+        // return;
 
         $response = Http::withHeaders($this->headers)
             ->withQueryParameters(
@@ -73,6 +69,8 @@ class ApifyScraper
         }
 
         ig_business_account_post_commenter_to_be_scraped::whereIn('ig_handle', $usernames)->delete();
+
+        $this->sendSuccessNotification();
 
         logger(print_r("API scraping done", true));
     }
