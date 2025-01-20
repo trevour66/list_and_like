@@ -268,6 +268,10 @@ class ApifyScraper
                 // logger(print_r($fetch_proccess_id, true));
                 // logger(print_r($IG_Business_account, true));
 
+                if ($current_ig_data_fetch_process->IDFP_status !== 'finished_fetching_ig_profile_from_instagram') {
+                    continue;
+                }
+
                 $current_ig_data_fetch_process->IDFP_status = 'finished_success';
                 $current_ig_data_fetch_process->save();
 

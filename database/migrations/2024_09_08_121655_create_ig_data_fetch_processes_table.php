@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('ig_data_fetch_processes', function (Blueprint $table) {
             $table->id();
-            $table->enum('IDFP_status', ['processing', 'finished_success', 'finished_error']);
+            $table->enum('IDFP_status', ['processing', 'finished_fetching_ig_profile_from_instagram', 'finished_success', 'finished_error']);
 
             $table->foreignId('IDFP_ig_bussines_account')->constrained(
                 table: 'ig_access_codes'

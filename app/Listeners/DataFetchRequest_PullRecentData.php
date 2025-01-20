@@ -70,13 +70,13 @@ class DataFetchRequest_PullRecentData implements ShouldQueue
             $IG_MediaService = new IGMedia($IGAccountUnder, $user, $ig_data_fetch_process_id);
             $IG_MediaService->pullRecentUserPost();
 
+            ig_data_fetch_process::where('id', '=', $ig_data_fetch_process_id)
+                ->update(
+                    ['IDFP_status' => 'finished_fetching_ig_profile_from_instagram'],
+                );
+
+
             // This functionality has been moved to after an APIFY fetch process have been completed
-            // ig_data_fetch_process::where('id', '=', $ig_data_fetch_process_id)
-            //     ->update(
-            //         ['IDFP_status' => 'finished_success'],
-            //     );
-
-
             // try {
             //     $user->notify(new SuccessfulDataFetch($IGAccountUnder));
             // } catch (\Throwable $th) {

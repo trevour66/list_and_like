@@ -41,7 +41,7 @@ class CommunityController extends Controller
                     ->cursorPaginate(10);
             }
 
-            logger($associated_user_posts);
+            // logger($associated_user_posts);
 
             foreach ($associated_user_posts as $post) {
                 // logger(print_r($post->owner_ig_profile, true));
