@@ -26,6 +26,8 @@ class IGMedia
     private $commenters_tracker = [];
     private $repliesIDStack = [];
 
+    private $commentersProfileAddedForScrapping = false;
+
     public function __construct(
         IGAccessCodes $IG_access_codes,
         User $user,
@@ -98,6 +100,8 @@ class IGMedia
         $this->savePostData();
 
         logger('done pullRecentUserPost');
+
+        return $this->commentersProfileAddedForScrapping;
     }
 
     private function savePostData()
@@ -285,6 +289,8 @@ class IGMedia
     private function saveCommentersWithFiveOrMoreCommentsForScraping()
     {
         if (count($this->commenters_tracker ?? []) == 0) {
+            $this->commentersProfileAddedForScrapping = false;
+
             return;
         }
 
@@ -317,6 +323,8 @@ class IGMedia
                     );
             }
         }
+
+        $this->commentersProfileAddedForScrapping = true;
     }
 
     private function exploreReplies(ig_business_account_posts $post)

@@ -68,12 +68,21 @@ class DataFetchRequest_PullRecentData implements ShouldQueue
             }
 
             $IG_MediaService = new IGMedia($IGAccountUnder, $user, $ig_data_fetch_process_id);
-            $IG_MediaService->pullRecentUserPost();
+            $commentersProfileAddedForScrapping =  $IG_MediaService->pullRecentUserPost();
 
-            ig_data_fetch_process::where('id', '=', $ig_data_fetch_process_id)
-                ->update(
-                    ['IDFP_status' => 'finished_fetching_ig_profile_from_instagram'],
-                );
+            if ($commentersProfileAddedForScrapping) {
+                ig_data_fetch_process::where('id', '=', $ig_data_fetch_process_id)
+                    ->update(
+                        ['IDFP_status' => 'finished_fetching_ig_profile_from_instagram'],
+                    );
+            } else {
+
+                ig_data_fetch_process::where('id', '=', $ig_data_fetch_process_id)
+                    ->update(
+                        ['IDFP_status' => 'finished_success'],
+                    );
+            }
+
 
 
             // This functionality has been moved to after an APIFY fetch process have been completed
