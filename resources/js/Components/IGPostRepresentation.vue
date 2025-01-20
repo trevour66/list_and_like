@@ -87,7 +87,7 @@ const skipPost = async (post_id) => {
 
 watchEffect(() => {
 	if (postSkipped.value) {
-		emits("postSkipped", post.post_id ?? "");
+		emits("postSkipped", props.post?.post_id ?? "");
 	}
 });
 
