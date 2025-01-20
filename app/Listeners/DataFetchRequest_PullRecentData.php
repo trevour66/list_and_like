@@ -13,6 +13,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use App\Notifications\NewDataFetch;
 use App\Notifications\SuccessfulDataFetch;
 use App\Notifications\FailedDataFetch;
+use App\Notifications\SuccessfulDataFetch_noNewProfile;
 
 class DataFetchRequest_PullRecentData implements ShouldQueue
 {
@@ -81,6 +82,13 @@ class DataFetchRequest_PullRecentData implements ShouldQueue
                     ->update(
                         ['IDFP_status' => 'finished_success'],
                     );
+
+                try {
+                    $user->notify(new SuccessfulDataFetch_noNewProfile($IGAccountUnder));
+                } catch (\Throwable $th) {
+                    logger(print_r("handle: NewDataFetchRequest SuccessfulDataFetch_noNewProfile Notify Error:", true));
+                    logger(print_r($th->getMessage(), true));
+                }
             }
 
 
