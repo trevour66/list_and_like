@@ -21,7 +21,8 @@ class IGMedia
 
 
     private $IG_URL = 'graph.instagram.com';
-    private $default_timeFrame = '3 months';
+    // private $default_timeFrame ='3 months';
+    private $default_timeFrame = '6 months';
     private $allPosts = [];
     private $commenters_tracker = [];
     private $repliesIDStack = [];

@@ -4,7 +4,7 @@ import InfinityScrollLoader from "@/Components/InfinityScrollLoader.vue";
 import { Head, usePage } from "@inertiajs/vue3";
 import IGPostRepresentation from "@/Components/IGPostRepresentation.vue";
 
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch, computed } from "vue";
 
 import DashboardData from "@/Services/DashboardData";
 
@@ -24,8 +24,52 @@ const noMorePost = ref(false);
 const userAccessToken = usePage().props.auth.user.auth_token;
 
 const cards = ref([
-	{ hide: true, dataSlide: 0, data: {}, isPlaceholder: true },
+	{ hide: true, dataSlide: 0, data: {}, isPlaceholder: true, skipped: false },
 ]);
+
+const getOnlyPlaceholderCardRemain = computed(() => {
+	let onlyPlaceholderCardRemain = false;
+
+	const index = cards.value.findIndex((item) => item.isPlaceholder === true);
+
+	onlyPlaceholderCardRemain = index >= 0 && cards.value.length === 1;
+
+	return onlyPlaceholderCardRemain;
+});
+
+const getCards = computed(() => {
+	let skippedPost = 0;
+	let totalContent = cards.value.length;
+
+	const orderedCards = cards.value.filter((card, index) => {
+		if (!card.skipped) {
+			card.dataSlide -= skippedPost; // Adjust dataSlide based on skipped count
+
+			if (card.dataSlide >= totalContent) {
+				card.dataSlide = card.dataSlide == 0 || index == 0 ? 0 : index - 1;
+			}
+			return true; // Keep this card
+		} else {
+			skippedPost++; // Increment skipped count
+			return false; // Remove this card
+		}
+	});
+	cards.value = orderedCards;
+	return orderedCards;
+});
+
+const skipPost = (postID) => {
+	const index = cards.value.findIndex(
+		(item) => item.data?.post_id === postID && item.isPlaceholder === false
+	);
+	// console.log(postID);
+	// console.log(index);
+	// console.log(cards.value);
+
+	if ((cards.value ?? []).length === 0) return;
+
+	cards.value[index].skipped = true;
+};
 
 const rotateCards = () => {
 	const cardIndexes = cards.value.map((data, i) => {
@@ -50,7 +94,9 @@ const userPostsFetch = async () => {
 
 	Loading.value = true;
 	noMorePost.value = false;
-	cards.value = [{ hide: true, dataSlide: 0, data: {}, isPlaceholder: true }];
+	cards.value = [
+		{ hide: true, dataSlide: 0, data: {}, isPlaceholder: true, skipped: false },
+	];
 
 	await DashboardData.getCommunityData(IG_username, next_page_url.value)
 		.then(function (response) {
@@ -76,6 +122,7 @@ const userPostsFetch = async () => {
 					cards.value[0].data = data;
 				}
 				return {
+					skipped: false,
 					hide: false,
 					dataSlide: index,
 					data: data,
@@ -92,13 +139,6 @@ const userPostsFetch = async () => {
 			console.log(error);
 			Loading.value = false;
 		});
-};
-
-const skipPost = (postID) => {
-	const index = cards.value.findIndex((item) => item.data?.post_id === postID);
-	if (index !== -1) {
-		cards.value.splice(index, 1);
-	}
 };
 
 const refreshCards = async () => {
@@ -151,11 +191,13 @@ onMounted(async () => {
 					</div>
 				</div>
 			</template>
+
 			<template v-else>
 				<div class="cards-box relative min-h-full">
 					<div
-						v-for="(card, index) in cards"
+						v-for="(card, index) in getCards"
 						:class="['card', { hide: card.hide }]"
+						:key="`${card.data.post_id}__${index}`"
 						:data-slide="card.dataSlide"
 					>
 						<template v-if="!card.isPlaceholder">
@@ -163,6 +205,7 @@ onMounted(async () => {
 								:post="card.data"
 								:index="card.dataSlide"
 								:parentIsDashboard="true"
+								@postSkipped="skipPost"
 							/>
 						</template>
 						<template v-else>
@@ -170,13 +213,17 @@ onMounted(async () => {
 								:post="card.data"
 								:index="card.dataSlide"
 								:parentIsDashboard="true"
-								@postSkipped="skipPost"
 							/>
 						</template>
 					</div>
 				</div>
 
 				<div class="m-8 flex items-center justify-center float-right">
+					<template v-if="getOnlyPlaceholderCardRemain === true">
+						<p class="text-center font-normal text-gray-600 px-4">
+							That's all for now. Refresh to populate this view
+						</p>
+					</template>
 					<div
 						v-if="next_page_url !== ''"
 						@click="refreshCards"
