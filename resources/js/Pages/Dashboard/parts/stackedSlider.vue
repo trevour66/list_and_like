@@ -94,6 +94,13 @@ const userPostsFetch = async () => {
 		});
 };
 
+const skipPost = (postID) => {
+	const index = cards.value.findIndex((item) => item.data?.post_id === postID);
+	if (index !== -1) {
+		cards.value.splice(index, 1);
+	}
+};
+
 const refreshCards = async () => {
 	await userPostsFetch();
 };
@@ -163,6 +170,7 @@ onMounted(async () => {
 								:post="card.data"
 								:index="card.dataSlide"
 								:parentIsDashboard="true"
+								@postSkipped="skipPost"
 							/>
 						</template>
 					</div>
